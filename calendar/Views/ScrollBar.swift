@@ -26,9 +26,10 @@ struct ScrollBar: View {
             Text(self.monthName).font(.caption)
             HStack {
                 ForEach(1..<31, id:\.self) { i in
-                    Circle()
-                        .fill(validDays.contains(i) ? .blue : .gray)
-                        .frame(width: self.diameter, height: self.diameter)
+//                    Circle()
+//                        .fill(validDays.contains(i) ? .blue : .gray)
+//                        .frame(width: self.diameter, height: self.diameter)
+                    Text(String(i % 10)).font(.system(size: 6))
                 }
             }
         }.padding(.all, 8)

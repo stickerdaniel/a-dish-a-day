@@ -20,16 +20,25 @@ struct DateView: View {
         NavigationStack(path: $path) {
                 
             VStack {
+                Spacer()
                 ZStack(alignment: .center) {
                     HStack {
                         Button(action: {() -> Void in self.selected = max(0, self.selected - 1) }) {
-                            Text("<")
+                            Label("Left", systemImage: "chevron.left")
+                                .labelStyle(.iconOnly)
                         }
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.circle)
+                        .disabled(selected == 0)
                         Spacer()
                         Button(action: {() -> Void in self.selected = min(self.recipes.count - 1, selected + 1)}) {
                             
-                            Text(">")
+                            Label("Right", systemImage: "chevron.right")
+                                .labelStyle(.iconOnly)
                         }
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.circle)
+                        .disabled(selected == self.recipes.count - 1)
                     }
                     .padding()
                     ForEach(0..<self.recipes.count - selected, id: \.self) { i in
@@ -42,6 +51,17 @@ struct DateView: View {
                 Spacer()
                 Text(String(selected))
                 ScrollBar(recipes: self.recipes)
+            }
+            
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    
+                        
+                    NavigationLink(destination: EditView())
+                    {
+                        Label("Menu", systemImage: "line.3.horizontal")
+                    }
+                }
             }
             .navigationDestination(for: Recipe.self) { r in
                 DetailView(recipe: r)
