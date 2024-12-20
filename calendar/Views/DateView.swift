@@ -42,7 +42,7 @@ struct DateView: View {
                     }
                     .padding()
                     ForEach(0..<self.recipes.count - selected, id: \.self) { i in
-                        RecipeView(recipe: self.recipes[i + selected], path: $path)
+                        CardView(recipe: self.recipes[i + selected], path: $path)
                             .offset(x: CGFloat(i) * 20.0, y: CGFloat(i) * -20.0)
                             .zIndex(Double(-i))
                     }
@@ -57,10 +57,6 @@ struct DateView: View {
                 ToolbarItem(placement: .navigation) {
                     
                         
-                    NavigationLink(destination: EditView())
-                    {
-                        Label("Menu", systemImage: "line.3.horizontal")
-                    }
                 }
             }
             .navigationDestination(for: Recipe.self) { r in

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RecipeView: View {
+struct CardView: View {
     
     var recipe: Recipe
     @Binding var path: NavigationPath

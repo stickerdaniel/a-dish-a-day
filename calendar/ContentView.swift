@@ -7,9 +7,37 @@
 
 import SwiftUI
 
+enum Tab: String, CaseIterable {
+    case calendar = "Calendar"
+    case recipe = "Recipe"
+}
+
 struct ContentView: View {
+    
+    @State private var selection: Tab = .calendar
+    
     var body: some View {
-        DateView()
+        TabView(selection: $selection) {
+            NavigationStack() {
+                CalendarView()
+                    
+                    .tag(Tab.calendar)
+                
+                    
+            }
+            .tabItem {
+                Label("Calendars", systemImage: "calendar")
+            }
+
+            NavigationStack() {
+                
+                RecipeView()
+                    .tag(Tab.recipe)
+            }
+            .tabItem {
+                Label("Recipes", systemImage: "book.pages")
+            }
+        }
     }
 }
 

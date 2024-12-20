@@ -1,0 +1,57 @@
+//
+//  CreatedCalendarView.swift
+//  calendar
+//
+//  Created by Vincent Nahn on 2024/12/20.
+//
+
+import SwiftUI
+
+struct AddCalendarButton: View {
+    @State private var isShowingForm = false;
+    var body: some View {
+        Button("", systemImage: "plus") {
+            isShowingForm.toggle()
+        }
+
+        .frame(width: 100, height: 100)
+        .overlay(
+            RoundedRectangle(cornerRadius: 15.0)
+                .stroke(.black, lineWidth: 2.0)
+        )
+        .sheet(isPresented: $isShowingForm) {
+            AddCalendarView()
+        }
+    }
+}
+
+struct CalendarGridItem: View {
+    var body: some View {
+        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+            .padding()
+            .frame(width: 100, height: 100)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15.0)
+                    .stroke(.black, lineWidth: 2.0)
+            )
+    }
+}
+
+struct CreatedCalendarView: View {
+    var calendars = CalendarModel.sampleCalendars
+//    var columns = Array(repeating: GridItem(.flexible()), count: 3)
+    var columns = [GridItem(.adaptive(minimum: 100))]
+    
+    var body: some View {
+        LazyVGrid(columns: columns) {
+            AddCalendarButton()
+            ForEach(calendars, id: \.self) { c in
+                CalendarGridItem()
+            }
+        }
+    }
+}
+
+#Preview {
+    CreatedCalendarView()
+}

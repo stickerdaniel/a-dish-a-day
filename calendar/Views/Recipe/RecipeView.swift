@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EditRecipeView: View {
+struct RecipeView: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
             .navigationTitle("Recipes")
@@ -15,5 +15,5 @@ struct EditRecipeView: View {
 }
 
 #Preview {
-    EditRecipeView()
+    RecipeView()
 }
