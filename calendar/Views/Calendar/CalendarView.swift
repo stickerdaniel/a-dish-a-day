@@ -17,6 +17,7 @@ struct CalendarView: View {
     
     @State private var isShowingSettings = false;
     @State private var selection: CalendarTab = .created
+    @Binding var path: NavigationPath
     
     var body: some View {
         VStack {
@@ -54,5 +55,6 @@ struct CalendarView: View {
 }
 
 #Preview {
-    CalendarView()
+    @Previewable @State var p = NavigationPath()
+    CalendarView(path: $p)
 }

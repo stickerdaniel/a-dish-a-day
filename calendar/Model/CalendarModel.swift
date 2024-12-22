@@ -17,6 +17,7 @@ struct CalendarModel: Identifiable, Hashable {
     
     var recipes: Dictionary<Date, Recipe>
     
+    
 }
 
 extension CalendarModel {

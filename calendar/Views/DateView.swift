@@ -7,13 +7,25 @@
 
 import SwiftUI
 
+struct DateRecipe: Hashable {
+    var date: Date
+    var recipe: Recipe
+}
+
 struct DateView: View {
-    var recipes: [Recipe]
+    var calendar: CalendarModel
+    var recipes: [DateRecipe]
     @State var selected = 0
     @State var path = NavigationPath()
     
-    init() {
-        self.recipes = Recipe.sampleRecipes
+    init(calendar: CalendarModel) {
+        self.calendar = calendar
+        self.recipes = []
+        for (date, recipe) in (calendar.recipes.sorted{ $0.0 < $1.0}) {
+            recipes.append(DateRecipe(date: date, recipe: recipe))
+            
+        }
+        print(self.recipes)
     }
     var body: some View {
         
@@ -41,8 +53,8 @@ struct DateView: View {
                         .disabled(selected == self.recipes.count - 1)
                     }
                     .padding()
-                    ForEach(0..<self.recipes.count - selected, id: \.self) { i in
-                        CardView(recipe: self.recipes[i + selected], path: $path)
+                    ForEach(self.recipes.indices) { i in
+                        CardView(recipe: self.recipes[i + selected].recipe, date: self.recipes[i + selected].date, path: $path)
                             .offset(x: CGFloat(i) * 20.0, y: CGFloat(i) * -20.0)
                             .zIndex(Double(-i))
                     }
@@ -50,7 +62,7 @@ struct DateView: View {
                 .padding(.all, 8)
                 Spacer()
                 Text(String(selected))
-                ScrollBar(recipes: self.recipes)
+//                ScrollBar(recipes: self.recipes)
             }
             
             .toolbar {
@@ -59,8 +71,8 @@ struct DateView: View {
                         
                 }
             }
-            .navigationDestination(for: Recipe.self) { r in
-                DetailView(recipe: r)
+            .navigationDestination(for: DateRecipe.self) { r in
+                DetailView(recipe: r.recipe, date: r.date)
             }
         }
     }
@@ -68,6 +80,6 @@ struct DateView: View {
 
 #Preview {
     NavigationView {
-        DateView()
+        DateView(calendar: CalendarModel.sampleCalendars[0])
     }
 }

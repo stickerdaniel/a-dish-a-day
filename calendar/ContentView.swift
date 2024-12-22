@@ -15,11 +15,13 @@ enum Tab: String, CaseIterable {
 struct ContentView: View {
     
     @State private var selection: Tab = .calendar
+    @State private var calendarPath: NavigationPath = NavigationPath()
+    
     
     var body: some View {
         TabView(selection: $selection) {
-            NavigationStack() {
-                CalendarView()
+            NavigationStack(path: $calendarPath) {
+                CalendarView(path: $calendarPath)
                     
                     .tag(Tab.calendar)
                 

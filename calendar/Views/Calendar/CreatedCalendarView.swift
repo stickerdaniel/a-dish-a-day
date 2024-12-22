@@ -26,14 +26,18 @@ struct AddCalendarButton: View {
 }
 
 struct CalendarGridItem: View {
+    var calendar: CalendarModel
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-            .padding()
-            .frame(width: 100, height: 100)
-            .overlay(
-                RoundedRectangle(cornerRadius: 15.0)
-                    .stroke(.black, lineWidth: 2.0)
-            )
+        NavigationLink(destination: DateView(calendar: calendar)) {
+            
+            Text(calendar.name)
+                .padding()
+                .frame(width: 100, height: 100)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15.0)
+                        .stroke(.black, lineWidth: 2.0)
+                )
+        }
     }
 }
 
@@ -46,7 +50,7 @@ struct CreatedCalendarView: View {
         LazyVGrid(columns: columns) {
             AddCalendarButton()
             ForEach(calendars, id: \.self) { c in
-                CalendarGridItem()
+                CalendarGridItem(calendar: c)
             }
         }
     }

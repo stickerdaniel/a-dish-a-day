@@ -12,19 +12,13 @@ struct DetailView: View {
     var recipe: Recipe
     var day: String
     var daySuffix: String
+    var date: Date
     
-    init(recipe: Recipe) {
+    init(recipe: Recipe, date: Date) {
+        self.date = date
         self.recipe = recipe
-        self.day = recipe.date.formatted(Date.FormatStyle().day(.defaultDigits))
-        if (day == "1") {
-            self.daySuffix = "st"
-        } else if (day == "2") {
-            self.daySuffix = "nd"
-        } else if (day == "3") {
-            self.daySuffix = "rd"
-        } else {
-            self.daySuffix = "th"
-        }
+        self.day = Helper.day(date)
+        self.daySuffix = Helper.daySuffix(Int(self.day) ?? 0)
     }
     
     var body: some View {
@@ -50,5 +44,5 @@ struct DetailView: View {
 }
 
 #Preview {
-    DetailView(recipe: Recipe.sampleRecipes[2])
+    DetailView(recipe: Recipe.sampleRecipes[2], date: Date())
 }
