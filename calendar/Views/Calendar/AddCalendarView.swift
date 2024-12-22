@@ -15,31 +15,60 @@ struct AddCalendarView: View {
     @State private var endDate = Date()
     @State private var numberOfDays = 0
     
-//    let dateRange: ClosedRange<Date> = {
-//        let calendar = Calendar.current
-//        let startComponents = DateComponents(
-//    }
+    @State private var changedNumberOfDays = false
+    
+    
+    
+    func updateNumberOfDays() {
+
+        changedNumberOfDays = true
+        let newNumberOfDays = Calendar.current.dateComponents([.day], from: startDate, to: endDate)
+        if let days = newNumberOfDays.day {
+            numberOfDays = days + 1
+        }
+    }
 
     var body: some View {
-        Form {
-            Section() {
-                TextField("Name", text: $name)
-            }
-            
-            Section() {
-                DatePicker("Start date", selection: $startDate, displayedComponents: .date)
-                DatePicker("End date", selection: $endDate, in: startDate..., displayedComponents: .date)
-                HStack {
-                    
-                    Text("Number of days")
-                    Spacer()
+                
+
+        NavigationStack {
+            Form {
+                Section() {
+                    TextField("Name", text: $name)
+                }
+                
+                Section() {
+                    DatePicker("Starts", selection: $startDate, displayedComponents: .date)
+                    DatePicker("Ends", selection: $endDate, in: startDate..., displayedComponents: .date)
+                    HStack {
                         
-                    TextField("", value: $numberOfDays, format: .number)
-                    .fixedSize()
-                    .onChange(
-                    
+                        Text("Number of days")
+                        Spacer()
+                        
+                        TextField("", value: $numberOfDays, format: .number)
+                            .fixedSize()
+                            .onChange(of: startDate) {
+                                
+                                updateNumberOfDays()
+                            }
+                            .onChange(of: endDate) {
+                                updateNumberOfDays()
+                            }
+                            .onChange(of: numberOfDays) {
+                                guard !changedNumberOfDays else {
+                                    changedNumberOfDays = false
+                                    return
+                                }
+                                
+                                if let futureDate = Calendar.current.date(byAdding: .day, value: numberOfDays, to: startDate) {
+                                    endDate = futureDate
+                                }
+                            }
+                        
+                    }
                 }
             }
+            .navigationTitle("Add Calendar")
         }
     }
 }
