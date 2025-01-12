@@ -10,16 +10,47 @@ import SwiftUI
 struct RecipeView: View {
     var recipes = Recipe.sampleRecipes
     var columns = [GridItem(.adaptive(minimum: 100))]
+    @State private var isShowingSettings = false;
     var body: some View {
         LazyVGrid(columns: columns) {
+            AddRecipeButton()
             ForEach(recipes, id: \.self) { r in
                 RecipeGridItem(recipe: r)
             }
         }
+        .padding(.leading,20)
         .frame(maxHeight: .infinity, alignment: .top)
         .padding(.top, 20)
         .navigationTitle("Recipes")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Settings", systemImage: "gearshape") {
+                    isShowingSettings.toggle()
+                }
+                .sheet(isPresented: $isShowingSettings) {
+                    SettingsView()
+                }
+                .presentationDragIndicator(.visible)
+            }
+        }
         
+    }
+    struct AddRecipeButton: View {
+        @State private var isShowingForm = false;
+        var body: some View {
+            Button("", systemImage: "plus") {
+                isShowingForm.toggle()
+            }
+
+            .frame(width: 100, height: 100)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15.0)
+                    .stroke(.black, lineWidth: 2.0)
+            )
+            .sheet(isPresented: $isShowingForm) {
+                AddRecipeView()
+            }
+        }
     }
     
     struct RecipeGridItem: View {

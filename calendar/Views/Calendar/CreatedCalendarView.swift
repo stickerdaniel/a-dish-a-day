@@ -53,6 +53,7 @@ struct CreatedCalendarView: View {
                 CalendarGridItem(calendar: c)
             }
         }
+        .padding(.leading,20)
     }
 }
 
