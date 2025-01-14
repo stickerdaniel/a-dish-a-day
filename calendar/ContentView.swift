@@ -41,7 +41,7 @@ struct ContentView: View {
             }
         }
         .modelContainer(for: CalendarModel.self)
-        .modelContainer(for: Recipe.self)
+        .modelContainer(for: RecipeModel.self)
     }
 }
 

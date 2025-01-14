@@ -71,7 +71,7 @@ struct AddRecipeView: View{
                     }
                 }
                 Button("Add Recipe") {
-                    context.insert(Recipe(name: name, text: description, ingredients: ingredients))
+                    context.insert(RecipeModel(name: name, text: description, ingredients: ingredients))
                 }
                 .disabled(name.isEmpty)
                 .padding()
