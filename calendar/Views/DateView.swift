@@ -16,7 +16,6 @@ struct DateView: View {
     var calendar: CalendarModel
     var recipes: [DateRecipe]
     @State var selected = 0
-    @State var path = NavigationPath()
     
     init(calendar: CalendarModel) {
         self.calendar = calendar
@@ -29,7 +28,7 @@ struct DateView: View {
     }
     var body: some View {
         
-        NavigationStack(path: $path) {
+        NavigationStack {
                 
             VStack {
                 Spacer()
@@ -54,7 +53,7 @@ struct DateView: View {
                     }
                     .padding()
                     ForEach(self.recipes.indices) { i in
-                        CardView(recipe: self.recipes[i + selected].recipe, date: self.recipes[i + selected].date, path: $path)
+                        CardView(recipe: self.recipes[i + selected].recipe, date: self.recipes[i + selected].date)
                             .offset(x: CGFloat(i) * 20.0, y: CGFloat(i) * -20.0)
                             .zIndex(Double(-i))
                     }
@@ -65,21 +64,8 @@ struct DateView: View {
 //                ScrollBar(recipes: self.recipes)
             }
             
-            .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    
-                        
-                }
-            }
-            .navigationDestination(for: DateRecipe.self) { r in
-                DetailView(recipe: r.recipe, date: r.date)
-            }
+            .toolbar(.hidden, for: .tabBar)
         }
     }
 }
 
-#Preview {
-    NavigationView {
-        DateView(calendar: CalendarModel.sampleCalendars[0])
-    }
-}

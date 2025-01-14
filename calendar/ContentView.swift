@@ -21,7 +21,7 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selection) {
             NavigationStack(path: $calendarPath) {
-                CalendarView(path: $calendarPath)
+                CalendarView()
                     
                     .tag(Tab.calendar)
                 
@@ -40,6 +40,7 @@ struct ContentView: View {
                 Label("Recipes", systemImage: "book.pages")
             }
         }
+        .modelContainer(for: CalendarModel.self)
     }
 }
 

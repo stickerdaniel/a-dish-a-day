@@ -39,7 +39,3 @@ struct DatePickerRange: View {
             }
     }
 }
-
-#Preview {
-    DatePickerRange()
-}

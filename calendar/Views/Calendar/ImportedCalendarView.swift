@@ -13,6 +13,3 @@ struct ImportedCalendarView: View {
     }
 }
 
-#Preview {
-    ImportedCalendarView()
-}

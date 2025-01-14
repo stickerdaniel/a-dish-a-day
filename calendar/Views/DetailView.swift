@@ -36,13 +36,10 @@ struct DetailView: View {
                 
             }
             .padding(.bottom, 8)
-            Text(self.recipe.description)
+            Text(self.recipe.text)
             Spacer()
         }
         .padding(.all, 40)
     }
 }
 
-#Preview {
-    DetailView(recipe: Recipe.sampleRecipes[2], date: Date())
-}

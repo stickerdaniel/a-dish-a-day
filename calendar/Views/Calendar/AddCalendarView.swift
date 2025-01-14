@@ -9,23 +9,20 @@ import SwiftUI
 
 struct AddCalendarView: View {
     
+    @Binding var isShowingForm: Bool
+    
     @State private var name = ""
     
     @State private var startDate = Date()
     @State private var endDate = Date()
-    @State private var numberOfDays = 0
+    @State private var numberOfDays = 1
     
-    @State private var changedNumberOfDays = false
-    
-    
-    
+    @Environment(\.modelContext) private var context
+
     func updateNumberOfDays() {
 
-        changedNumberOfDays = true
-        let newNumberOfDays = Calendar.current.dateComponents([.day], from: startDate, to: endDate)
-        if let days = newNumberOfDays.day {
-            numberOfDays = days + 1
-        }
+        let daysBetween = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day
+        numberOfDays = (daysBetween ?? 0) + 1
     }
 
     var body: some View {
@@ -54,27 +51,21 @@ struct AddCalendarView: View {
                             .onChange(of: endDate) {
                                 updateNumberOfDays()
                             }
-                            .onChange(of: numberOfDays) {
-                                guard !changedNumberOfDays else {
-                                    changedNumberOfDays = false
-                                    return
-                                }
-                                
-                                if let futureDate = Calendar.current.date(byAdding: .day, value: numberOfDays, to: startDate) {
-                                    endDate = futureDate
-                                }
-                            }
+                            .disabled(true)
                         
                     }
                 }
+                Section() {
+                    
+                    Button("Add new calendar") {
+                        context.insert(CalendarModel(name: name, startDate: startDate, endDate: endDate))
+                        isShowingForm = false
+                    }
+                    .disabled(name.isEmpty)
+                }
             }
             .navigationTitle("Add Calendar")
+            .presentationDragIndicator(.visible)
         }
     }
-}
-
-
-
-#Preview {
-    AddCalendarView()
 }

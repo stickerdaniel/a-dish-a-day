@@ -4,11 +4,12 @@
 //
 //  Created by Vincent Nahn on 2024/12/20.
 //
+import SwiftData
 
 import SwiftUI
 
 struct AddCalendarButton: View {
-    @State private var isShowingForm = false;
+    @State var isShowingForm = false
     var body: some View {
         Button("", systemImage: "plus") {
             isShowingForm.toggle()
@@ -20,7 +21,7 @@ struct AddCalendarButton: View {
                 .stroke(.black, lineWidth: 2.0)
         )
         .sheet(isPresented: $isShowingForm) {
-            AddCalendarView()
+            AddCalendarView(isShowingForm: $isShowingForm)
         }
     }
 }
@@ -28,7 +29,7 @@ struct AddCalendarButton: View {
 struct CalendarGridItem: View {
     var calendar: CalendarModel
     var body: some View {
-        NavigationLink(destination: DateView(calendar: calendar)) {
+        NavigationLink(destination: EditCalendarView(calendar: calendar)) {
             
             Text(calendar.name)
                 .padding()
@@ -42,8 +43,7 @@ struct CalendarGridItem: View {
 }
 
 struct CreatedCalendarView: View {
-    var calendars = CalendarModel.sampleCalendars
-//    var columns = Array(repeating: GridItem(.flexible()), count: 3)
+    @Query private var calendars: [CalendarModel]
     var columns = [GridItem(.adaptive(minimum: 100))]
     
     var body: some View {
@@ -54,8 +54,4 @@ struct CreatedCalendarView: View {
             }
         }
     }
-}
-
-#Preview {
-    CreatedCalendarView()
 }
