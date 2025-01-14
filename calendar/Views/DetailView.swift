@@ -9,12 +9,12 @@
 import SwiftUI
 
 struct DetailView: View {
-    var recipe: Recipe
+    var recipe: RecipeModel
     var day: String
     var daySuffix: String
     var date: Date
     
-    init(recipe: Recipe, date: Date) {
+    init(recipe: RecipeModel, date: Date) {
         self.date = date
         self.recipe = recipe
         self.day = Helper.day(date)

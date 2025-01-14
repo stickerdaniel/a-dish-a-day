@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecipeView: View {
-    var recipes = Recipe.sampleRecipes
+    var recipes = RecipeModel.sampleRecipes
     var columns = [GridItem(.adaptive(minimum: 100))]
     @State private var isShowingSettings = false;
     var body: some View {
@@ -54,7 +54,7 @@ struct RecipeView: View {
     }
     
     struct RecipeGridItem: View {
-        var recipe: Recipe
+        var recipe: RecipeModel
         var body: some View {
             NavigationLink(destination: OpenRecipeView(recipe: recipe)) {
                 
