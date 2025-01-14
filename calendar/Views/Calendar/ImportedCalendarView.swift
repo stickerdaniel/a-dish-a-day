@@ -22,8 +22,9 @@ struct ImportedCalendarView: View {
                 CalendarCard(
                     icon: Image(systemName: "tray.and.arrow.down"),
                     description: "Import calendars"
-                ) {
-                    isImportingJSON = true // Trigger the file picker
+                )
+                .onTapGesture {
+                    isImportingJSON = true
                 }
             )
         )

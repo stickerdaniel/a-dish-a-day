@@ -19,7 +19,8 @@ struct CreatedCalendarView: View {
                 CalendarCard(
                     icon: Image(systemName: "plus"),
                     description: "Create new calendar"
-                ) {
+                )
+                .onTapGesture {
                     isShowingForm.toggle()
                 }
                 .sheet(isPresented: $isShowingForm) {

@@ -17,7 +17,6 @@ struct CalendarCard: View {
     var image: Image? = nil // Optional image
     var icon: Image? = nil // Optional icon
     var description: String
-    var action: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 8) {
@@ -46,9 +45,6 @@ struct CalendarCard: View {
             .background(Color.white)
             .cornerRadius(15)
             .shadow(radius: 2)
-            .onTapGesture {
-                action?()
-            }
 
             Text(description)
                 .font(.subheadline)
