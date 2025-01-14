@@ -1,92 +1,96 @@
 import SwiftUI
 
+enum Appearance: String, CaseIterable {
+    case light, dark, system
+
+    var title: String {
+        switch self {
+        case .light: return "Light"
+        case .dark: return "Dark"
+        case .system: return "System"
+        }
+    }
+}
+
 struct SettingsView: View {
+    @AppStorage("appearance") private var appearance: Appearance = .system // Persist choice
+
     var body: some View {
-        NavigationView {
-            VStack {
-                // First section
-                VStack {
-                    NavigationLink(destination: PrivacyView()) {
+        NavigationStack {
+            Form {
+                // First Section
+                Section {
+                    NavigationLink(destination: Text("Privacy Placeholder")) {
                         SettingsRow(title: "Privacy")
                     }
-                    Divider()
-                    NavigationLink(destination: NotificationsView()) {
+                    NavigationLink(destination: Text("Notifications Placeholder")) {
                         SettingsRow(title: "Notifications")
                     }
                 }
-                .background(Color.white)
-                .cornerRadius(10)
-                .padding(.horizontal)
-
-                // Second section
-                VStack {
-                    NavigationLink(destination: StorageView()) {
+                
+                // Second Section
+                Section {
+                    NavigationLink(destination: Text("Storage Placeholder")) {
                         SettingsRow(title: "Storage")
                     }
-                    Divider()
-                    NavigationLink(destination: AboutView()) {
+                    NavigationLink(destination: Text("About Placeholder")) {
                         SettingsRow(title: "About")
                     }
                 }
-                .background(Color.white)
-                .cornerRadius(10)
-                .padding(.horizontal)
                 
-                VStack {
-                    NavigationLink(destination: HelpView()) {
+                // Help Section
+                Section {
+                    NavigationLink(destination: Text("Help Placeholder")) {
                         SettingsRow(title: "Help")
                     }
                 }
-                .background(Color.white)
-                .cornerRadius(10)
-                .padding(.horizontal)
                 
-               
-
-                // Other buttons
-                VStack {
-                    NavigationLink(destination: LogoutView()) {
+                // Appearance Picker Section
+                Picker("Appearance", selection: $appearance) {
+                    ForEach(Appearance.allCases, id: \.self) { appearance in
+                        Text(appearance.title).tag(appearance)
+                    }
+                }
+                .pickerStyle(.inline)
+                
+                // Log Out Section
+                Section {
+                    NavigationLink(destination: Text("Log Out Placeholder")) {
                         SettingsRow(title: "Log out")
                     }
                 }
-                .background(Color.white)
-                .cornerRadius(10)
-                .padding(.horizontal)
-                .padding(.top, 50)
-
-                Spacer()
             }
-            .background(Color(UIColor.systemGray6)) // Light gray background
-            .navigationBarTitle("Settings", displayMode: .inline)
+            .navigationTitle("Settings")
+            .onChange(of: appearance) {
+                applyAppearance()
+            }
         }
     }
-}
 
-// Reusable Row Component
-struct SettingsRow: View {
-    var title: String
+    /// Apply appearance mode based on selection
+    private func applyAppearance() {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            for window in windowScene.windows {
+                switch appearance {
+                case .light:
+                    window.overrideUserInterfaceStyle = .light
+                case .dark:
+                    window.overrideUserInterfaceStyle = .dark
+                case .system:
+                    window.overrideUserInterfaceStyle = .unspecified
+                }
+            }
+        }
+    }
     
-    var body: some View {
-        HStack {
-            Text(title)
-                .foregroundColor(.black)
-                .padding()
-            Spacer()
-        }
-        .frame(height: 50)
-    }
-}
-
-// Dummy Views for Navigation
-struct PrivacyView: View { var body: some View { Text("Privacy Settings").navigationTitle("Privacy") } }
-struct NotificationsView: View { var body: some View { Text("Notification Settings").navigationTitle("Notifications") } }
-struct StorageView: View { var body: some View { Text("Storage Settings").navigationTitle("Storage") } }
-struct AboutView: View { var body: some View { Text("About App").navigationTitle("About") } }
-struct HelpView: View { var body: some View { Text("Help Center").navigationTitle("Help") } }
-struct LogoutView: View { var body: some View { Text("Log Out").navigationTitle("Log out") } }
-
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView()
+    struct SettingsRow: View {
+        var title: String
+        
+        var body: some View {
+            HStack {
+                Text(title)
+                    .foregroundColor(.primary)
+                Spacer()
+            }        }
     }
 }
