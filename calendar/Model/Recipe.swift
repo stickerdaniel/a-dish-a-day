@@ -12,25 +12,30 @@ class Recipe: Identifiable, Hashable, Codable {
     enum CodingKeys: CodingKey {
         case name
         case text
+        case ingredients
     }
     var id = UUID()
     var name: String
     var text: String
+    var ingredients: String
     
-    init(name: String, text: String) {
+    init(name: String, text: String, ingredients: String = "") {
         self.name = name
         self.text = text
+        self.ingredients = ingredients
     }
     
     required init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
         text = try container.decode(String.self, forKey: .text)
+        ingredients = try container.decode(String.self, forKey: .ingredients)
     }
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
         try container.encode(text, forKey: .text)
+        try container.encode(ingredients, forKey: .ingredients)
     }
 
 }

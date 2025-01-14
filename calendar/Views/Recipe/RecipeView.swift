@@ -6,9 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct RecipeView: View {
-    var recipes = Recipe.sampleRecipes
+    @Query private var recipes: [Recipe]
     var columns = [GridItem(.adaptive(minimum: 100))]
     @State private var isShowingSettings = false;
     var body: some View {

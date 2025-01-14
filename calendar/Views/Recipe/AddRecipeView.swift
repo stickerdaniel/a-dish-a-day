@@ -13,6 +13,9 @@ struct AddRecipeView: View{
     @State private var description = ""
     @State public var textHeightIng: CGFloat = 40 // Default height
     @State public var textHeightDes: CGFloat = 40 // Default height
+    
+    @Environment(\.modelContext) private var context
+
     var body: some View {
         NavigationStack {
             Form {
@@ -67,6 +70,16 @@ struct AddRecipeView: View{
                         Spacer()
                     }
                 }
+                Button("Add Recipe") {
+                    context.insert(Recipe(name: name, text: description, ingredients: ingredients))
+                }
+                .disabled(name.isEmpty)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                .padding(.bottom, 10)
+
 
             }
         }

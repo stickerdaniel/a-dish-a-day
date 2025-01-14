@@ -56,3 +56,7 @@ struct CreatedCalendarView: View {
         .padding(.leading,20)
     }
 }
+
+#Preview() {
+    CreatedCalendarView()
+}

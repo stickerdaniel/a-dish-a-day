@@ -38,19 +38,21 @@ struct AddCalendarView: View {
                         DatePicker("Starts", selection: $startDate, displayedComponents: .date)
                         DatePicker("Ends", selection: $endDate, in: startDate..., displayedComponents: .date)
                         
-                        Text("Number of days")
-                        Spacer()
-                        
-                        TextField("", value: $numberOfDays, format: .number)
-                            .fixedSize()
-                            .onChange(of: startDate) {
-                                
-                                updateNumberOfDays()
-                            }
-                            .onChange(of: endDate) {
-                                updateNumberOfDays()
-                            }
-                            .disabled(true)
+                        HStack{
+                            Text("Number of days")
+                            Spacer()
+                            
+                            TextField("", value: $numberOfDays, format: .number)
+                                .fixedSize()
+                                .onChange(of: startDate) {
+                                    
+                                    updateNumberOfDays()
+                                }
+                                .onChange(of: endDate) {
+                                    updateNumberOfDays()
+                                }
+                                .disabled(true)
+                        }
                         
                     }
                 }
