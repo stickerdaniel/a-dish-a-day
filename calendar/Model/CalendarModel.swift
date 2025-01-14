@@ -31,10 +31,6 @@ class CalendarModel: Identifiable, Hashable {
         self.endDate = endDate
         self.recipes = recipes
     }
-    
-    
-    
-    
 }
 
 extension CalendarModel {
