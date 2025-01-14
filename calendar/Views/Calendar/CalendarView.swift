@@ -27,6 +27,8 @@ struct CalendarView: View {
             }
             .pickerStyle(.segmented)
             .padding()
+            // max width
+            .frame(maxWidth: 500)
             
             if selection == .created {
                 CreatedCalendarView()

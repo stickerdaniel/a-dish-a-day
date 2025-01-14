@@ -11,17 +11,20 @@ struct CalendarGridView: View {
     let calendars: [CalendarModel]
     let addButton: AnyView
 
-    var columns = [GridItem(.adaptive(minimum: 100))]
+    // flex wrap
+    var columns = [GridItem(.adaptive(minimum: 112), spacing: 16)]
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 32) {
-            addButton
-
-            ForEach(calendars, id: \.self) { calendar in
-                CalendarGridItem(calendar: calendar)
+        ScrollView{
+            LazyVGrid(columns: columns, spacing: 16) {
+                addButton
+                
+                ForEach(calendars, id: \.self) { calendar in
+                    CalendarGridItem(calendar: calendar)
+                }
             }
+            .padding()
+            .padding(.top)
         }
-        .padding()
-        .padding(.top)
     }
 }
