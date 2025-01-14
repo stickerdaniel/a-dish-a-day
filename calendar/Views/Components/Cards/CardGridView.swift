@@ -13,7 +13,7 @@ struct CardGridView<Item: Identifiable & Hashable, Content: View>: View {
     let content: (Item) -> Content // View builder for each grid item
 
     // Flex wrap columns
-    var columns = [GridItem(.adaptive(minimum: 112), spacing: 16)]
+    var columns = [GridItem(.adaptive(minimum: 96), spacing: 16)]
 
     var body: some View {
         ScrollView {
