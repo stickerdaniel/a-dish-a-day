@@ -11,11 +11,14 @@ struct CalendarCard: View {
     var image: Image? = nil // Optional image
     var icon: Image? = nil // Optional icon
     var description: String
+    
+    
+    // systemBackground for lightmode, secondarySystemBackground for darkmode
 
     var body: some View {
         VStack(spacing: 8) {
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
+                .fill(Color.cardBackground) // Dynamically adjust based on color scheme
                 .overlay(
                     ZStack {
                         if let icon = icon {
@@ -51,5 +54,17 @@ struct CalendarCard: View {
                 .frame(height: 40, alignment: .top)
         }
         .frame(maxWidth: .infinity) // Adapt to grid column width
+    }
+}
+
+// Extension dynamic card bg color
+extension Color {
+    static var cardBackground: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                // light opacity for dark mode
+            ? UIColor.secondarySystemBackground.withAlphaComponent(0.5)
+                : .systemBackground
+        })
     }
 }
