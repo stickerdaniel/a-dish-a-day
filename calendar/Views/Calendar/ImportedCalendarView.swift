@@ -13,8 +13,11 @@ struct ImportedCalendarView: View {
     @State private var isImportingJSON = false
 
     var body: some View {
+        let calendars = importedCalendars.isEmpty ?
+            CalendarModel.sampleCalendars : importedCalendars
+        
         CalendarGridView(
-            calendars: importedCalendars,
+            calendars: calendars,
             addButton: AnyView(
                 CalendarCard(
                     icon: Image(systemName: "tray.and.arrow.down"),
