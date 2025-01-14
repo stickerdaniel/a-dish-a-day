@@ -19,7 +19,7 @@ struct ImportedCalendarView: View {
         CalendarGridView(
             calendars: calendars,
             addButton: AnyView(
-                CalendarCard(
+                Card(
                     icon: Image(systemName: "tray.and.arrow.down"),
                     description: "Import calendar"
                 )

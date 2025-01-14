@@ -16,7 +16,7 @@ struct CreatedCalendarView: View {
         CalendarGridView(
             calendars: calendars,
             addButton: AnyView(
-                CalendarCard(
+                Card(
                     icon: Image(systemName: "plus"),
                     description: "Create new calendar"
                 )

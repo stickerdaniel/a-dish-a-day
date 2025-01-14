@@ -12,7 +12,7 @@ struct CalendarGridItem: View {
 
     var body: some View {
         NavigationLink(destination: EditCalendarView(calendar: calendar)) {
-            CalendarCard(
+            Card(
                 image: calendar.thumbnailImage, // Computed property to handle thumbnail
                 description: calendar.name
             )

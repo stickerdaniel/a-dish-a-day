@@ -53,6 +53,7 @@ struct ContentView: View {
         .environment(\.horizontalSizeClass, .compact) // 👈 Use this modifier to change to
         // Padding 16 bottom only on MacOS not on iOS and iPadOS
         .padding(.bottom, bottomPadding)
+
     }
 }
 
