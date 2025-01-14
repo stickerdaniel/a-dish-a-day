@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DateRecipe: Hashable {
     var date: Date
-    var recipe: Recipe
+    var recipe: RecipeModel
 }
 
 struct DateView: View {

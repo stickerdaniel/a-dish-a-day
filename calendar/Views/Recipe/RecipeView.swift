@@ -55,7 +55,7 @@ struct RecipeView: View {
     }
     
     struct RecipeGridItem: View {
-        var recipe: Recipe
+        var recipe: RecipeModel
         var body: some View {
             NavigationLink(destination: OpenRecipeView(recipe: recipe)) {
                 
@@ -70,8 +70,3 @@ struct RecipeView: View {
             }
         }
     }
-    
-    #Preview {
-        RecipeView()
-    }
-

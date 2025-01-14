@@ -8,20 +8,19 @@
 import SwiftUI
 
 enum CalendarTab: String, CaseIterable {
+    case imported = "Added"
     case created = "Created"
-    case imported = "Imported"
 }
 
 
 struct CalendarView: View {
     
     @State private var isShowingSettings = false;
-    @State private var selection: CalendarTab = .created
+    @State private var selection: CalendarTab = .imported
     
     var body: some View {
         VStack {
             Picker("Select Calendar Tab" ,selection: $selection) {
-//
                 ForEach(CalendarTab.allCases, id: \.self) {
                     Text($0.rawValue)
                 }

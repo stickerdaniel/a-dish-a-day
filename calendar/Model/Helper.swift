@@ -8,13 +8,18 @@
 import SwiftUI
 
 class Helper {
-    static let formatter = {
+    static let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd"
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
-    static func getDate(_ d: String) -> Date {
-        return self.formatter.date(from: d) ?? Date()
+
+    static func formatDate(_ date: Date) -> String {
+        return formatter.string(from: date)
+    }
+
+    static func getDate(_ string: String) -> Date? {
+        return formatter.date(from: string)
     }
     
     static func day(_ date: Date) -> String {
