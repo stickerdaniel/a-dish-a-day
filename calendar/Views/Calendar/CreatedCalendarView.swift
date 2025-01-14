@@ -13,15 +13,14 @@ struct CreatedCalendarView: View {
     @State private var isShowingForm = false
 
     var body: some View {
-        let allCalendars = calendars.isEmpty ? CalendarModel.sampleCalendars : calendars
-
         CalendarGridView(
-            calendars: allCalendars,
+            calendars: calendars,
             addButton: AnyView(
                 CalendarCard(
                     icon: Image(systemName: "plus"),
                     description: "Create new calendar"
-                ) {
+                )
+                .onTapGesture {
                     isShowingForm.toggle()
                 }
                 .sheet(isPresented: $isShowingForm) {
