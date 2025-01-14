@@ -17,6 +17,8 @@ struct AddCalendarView: View {
     @State private var endDate = Date()
     @State private var numberOfDays = 1
     
+    @State private var navigateToSelection = false;
+    
     @Environment(\.modelContext) private var context
 
     func updateNumberOfDays() {
@@ -26,18 +28,15 @@ struct AddCalendarView: View {
     }
 
     var body: some View {
-                
+            NavigationStack {
+                Form {
+                    Section {
+                        TextField("Name", text: $name)
+                    }
 
-        NavigationStack {
-            Form {
-                Section() {
-                    TextField("Name", text: $name)
-                }
-                
-                Section() {
-                    DatePicker("Starts", selection: $startDate, displayedComponents: .date)
-                    DatePicker("Ends", selection: $endDate, in: startDate..., displayedComponents: .date)
-                    HStack {
+                    Section {
+                        DatePicker("Starts", selection: $startDate, displayedComponents: .date)
+                        DatePicker("Ends", selection: $endDate, in: startDate..., displayedComponents: .date)
                         
                         Text("Number of days")
                         Spacer()
@@ -55,17 +54,28 @@ struct AddCalendarView: View {
                         
                     }
                 }
-                Section() {
                     
-                    Button("Add new calendar") {
-                        context.insert(CalendarModel(name: name, startDate: startDate, endDate: endDate))
-                        isShowingForm = false
-                    }
-                    .disabled(name.isEmpty)
+                Button("Add Calendar") {
+                    context.insert(CalendarModel(name: name, startDate: startDate, endDate: endDate))
+                    navigateToSelection = true
+                }
+                .disabled(name.isEmpty)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                .padding(.bottom, 10)
+
+                // NavigationLink controlled by the @State variable
+                NavigationLink(
+                    destination: SelectionDatesView(name: name, startDate: startDate, endDate: endDate, numberOfDays: numberOfDays),
+                    isActive: $navigateToSelection
+                ) {
+                    EmptyView()
                 }
             }
             .navigationTitle("Add Calendar")
             .presentationDragIndicator(.visible)
+
         }
-    }
 }
