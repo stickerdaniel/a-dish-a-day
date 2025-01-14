@@ -1,5 +1,5 @@
 //
-//  Recipe.swift
+//  RecipeModel.swift
 //  calendar
 //
 //  Created by Vincent Nahn on 2024/12/16.
@@ -8,7 +8,7 @@ import SwiftUI
 import SwiftData
 
 @Model
-class Recipe: Identifiable, Hashable, Codable {
+class RecipeModel: Identifiable, Hashable, Codable {
     enum CodingKeys: CodingKey {
         case name
         case text
@@ -35,19 +35,19 @@ class Recipe: Identifiable, Hashable, Codable {
 
 }
 
-extension Recipe {
+extension RecipeModel {
     
 
-    static let sampleRecipes: [Recipe] = [
-        Recipe(
+    static let sampleRecipes: [RecipeModel] = [
+        RecipeModel(
             name: "Baklawa",
             text: "Tastes good"
         ),
-        Recipe(
+        RecipeModel(
             name: "Peking Duck",
             text: "Available in all Chinese restaurants"
         ),
-        Recipe(
+        RecipeModel(
             name: "Schwarma",
             text: "How fatty do you want it? Yes!"
         )

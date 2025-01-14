@@ -9,9 +9,9 @@
 import SwiftUI
 
 struct OpenRecipeView: View{
-    var recipe: Recipe
+    var recipe: RecipeModel
     
-    init(recipe: Recipe) {
+    init(recipe: RecipeModel) {
         self.recipe = recipe
     }
     

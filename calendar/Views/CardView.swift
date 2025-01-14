@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CardView: View {
     
-    var recipe: Recipe
+    var recipe: RecipeModel
     var date: Date
     
     var body: some View {
