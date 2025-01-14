@@ -21,7 +21,7 @@ struct ImportedCalendarView: View {
             addButton: AnyView(
                 CalendarCard(
                     icon: Image(systemName: "tray.and.arrow.down"),
-                    description: "Import calendars"
+                    description: "Import calendar"
                 )
                 .onTapGesture {
                     isImportingJSON = true
