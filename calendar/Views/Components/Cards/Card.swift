@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CalendarCard: View {
+struct Card: View {
     var image: Image? = nil // Optional image
     var icon: Image? = nil // Optional icon
     var description: String
@@ -63,7 +63,7 @@ extension Color {
         Color(UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
                 // light opacity for dark mode
-            ? UIColor.secondarySystemBackground.withAlphaComponent(0.5)
+            ? UIColor.secondarySystemBackground.withAlphaComponent(0.75)
                 : .systemBackground
         })
     }

@@ -1,5 +1,5 @@
 //
-//  EditRecipeView.swift
+//  RecipeView.swift
 //  calendar
 //
 //  Created by Vincent Nahn on 2024/12/18.
@@ -10,63 +10,37 @@ import SwiftData
 
 struct RecipeView: View {
     @Query private var recipes: [RecipeModel]
-    var columns = [GridItem(.adaptive(minimum: 100))]
-    @State private var isShowingSettings = false;
+    @State private var isShowingAddRecipe = false
+    @State private var isShowingSettings = false
+
     var body: some View {
-        LazyVGrid(columns: columns) {
-            AddRecipeButton()
-            ForEach(recipes, id: \.self) { r in
-                RecipeGridItem(recipe: r)
-            }
-        }
-        .padding(.leading,20)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .padding(.top, 20)
+        RecipeGridView(
+            recipes: recipes,
+            addButton: AnyView(
+                Card(
+                    icon: Image(systemName: "plus"),
+                    description: "Create new Recipe"
+                )
+                .onTapGesture {
+                    isShowingAddRecipe.toggle()
+                }
+                .sheet(isPresented: $isShowingAddRecipe) {
+                    AddRecipeView()
+                }
+            )
+        )
         .navigationTitle("Recipes")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Settings", systemImage: "gearshape") {
+                Button {
                     isShowingSettings.toggle()
+                } label: {
+                    Image(systemName: "gearshape")
                 }
                 .sheet(isPresented: $isShowingSettings) {
                     SettingsView()
                 }
-                .presentationDragIndicator(.visible)
-            }
-        }
-        
-    }
-    struct AddRecipeButton: View {
-        @State private var isShowingForm = false;
-        var body: some View {
-            Button("", systemImage: "plus") {
-                isShowingForm.toggle()
-            }
-
-            .frame(width: 100, height: 100)
-            .overlay(
-                RoundedRectangle(cornerRadius: 15.0)
-                    .stroke(.black, lineWidth: 2.0)
-            )
-            .sheet(isPresented: $isShowingForm) {
-                AddRecipeView()
             }
         }
     }
-    
-    struct RecipeGridItem: View {
-        var recipe: RecipeModel
-        var body: some View {
-            NavigationLink(destination: OpenRecipeView(recipe: recipe)) {
-                
-                Text(recipe.name)
-                    .padding()
-                    .frame(width: 100, height: 100)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15.0)
-                            .stroke(.black, lineWidth: 2.0)
-                    )
-                }
-            }
-        }
-    }
+}

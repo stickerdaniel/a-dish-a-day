@@ -1,5 +1,5 @@
 //
-//  CalendarGridView.swift
+//  RecipeGridView.swift
 //  calendar
 //
 //  Created by Daniel Sticker on 14.01.25.
@@ -7,16 +7,16 @@
 
 import SwiftUI
 
-struct CalendarGridView: View {
-    let calendars: [CalendarModel]
+struct RecipeGridView: View {
+    let recipes: [RecipeModel]
     let addButton: AnyView
 
     var body: some View {
         CardGridView(
-            items: calendars,
+            items: recipes,
             addButton: addButton
-        ) { calendar in
-            CalendarGridItem(calendar: calendar)
+        ) { recipe in
+            RecipeGridItem(recipe: recipe)
         }
     }
 }
