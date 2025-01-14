@@ -42,6 +42,7 @@ struct ContentView: View {
         }
         .modelContainer(for: CalendarModel.self)
         .modelContainer(for: RecipeModel.self)
+        .environment(\.horizontalSizeClass, .compact) // 👈 Use this modifier to change to
     }
 }
 
