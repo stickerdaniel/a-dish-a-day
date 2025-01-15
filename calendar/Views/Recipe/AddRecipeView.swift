@@ -21,13 +21,23 @@ struct AddRecipeView: View {
                 Section(header: Text("Name")) {
                     TextField("Enter recipe name", text: $name)
                 }
+                
+                // Upload Thumbnail image Section
+                Section(header: Text("Thumbnail Image")) {
+                    Button(action: openImagePicker) {
+                        HStack {
+                            Image(systemName: "camera")
+                            Text("Add Image")
+                        }
+                    }
+                }
 
                 Section(header: Text("Ingredients")) {
                     DynamicTextEditor(
                         placeholder: "List ingredients here...",
                         text: $ingredients,
                         minHeight: 80 // Larger default height for longer inputs
-                    ).offset(x: -4, y: -6) // Align with other text fields
+                    ).offset(x: -4, y: -6) // Align top left with other text fields
                 }
 
                 Section(header: Text("Instructions")) {
@@ -35,14 +45,14 @@ struct AddRecipeView: View {
                         placeholder: "Write instructions here...",
                         text: $anleitung,
                         minHeight: 120 // Larger default height for longer instructions
-                    ).offset(x: -4, y: -6) // Align with other text fields
+                    ).offset(x: -4, y: -6) // Align top left with other text fields
                 }
             }
             .navigationTitle("Create Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(action: openCamera) {
+                    Button(action: openAIScan) {
                         Image(systemName: "document.viewfinder.fill")
                     }
                 }
@@ -67,8 +77,13 @@ struct AddRecipeView: View {
         context.insert(newRecipe)
         dismiss()
     }
+    
+    private func openImagePicker() {
+        // Add camera opening logic here
+        print("Add Thumbnail button tapped")
+    }
 
-    private func openCamera() {
+    private func openAIScan() {
         // Add camera opening logic here
         print("Scan button tapped")
     }
