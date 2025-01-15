@@ -17,11 +17,11 @@ class RecipeModel: Identifiable {
     var thumbnailData: Data? // Store the image data for the thumbnail
 
     // Computed property to convert thumbnail data to a SwiftUI Image
-    var thumbnailImage: Image {
+    var thumbnailImage: Image? {
         if let data = thumbnailData, let uiImage = UIImage(data: data) {
             return Image(uiImage: uiImage)
         } else {
-            return Image("recipe-default-thumbnail") // Default image
+            return nil  // No image
         }
     }
 

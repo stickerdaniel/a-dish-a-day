@@ -14,7 +14,8 @@ struct RecipeGridItem: View {
         NavigationLink(destination: OpenRecipeView(recipe: recipe)) {
             Card(
                 image: recipe.thumbnailImage, // Computed property to handle thumbnail
-                description: recipe.name
+                description: recipe.name,
+                fallbackSymbols: ["book.pages.fill", "carrot.fill", "fork.knife", "stove.fill"]
             )
         }
     }
