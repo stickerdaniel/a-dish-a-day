@@ -36,7 +36,7 @@ struct CalendarView: View {
                     handleAddAction()
                 }
                 .sheet(isPresented: $isShowingForm) {
-                    AddCalendarView(isShowingForm: $isShowingForm)
+                    AddCalendarView()
                 }
                 .fileImporter(
                     isPresented: $isImportingJSON,
