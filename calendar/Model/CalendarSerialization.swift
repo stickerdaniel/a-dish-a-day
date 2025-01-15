@@ -43,6 +43,7 @@ class CalendarSerialization {
             return calendar
         } catch {
             print("Error decoding calendar: \(error)")
+            print("File path: \(fileURL.path)")
             return nil
         }
     }
