@@ -19,7 +19,7 @@ struct DynamicTextEditor: View {
                 Text(placeholder)
                     .foregroundColor(.secondary).opacity(0.5)
                     .padding(.leading, 4)
-                    .padding(.top, 8)
+                    .padding(.top, 10)
             }
 
             TextEditor(text: $text)
