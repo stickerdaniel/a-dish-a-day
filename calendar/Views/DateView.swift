@@ -4,7 +4,6 @@
 //
 //  Created by Vincent Nahn on 2024/12/16.
 //
-
 import SwiftUI
 
 struct DateRecipe: Hashable {
@@ -15,57 +14,63 @@ struct DateRecipe: Hashable {
 struct DateView: View {
     var calendar: CalendarModel
     var recipes: [DateRecipe]
-    @State var selected = 0
-    
+    @State private var selected = 0
+
+    // Initialize `recipes` by sorting `calendar.recipes` by date
     init(calendar: CalendarModel) {
         self.calendar = calendar
-        self.recipes = []
-        for (date, recipe) in (calendar.recipes.sorted{ $0.0 < $1.0}) {
-            recipes.append(DateRecipe(date: date, recipe: recipe))
-            
-        }
-        print(self.recipes)
+        self.recipes = calendar.recipes
+            .sorted { $0.date < $1.date } // Sort by date
+            .map { DateRecipe(date: $0.date, recipe: $0.recipe) } // Map to `DateRecipe`
     }
+
     var body: some View {
-        
         NavigationStack {
-                
             VStack {
                 Spacer()
+
                 ZStack(alignment: .center) {
+                    // Navigation buttons
                     HStack {
-                        Button(action: {() -> Void in self.selected = max(0, self.selected - 1) }) {
+                        Button(action: { selected = max(0, selected - 1) }) {
                             Label("Left", systemImage: "chevron.left")
                                 .labelStyle(.iconOnly)
                         }
                         .buttonStyle(.bordered)
                         .buttonBorderShape(.circle)
                         .disabled(selected == 0)
+
                         Spacer()
-                        Button(action: {() -> Void in self.selected = min(self.recipes.count - 1, selected + 1)}) {
-                            
+
+                        Button(action: { selected = min(recipes.count - 1, selected + 1) }) {
                             Label("Right", systemImage: "chevron.right")
                                 .labelStyle(.iconOnly)
                         }
                         .buttonStyle(.bordered)
                         .buttonBorderShape(.circle)
-                        .disabled(selected == self.recipes.count - 1)
+                        .disabled(selected == recipes.count - 1)
                     }
                     .padding()
-                    ForEach(self.recipes.indices) { i in
-                        CardView(recipe: self.recipes[i + selected].recipe, date: self.recipes[i + selected].date)
-                            .offset(x: CGFloat(i) * 20.0, y: CGFloat(i) * -20.0)
-                            .zIndex(Double(-i))
+
+                    // Display selected recipe card
+                    if !recipes.isEmpty {
+                        CardView(recipe: recipes[selected].recipe, date: recipes[selected].date)
+                            .padding()
+                            .zIndex(1) // Ensure it's on top
+                    } else {
+                        Text("No recipes available")
+                            .foregroundColor(.secondary)
                     }
                 }
-                .padding(.all, 8)
+
                 Spacer()
-                Text(String(selected))
-//                ScrollBar(recipes: self.recipes)
+
+                // Display the selected index
+                Text("Selected Index: \(selected + 1) of \(recipes.count)")
+                    .font(.caption)
+                    .padding(.bottom)
             }
-            
             .toolbar(.hidden, for: .tabBar)
         }
     }
 }
-
