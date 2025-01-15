@@ -19,7 +19,7 @@ struct DayOverlay: View {
             Text("\(day)")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-                .foregroundColor(.gray)
+                .foregroundColor(.secondary)
         }
     }
 }
