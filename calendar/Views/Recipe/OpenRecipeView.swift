@@ -9,12 +9,12 @@ import SwiftUI
 
 struct OpenRecipeView: View {
     var recipe: RecipeModel
-    var day: Int? = 15 // Optional day to display
+    var day: Int? = nil // Optional day to display
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                ZStack(alignment: .topLeading) {
+                ZStack(alignment: .bottomLeading) {
                     // Expand thumbnail image full width
                     if let thumbnail = recipe.thumbnailImage {
                         thumbnail
