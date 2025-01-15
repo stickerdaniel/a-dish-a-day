@@ -47,7 +47,7 @@ struct AddRecipeView: View {
                     )
                 }
             }
-            .navigationTitle("Add Recipe")
+            .navigationTitle("New Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
