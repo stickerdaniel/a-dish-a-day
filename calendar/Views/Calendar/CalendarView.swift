@@ -107,6 +107,14 @@ struct CalendarView: View {
     private func handleFileImport(_ result: Result<URL, Error>) {
         switch result {
         case .success(let url):
+            // Request access to the file's data (if security-scoped resource)
+            guard url.startAccessingSecurityScopedResource() else {
+                print("Failed to access the security-scoped resource.")
+                return
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+            
+            // Decode calendar from the file
             if let calendar = CalendarSerialization.decodeCalendar(from: url) {
                 importedCalendars.append(calendar)
             } else {
@@ -116,4 +124,5 @@ struct CalendarView: View {
             print("File import failed: \(error.localizedDescription)")
         }
     }
+
 }
