@@ -17,7 +17,7 @@ struct DynamicTextEditor: View {
         ZStack(alignment: .topLeading) {
             if text.isEmpty {
                 Text(placeholder)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary).opacity(0.5)
                     .padding(.leading, 4)
                     .padding(.top, 8)
             }
