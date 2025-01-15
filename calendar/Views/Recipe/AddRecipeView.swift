@@ -1,8 +1,8 @@
 //
-//  File.swift
+//  AddRecipeView.swift
 //  calendar
 //
-//  Created by Lucy May Plassmann on 12.01.25.
+//  Created by Daniel Sticker on 15.01.25.
 //
 
 import SwiftUI
@@ -11,6 +11,7 @@ struct AddRecipeView: View {
     @State private var name = ""
     @State private var ingredients = ""
     @State private var anleitung = ""
+    @State private var thumbnailImage: UIImage?
 
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
@@ -24,31 +25,29 @@ struct AddRecipeView: View {
                 
                 // Upload Thumbnail image Section
                 Section(header: Text("Thumbnail Image")) {
-                    Button(action: openImagePicker) {
-                        HStack {
-                            Image(systemName: "camera")
-                            Text("Add Image")
-                        }
-                    }
+                    PhotoPicker(
+                        title: "Select Image",
+                        selectedImage: $thumbnailImage
+                    ).padding(.top, 4)
                 }
 
                 Section(header: Text("Ingredients")) {
                     DynamicTextEditor(
                         placeholder: "List ingredients here...",
                         text: $ingredients,
-                        minHeight: 80 // Larger default height for longer inputs
-                    ).offset(x: -4, y: -6) // Align top left with other text fields
+                        minHeight: 80
+                    )
                 }
 
                 Section(header: Text("Instructions")) {
                     DynamicTextEditor(
                         placeholder: "Write instructions here...",
                         text: $anleitung,
-                        minHeight: 120 // Larger default height for longer instructions
-                    ).offset(x: -4, y: -6) // Align top left with other text fields
+                        minHeight: 120
+                    )
                 }
             }
-            .navigationTitle("Create Recipe")
+            .navigationTitle("Add Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -73,14 +72,11 @@ struct AddRecipeView: View {
     // MARK: - Actions
 
     private func addRecipe() {
+        guard let thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8) else { return }
         let newRecipe = RecipeModel(name: name, text: anleitung, ingredients: ingredients)
+        newRecipe.thumbnailData = thumbnailData
         context.insert(newRecipe)
         dismiss()
-    }
-    
-    private func openImagePicker() {
-        // Add camera opening logic here
-        print("Add Thumbnail button tapped")
     }
 
     private func openAIScan() {
