@@ -9,9 +9,10 @@ enum BadgeType {
 struct Card: View {
     var image: Image? = nil // Optional image
     var icon: Image? = nil // Optional icon
-    var badgeType: BadgeType = .warning // Badge type
+    var badgeType: BadgeType = .none // Badge type
     var description: String
     var fallbackSymbols: [String] = [] // Pass SF Symbols for the grid
+    var day: Int? = nil // Optional day to display as overlay
 
     var body: some View {
         VStack(spacing: 8) {
@@ -20,21 +21,23 @@ struct Card: View {
                     .fill(Color.cardBackground) // Dynamically adjust based on color scheme
                     .overlay(
                         ZStack {
-                            if let icon = icon {
+                            if let image = image {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipped()
+                            } else if let icon = icon {
                                 icon
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 24, height: 24)
                                     .foregroundColor(.gray)
-                            } else if let image = image {
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipped()
                             } else if !fallbackSymbols.isEmpty {
                                 IconGrid(symbols: fallbackSymbols)
-                            } else {
-                                IconGrid(symbols: ["frying.pan.fill", "stove.fill", "fork.knife", "cooktop.fill"])
+                            }
+
+                            if let day = day {
+                                overlayDay(day)
                             }
                         }
                     )
@@ -74,6 +77,20 @@ struct Card: View {
                 .scaledToFit()
                 .frame(width: 20, height: 20)
                 .foregroundColor(.yellow)
+        }
+    }
+
+    @ViewBuilder
+    private func overlayDay(_ day: Int) -> some View {
+        ZStack {
+            Circle()
+                .fill(.thinMaterial)
+                .frame(width: 72, height: 72)
+
+            Text("\(day)")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
         }
     }
 }
