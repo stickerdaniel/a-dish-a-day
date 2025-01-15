@@ -37,7 +37,7 @@ struct Card: View {
                             }
 
                             if let day = day {
-                                overlayDay(day)
+                                DayOverlay(day: day)
                             }
                         }
                     )
@@ -77,20 +77,6 @@ struct Card: View {
                 .scaledToFit()
                 .frame(width: 20, height: 20)
                 .foregroundColor(.yellow)
-        }
-    }
-
-    @ViewBuilder
-    private func overlayDay(_ day: Int) -> some View {
-        ZStack {
-            Circle()
-                .fill(.thinMaterial)
-                .frame(width: 72, height: 72)
-
-            Text("\(day)")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
         }
     }
 }

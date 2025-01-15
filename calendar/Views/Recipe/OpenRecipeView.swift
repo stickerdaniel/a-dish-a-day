@@ -5,30 +5,69 @@
 //  Created by Lucy May Plassmann on 12.01.25.
 //
 
-
 import SwiftUI
 
-struct OpenRecipeView: View{
+struct OpenRecipeView: View {
     var recipe: RecipeModel
-    
-    init(recipe: RecipeModel) {
-        self.recipe = recipe
-    }
-    
+    var day: Int? = 15 // Optional day to display
+
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack(alignment: .firstTextBaseline) {
-                Spacer()
-                Text(self.recipe.name)
-                Spacer()
-                
-                
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                ZStack(alignment: .topLeading) {
+                    // Expand thumbnail image full width
+                    if let thumbnail = recipe.thumbnailImage {
+                        thumbnail
+                            .resizable()
+                            .scaledToFill()
+                            .frame(height: 200)
+                            .clipped()
+                            .cornerRadius(16)
+                            .shadow(radius: 4)
+                        
+                    }
+                    if let day = day {
+                        DayOverlay(day: day)
+                            .padding(16)
+                            .frame(maxWidth: .infinity, alignment: .leading) // Centered overlay
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 16) {
+                    // Recipe Name
+                    Text(recipe.name)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                        .padding(.bottom, 16)
+
+                    // Ingredients Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Ingredients")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+
+                        Text(recipe.ingredients)
+                            .font(.body)
+                            .foregroundColor(.primary)
+                    }
+
+                    // Instructions Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Instructions")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+
+                        Text(recipe.text)
+                            .font(.body)
+                            .foregroundColor(.primary)
+                    }
+                }
+                .padding(.horizontal)
             }
-            .padding(.bottom, 8)
-            Text(self.recipe.text)
-            Spacer()
         }
-        .padding(.all, 40)
+        .frame(maxWidth: .infinity) // Ensure full width
+        .navigationTitle("Recipe Details")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
-
