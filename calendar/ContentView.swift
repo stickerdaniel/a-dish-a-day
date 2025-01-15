@@ -28,19 +28,16 @@ struct ContentView: View {
     
     var body: some View {
         TabView(selection: $selection) {
+            // Calendar
             NavigationStack(path: $calendarPath) {
                 CalendarView()
-                    
                     .tag(Tab.calendar)
-                
-                    
             }
             .tabItem {
                 Label("Calendars", systemImage: "calendar")
             }
-
+            // Recipes
             NavigationStack() {
-                
                 RecipeView()
                     .tag(Tab.recipe)
             }
@@ -53,7 +50,6 @@ struct ContentView: View {
         .environment(\.horizontalSizeClass, .compact) // 👈 Use this modifier to change to
         // Padding 16 bottom only on MacOS not on iOS and iPadOS
         .padding(.bottom, bottomPadding)
-
     }
 }
 
