@@ -17,10 +17,15 @@ struct calendarApp: App {
                 .onAppear {
                     applyAppearance()
                 }
+                .modelContainer(for: [
+                    RecipeModel.self,
+                    CalendarModel.self,
+                    RecipeEntry.self // Add RecipeEntry explicitly
+                ])
         }
     }
 
-    /// Apply the saved appearance at app launch
+    /// Apply saved appearance at app launch
     private func applyAppearance() {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             for window in windowScene.windows {

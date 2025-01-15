@@ -63,7 +63,7 @@ struct AddRecipeView: View {
                             Text("Add")
                             Image(systemName: "plus")
                         }
-                    }
+                    }.disabled(name.isEmpty) // At least a name is required
                 }
             }
         }
