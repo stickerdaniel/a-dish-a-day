@@ -27,7 +27,7 @@ struct AddRecipeView: View {
                         placeholder: "List ingredients here...",
                         text: $ingredients,
                         minHeight: 80 // Larger default height for longer inputs
-                    )
+                    ).offset(x: -4, y: -6) // Align with other text fields
                 }
 
                 Section(header: Text("Instructions")) {
@@ -35,21 +35,26 @@ struct AddRecipeView: View {
                         placeholder: "Write instructions here...",
                         text: $anleitung,
                         minHeight: 120 // Larger default height for longer instructions
-                    )
+                    ).offset(x: -4, y: -6) // Align with other text fields
                 }
             }
-            .navigationTitle("Add Recipe")
+            .navigationTitle("Create Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: openCamera) {
-                        Image(systemName: "camera")
+                        Image(systemName: "document.viewfinder.fill")
                     }
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Add", action: addRecipe)
-                        .disabled(name.isEmpty)
+                    // Add button with plus icon and "Create Recipe" text
+                    Button(action: addRecipe) {
+                        HStack {
+                            Text("Add")
+                            Image(systemName: "plus")
+                        }
+                    }
                 }
             }
         }
@@ -65,6 +70,6 @@ struct AddRecipeView: View {
 
     private func openCamera() {
         // Add camera opening logic here
-        print("Camera button tapped")
+        print("Scan button tapped")
     }
 }
