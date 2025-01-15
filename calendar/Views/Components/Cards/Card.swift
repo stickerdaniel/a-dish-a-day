@@ -12,12 +12,10 @@ struct Card: View {
     var icon: Image? = nil // Optional icon
     var showBadge: Bool = false // Optional red badge if new recipe is available to unlock
     var description: String
-    
-    // systemBackground for lightmode, secondarySystemBackground for darkmode
+    var fallbackSymbols: [String] = [] // Pass SF Symbols for the grid
 
     var body: some View {
         VStack(spacing: 8) {
-            // alignment bottom trailing
             ZStack(alignment: .topTrailing) {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color.cardBackground) // Dynamically adjust based on color scheme
@@ -34,11 +32,10 @@ struct Card: View {
                                     .resizable()
                                     .scaledToFill()
                                     .clipped()
+                            } else if !fallbackSymbols.isEmpty {
+                                IconGrid(symbols: fallbackSymbols)
                             } else {
-                                Image("calendar-default-thumbnail") // Default fallback image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipped()
+                                IconGrid(symbols: ["frying.pan.fill", "stove.fill", "fork.knife", "cooktop.fill" ])
                             }
                         }
                     )
@@ -55,17 +52,19 @@ struct Card: View {
                         .offset(x: 5, y: -5)
                 }
             }
+            
             Text(description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity) // Ensure text stretches across the card width
+                .frame(maxWidth: .infinity)
                 .frame(height: 40, alignment: .top)
         }
-        .frame(maxWidth: .infinity) // Adapt to grid column width
+        .frame(maxWidth: .infinity)
     }
 }
+
 
 // Extension dynamic card bg color
 extension Color {
@@ -74,7 +73,14 @@ extension Color {
             traitCollection.userInterfaceStyle == .dark
             // light opacity for better dark mode visibility
             ? UIColor.secondarySystemBackground.withAlphaComponent(0.75)
-                : .systemBackground
+            : .systemBackground
+        })
+    }
+    static var cardIcon: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+            ? .gray.withAlphaComponent(0.75)
+            : UIColor.secondarySystemBackground
         })
     }
 }

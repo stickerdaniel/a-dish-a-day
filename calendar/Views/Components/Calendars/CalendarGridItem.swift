@@ -14,7 +14,8 @@ struct CalendarGridItem: View {
         NavigationLink(destination: EditCalendarView(calendar: calendar)) {
             Card(
                 image: calendar.thumbnailImage, // Computed property to handle thumbnail
-                description: calendar.name
+                description: calendar.name,
+                fallbackSymbols: ["frying.pan.fill", "stove.fill", "fork.knife", "calendar"]
             )
         }
     }
