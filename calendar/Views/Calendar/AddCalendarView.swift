@@ -16,12 +16,17 @@ struct AddCalendarView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
+    var numberOfDays: Int {
+        let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
+        return max(days + 1, 0) // Ensure non-negative number of days
+    }
+
     var body: some View {
         NavigationStack {
             Form {
                 // Calendar Name Section
                 Section(header: Text("Name")) {
-                    TextField("Enter calendar name", text: $name)
+                    TextField("This time I'll finally learn to cook... 😤", text: $name)
                 }
 
                 // Upload Thumbnail Image Section
@@ -29,15 +34,16 @@ struct AddCalendarView: View {
                     PhotoPicker(
                         title: "Select Image",
                         selectedImage: $thumbnailImage
-                    ).padding(.top, 4)
+                    )
+                    .padding(.top, 4)
                 }
 
                 // Date Range Section
                 Section(header: Text("Date Range")) {
                     DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
                     DatePicker("End Date", selection: $endDate, displayedComponents: .date)
-                        .onChange(of: endDate) { newValue in
-                            if newValue < startDate {
+                        .onChange(of: endDate){
+                            if endDate < startDate {
                                 endDate = startDate // Prevent invalid date ranges
                             }
                         }
@@ -47,19 +53,13 @@ struct AddCalendarView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    // Add Button with "Create Calendar" Action
                     Button(action: addCalendar) {
                         HStack {
                             Text("Add")
                             Image(systemName: "plus")
                         }
                     }
-                    .disabled(name.isEmpty || startDate > endDate) // Require valid name and date range
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(action: openHelp) {
-                        Image(systemName: "questionmark.circle")
-                    }
+                    .disabled(name.isEmpty || startDate > endDate) // Validate input
                 }
             }
         }
@@ -75,11 +75,8 @@ struct AddCalendarView: View {
             thumbnailData: thumbnailImage?.jpegData(compressionQuality: 0.8) // Optional thumbnail
         )
         context.insert(newCalendar)
-        dismiss()
-    }
 
-    private func openHelp() {
-        // Placeholder for help action
-        print("Help button tapped")
+        // Dismiss the view after adding the calendar
+        dismiss()
     }
 }
