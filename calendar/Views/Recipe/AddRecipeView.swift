@@ -72,12 +72,16 @@ struct AddRecipeView: View {
     // MARK: - Actions
 
     private func addRecipe() {
-        guard let thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8) else { return }
-        let newRecipe = RecipeModel(name: name, text: anleitung, ingredients: ingredients)
-        newRecipe.thumbnailData = thumbnailData
+        let newRecipe = RecipeModel(
+            name: name,
+            text: anleitung,
+            ingredients: ingredients,
+            thumbnailData: thumbnailImage?.jpegData(compressionQuality: 0.8) // Optional
+        )
         context.insert(newRecipe)
         dismiss()
     }
+
 
     private func openAIScan() {
         // Add camera opening logic here
