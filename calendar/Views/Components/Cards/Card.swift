@@ -1,16 +1,15 @@
-//
-//  CalendarCard.swift
-//  calendar
-//
-//  Created by Daniel Sticker on 14.01.25.
-//
-
 import SwiftUI
+
+enum BadgeType {
+    case none
+    case indicator // Red dot indicator
+    case warning   // Warning triangle
+}
 
 struct Card: View {
     var image: Image? = nil // Optional image
     var icon: Image? = nil // Optional icon
-    var showBadge: Bool = false // Optional red badge if new recipe is available to unlock
+    var badgeType: BadgeType = .warning // Badge type
     var description: String
     var fallbackSymbols: [String] = [] // Pass SF Symbols for the grid
 
@@ -35,7 +34,7 @@ struct Card: View {
                             } else if !fallbackSymbols.isEmpty {
                                 IconGrid(symbols: fallbackSymbols)
                             } else {
-                                IconGrid(symbols: ["frying.pan.fill", "stove.fill", "fork.knife", "cooktop.fill" ])
+                                IconGrid(symbols: ["frying.pan.fill", "stove.fill", "fork.knife", "cooktop.fill"])
                             }
                         }
                     )
@@ -43,16 +42,12 @@ struct Card: View {
                     .cornerRadius(16)
                     .clipped()
                     .shadow(radius: 2)
-                
-                // red badge if there is a new recipe to unlock
-                if showBadge {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 20, height: 20)
-                        .offset(x: 5, y: -5)
-                }
+
+                // Display badge based on `badgeType`
+                badgeView
+                    .offset(x: 5, y: -5)
             }
-            
+
             Text(description)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -63,15 +58,31 @@ struct Card: View {
         }
         .frame(maxWidth: .infinity)
     }
+
+    @ViewBuilder
+    private var badgeView: some View {
+        switch badgeType {
+        case .none:
+            EmptyView()
+        case .indicator:
+            Circle()
+                .fill(Color.red)
+                .frame(width: 20, height: 20)
+        case .warning:
+            Image(systemName: "exclamationmark.triangle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundColor(.yellow)
+        }
+    }
 }
 
-
-// Extension dynamic card bg color
+// Extension for dynamic card background color
 extension Color {
     static var cardBackground: Color {
         Color(UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
-            // light opacity for better dark mode visibility
             ? UIColor.secondarySystemBackground.withAlphaComponent(0.75)
             : .systemBackground
         })
