@@ -72,7 +72,8 @@ struct AddCalendarView: View {
             name: name,
             startDate: startDate,
             endDate: endDate,
-            thumbnailData: thumbnailImage?.jpegData(compressionQuality: 0.8) // Optional thumbnail
+            thumbnailData: thumbnailImage?.jpegData(compressionQuality: 0.8), // Optional thumbnail
+            source: .created
         )
         context.insert(newCalendar)
 
