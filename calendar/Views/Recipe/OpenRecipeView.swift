@@ -62,6 +62,7 @@ struct OpenRecipeView: View {
                             .font(.body)
                             .foregroundColor(.primary)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal)
             }
