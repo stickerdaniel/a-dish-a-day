@@ -36,7 +36,7 @@ struct DetailView: View {
                 
             }
             .padding(.bottom, 8)
-            Text(self.recipe.text)
+            Text(self.recipe.steps)
             Spacer()
         }
         .padding(.all, 40)
