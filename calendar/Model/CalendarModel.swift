@@ -8,6 +8,11 @@
 import SwiftUI
 import SwiftData
 
+enum CalendarSource: String, Codable {
+    case created
+    case imported
+}
+
 @Model
 class CalendarModel: Identifiable, Codable {
     var id: UUID = UUID()
@@ -16,6 +21,7 @@ class CalendarModel: Identifiable, Codable {
     var endDate: Date
     var recipes: [RecipeEntry] = [] // Store recipes with assigned days
     var thumbnailData: Data? // Store the image data for the thumbnail
+    var source: CalendarSource? // Optional source (nil defaults to .imported)
 
     // Computed property to calculate days between startDate and endDate
     var daysBetween: Int {
@@ -33,11 +39,12 @@ class CalendarModel: Identifiable, Codable {
     }
 
     // MARK: - Initializer
-    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil) {
+    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created) {
         self.name = name
         self.startDate = startDate
         self.endDate = endDate
         self.thumbnailData = thumbnailData
+        self.source = source
     }
 
     // MARK: - Codable Conformance
@@ -53,6 +60,7 @@ class CalendarModel: Identifiable, Codable {
         endDate = try container.decode(Date.self, forKey: .endDate)
         recipes = try container.decode([RecipeEntry].self, forKey: .recipes)
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
+        source = .imported // Default to imported for backward compatibility
     }
 
     func encode(to encoder: Encoder) throws {
@@ -64,35 +72,9 @@ class CalendarModel: Identifiable, Codable {
         try container.encode(recipes, forKey: .recipes)
         try container.encode(thumbnailData, forKey: .thumbnailData)
     }
-
-    // Static sample calendars
-    static var sampleCalendars: [CalendarModel] = [
-        CalendarModel(
-            name: "German Pastries",
-            startDate: Date(),
-            endDate: Calendar.current.date(byAdding: .day, value: 7, to: Date())!,
-            thumbnailData: UIImage(named: "german-pastries")?.jpegData(compressionQuality: 0.8)
-        ),
-        CalendarModel(
-            name: "Sushi 101",
-            startDate: Date(),
-            endDate: Calendar.current.date(byAdding: .day, value: 14, to: Date())!,
-            thumbnailData: UIImage(named: "sushi-101")?.jpegData(compressionQuality: 0.8)
-        ),
-        CalendarModel(
-            name: "Introduction to Chinese Cuisine",
-            startDate: Date(),
-            endDate: Calendar.current.date(byAdding: .day, value: 30, to: Date())!,
-            thumbnailData: UIImage(named: "intro-chinese-cuisine")?.jpegData(compressionQuality: 0.8)
-        ),
-        CalendarModel(
-            name: "Granny's Calendar",
-            startDate: Date(),
-            endDate: Calendar.current.date(byAdding: .day, value: 30, to: Date())!,
-            thumbnailData: nil
-        )
-    ]
 }
+
+
 
 // Model for storing recipe entries with assigned dates
 @Model

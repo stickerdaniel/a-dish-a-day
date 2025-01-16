@@ -19,10 +19,11 @@ struct CalendarView: View {
     @State private var selection: CalendarTab = .imported
 
     // State for imported and created calendars
-    @Query private var createdCalendars: [CalendarModel]
-    @State private var importedCalendars: [CalendarModel] = []
+    @Query private var allCalendars: [CalendarModel]
     @State private var isImportingJSON = false
     @State private var isShowingForm = false
+
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         CardGridView(
@@ -77,9 +78,9 @@ struct CalendarView: View {
     private var selectedCalendars: [CalendarModel] {
         switch selection {
         case .imported:
-            return importedCalendars.isEmpty ? CalendarModel.sampleCalendars : importedCalendars
+            return allCalendars.filter { $0.source == .imported || $0.source == nil }
         case .created:
-            return createdCalendars
+            return allCalendars.filter { $0.source == .created }
         }
     }
 
@@ -116,7 +117,8 @@ struct CalendarView: View {
             
             // Decode calendar from the file
             if let calendar = CalendarSerialization.decodeCalendar(from: url) {
-                importedCalendars.append(calendar)
+                calendar.source = .imported // Mark as imported
+                context.insert(calendar)
             } else {
                 print("Failed to decode calendar.")
             }
@@ -124,5 +126,4 @@ struct CalendarView: View {
             print("File import failed: \(error.localizedDescription)")
         }
     }
-
 }
