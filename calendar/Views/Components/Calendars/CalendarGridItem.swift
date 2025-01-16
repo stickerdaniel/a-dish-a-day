@@ -10,6 +10,7 @@ import SwiftUI
 struct CalendarGridItem: View {
     var calendar: CalendarModel
     @State private var showErrorAlert = false // Controls error alert visibility
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         NavigationLink(destination: EditCalendarView(calendar: calendar)) {
@@ -21,7 +22,31 @@ struct CalendarGridItem: View {
         }
         .contextMenu {
             Button(action: exportCalendar) {
-                Label("Export as JSON", systemImage: "square.and.arrow.up")
+                Label("Export Calendar", systemImage: "square.and.arrow.up")
+            }
+
+            if calendar.source == .created {
+                Button(action: editCalendar) {
+                    Label("Edit", systemImage: "pencil")
+                }
+            }
+
+            if calendar.source == .created {
+                Button(action: duplicateCalendar) {
+                    Label("Duplicate", systemImage: "doc.on.doc")
+                }
+            }
+
+            if calendar.source == .imported {
+                Button(action: copyToCreatedSection) {
+                    Label("Copy to Created", systemImage: "folder.badge.plus")
+                }
+            }
+
+            Divider()
+
+            Button(role: .destructive, action: deleteCalendar) {
+                Label("Delete", systemImage: "trash")
             }
         }
         .alert("Export Failed", isPresented: $showErrorAlert) {
@@ -31,12 +56,49 @@ struct CalendarGridItem: View {
         }
     }
 
-    /// Handles the export and share logic
+    // MARK: - Context Menu Actions
+
+    /// Handles exporting and sharing the calendar as JSON
     private func exportCalendar() {
         if let url = ExportManager.exportCalendar(calendar) {
             ExportManager.shareFile(url: url) // Share the exported file
         } else {
             showErrorAlert = true // Show an error alert if encoding fails
         }
+    }
+
+    /// Opens the edit view for the calendar
+    private func editCalendar() {
+        // Navigate to the edit view (already handled via the NavigationLink)
+        // Alternatively, you can show a sheet or perform other navigation.
+    }
+
+    /// Duplicates the calendar and adds it to the "created" section
+    private func duplicateCalendar() {
+        let duplicatedCalendar = CalendarModel(
+            name: "\(calendar.name) (Copy)",
+            startDate: calendar.startDate,
+            endDate: calendar.endDate,
+            thumbnailData: calendar.thumbnailData,
+            source: .created
+        )
+        context.insert(duplicatedCalendar)
+    }
+
+    /// Copies an imported calendar to the "created" section
+    private func copyToCreatedSection() {
+        let copiedCalendar = CalendarModel(
+            name: "\(calendar.name) (Copied)",
+            startDate: calendar.startDate,
+            endDate: calendar.endDate,
+            thumbnailData: calendar.thumbnailData,
+            source: .created
+        )
+        context.insert(copiedCalendar)
+    }
+
+    /// Deletes the calendar from the persistence context
+    private func deleteCalendar() {
+        context.delete(calendar)
     }
 }
