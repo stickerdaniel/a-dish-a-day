@@ -9,8 +9,8 @@ import SwiftUI
 
 struct CalendarCard: View {
     var calendar: CalendarModel
-    var onEdit: (() -> Void)? // Callback to handle edit action
-    var onSwitchToCreatedTab: (() -> Void)? // Callback to notify parent
+    var onEdit: (() -> Void)?
+    var onSwitchToCreatedTab: (() -> Void)?
     @State private var showDeleteConfirmation = false
     @Environment(\.modelContext) private var context
 
@@ -26,7 +26,7 @@ struct CalendarCard: View {
             }
 
             if calendar.source == .created {
-                Button(action: { onEdit?() }) {
+                Button(action: { onEdit?() }) { // Ensure `onEdit` is called
                     Label("Edit", systemImage: "pencil")
                 }
             }

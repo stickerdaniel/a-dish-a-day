@@ -10,53 +10,48 @@ import SwiftData
 import UniformTypeIdentifiers
 
 enum CalendarTab: String, CaseIterable {
-    case imported = "Added"
+    case imported = "Imported"
     case created = "Created"
 }
 
 struct CalendarsView: View {
     @State private var isShowingSettings = false
-    @State private var selection: CalendarTab = .imported
+    @State private var selection: CalendarTab = .created
     @State private var isImportingJSON = false
-    @State private var navigationPath = NavigationPath()
-    @State private var selectedCalendarForEditing: CalendarModel? // State for calendar being edited
+    @State private var selectedCalendar: CalendarModel? = nil
 
     @Query private var allCalendars: [CalendarModel]
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        NavigationStack(path: $navigationPath) {
-            CardsView(
-                items: selectedCalendars,
-                addButton: AnyView(
-                    Card(
-                        icon: addButtonIcon,
-                        description: addButtonText
-                    )
-                    .onTapGesture {
-                        handleAddAction()
+        NavigationStack {
+            VStack {
+                Picker("Select Calendar Tab", selection: $selection) {
+                    ForEach(CalendarTab.allCases, id: \.self) { tab in
+                        Text(tab.rawValue)
                     }
-                    .fileImporter(
-                        isPresented: $isImportingJSON,
-                        allowedContentTypes: [.json],
-                        onCompletion: handleFileImport
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+
+                CardsView(
+                    items: filteredCalendars,
+                    addButton: AnyView(
+                        Card(
+                            icon: addButtonIcon,
+                            description: addButtonText
+                        )
+                        .onTapGesture {
+                            handleAddOrImportAction()
+                        }
                     )
-                ),
-                header: {
-                    Picker("Select Calendar Tab", selection: $selection) {
-                        ForEach(CalendarTab.allCases, id: \.self) {
-                            Text($0.rawValue)
+                ) { calendar in
+                    CalendarCard(calendar: calendar) {
+                        if calendar.source == .created {
+                            selectedCalendar = calendar
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .frame(maxWidth: 500)
-                    .padding(.bottom)
                 }
-            ) { calendar in
-                CalendarCard(
-                    calendar: calendar,
-                    onEdit: { editCalendar(calendar) }
-                )
             }
             .navigationTitle("Calendars")
             .toolbar {
@@ -71,17 +66,18 @@ struct CalendarsView: View {
                     }
                 }
             }
-            .sheet(item: $selectedCalendarForEditing) { calendar in
-                EditCalendarView(calendar: Binding(get: {
-                    calendar
-                }, set: { updatedCalendar in
-                    updateCalendar(updatedCalendar)
-                }))
+            .sheet(item: $selectedCalendar) { calendar in
+                EditCalendarView(calendarToEdit: calendar)
             }
+            .fileImporter(
+                isPresented: $isImportingJSON,
+                allowedContentTypes: [.json],
+                onCompletion: handleFileImport
+            )
         }
     }
 
-    private var selectedCalendars: [CalendarModel] {
+    private var filteredCalendars: [CalendarModel] {
         switch selection {
         case .imported:
             return allCalendars.filter { $0.source == .imported || $0.source == nil }
@@ -98,65 +94,33 @@ struct CalendarsView: View {
         selection == .created ? "Create new calendar" : "Import calendar"
     }
 
-    private func handleAddAction() {
+    private func handleAddOrImportAction() {
         if selection == .created {
             let newCalendar = CalendarModel(name: "", startDate: Date(), endDate: Date())
             context.insert(newCalendar)
-            selectedCalendarForEditing = newCalendar
+            selectedCalendar = newCalendar
         } else {
             isImportingJSON = true
         }
     }
 
-    private func editCalendar(_ calendar: CalendarModel) {
-        selectedCalendarForEditing = calendar
-    }
-
-    private func updateCalendar(_ updatedCalendar: CalendarModel) {
-        if let existingCalendar = allCalendars.first(where: { $0.id == updatedCalendar.id }) {
-            existingCalendar.name = updatedCalendar.name
-            existingCalendar.startDate = updatedCalendar.startDate
-            existingCalendar.endDate = updatedCalendar.endDate
-            existingCalendar.recipes = updatedCalendar.recipes
-            existingCalendar.thumbnailData = updatedCalendar.thumbnailData
-
-            // Save changes to the context
-            try? context.save()
-        }
-    }
-
-
     private func handleFileImport(_ result: Result<URL, Error>) {
         switch result {
         case .success(let url):
             guard url.startAccessingSecurityScopedResource() else {
-                print("Failed to access the security-scoped resource.")
+                print("Failed to access security-scoped resource.")
                 return
             }
             defer { url.stopAccessingSecurityScopedResource() }
 
-            if let calendar = CalendarSerialization.decodeCalendar(from: url) {
-                calendar.source = .imported
-                context.insert(calendar)
+            if let importedCalendar = CalendarSerialization.decodeCalendar(from: url) {
+                importedCalendar.source = .imported
+                context.insert(importedCalendar)
             } else {
                 print("Failed to decode calendar.")
             }
         case .failure(let error):
             print("File import failed: \(error.localizedDescription)")
-        }
-    }
-    
-    struct BindingViewWrapper<Model: ObservableObject, Content: View>: View {
-        @ObservedObject var model: Model
-        let content: (Binding<Model>) -> Content
-
-        init(model: Model, @ViewBuilder content: @escaping (Binding<Model>) -> Content) {
-            self.model = model
-            self.content = content
-        }
-
-        var body: some View {
-            content(.constant(model))
         }
     }
 }
