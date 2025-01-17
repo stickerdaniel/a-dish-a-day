@@ -1,5 +1,5 @@
 //
-//  CalendarGridItem.swift
+//  CalendarCard.swift
 //  calendar
 //
 //  Created by Daniel Sticker on 14.01.25.
@@ -7,28 +7,26 @@
 
 import SwiftUI
 
-struct CalendarGridItem: View {
+struct CalendarCard: View {
     var calendar: CalendarModel
+    var onEdit: (() -> Void)? // Callback to handle edit action
     var onSwitchToCreatedTab: (() -> Void)? // Callback to notify parent
-    @State private var showDeleteConfirmation = false // Controls delete confirmation visibility
-    @State private var navigateToEditView = false // Controls navigation to the edit view
+    @State private var showDeleteConfirmation = false
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        VStack {
-            Card(
-                image: calendar.thumbnailImage,
-                description: calendar.name,
-                fallbackSymbols: ["frying.pan.fill", "stove.fill", "fork.knife", "calendar"]
-            )
-        }
+        Card(
+            image: calendar.thumbnailImage,
+            description: calendar.name,
+            fallbackSymbols: ["frying.pan.fill", "stove.fill", "fork.knife", "calendar"]
+        )
         .contextMenu {
             Button(action: exportCalendar) {
                 Label("Export Calendar", systemImage: "square.and.arrow.up")
             }
 
             if calendar.source == .created {
-                Button(action: editCalendar) {
+                Button(action: { onEdit?() }) {
                     Label("Edit", systemImage: "pencil")
                 }
             }
@@ -63,26 +61,16 @@ struct CalendarGridItem: View {
             }
             Button("Cancel", role: .cancel) {}
         }
-        .navigationDestination(isPresented: $navigateToEditView) {
-            EditCalendarView(calendarToEdit: calendar)
-        }
     }
 
     // MARK: - Context Menu Actions
 
-    /// Handles exporting and sharing the calendar as JSON
     private func exportCalendar() {
         if let url = ExportManager.exportCalendar(calendar) {
             ExportManager.shareFile(url: url)
         }
     }
 
-    /// Opens the edit view for the calendar
-    private func editCalendar() {
-        navigateToEditView = true
-    }
-
-    /// Duplicates the calendar and adds it to the "created" section
     private func duplicateCalendar() {
         let duplicatedCalendar = CalendarModel(
             name: "\(calendar.name) (Copy)",
@@ -94,7 +82,6 @@ struct CalendarGridItem: View {
         context.insert(duplicatedCalendar)
     }
 
-    /// Copies an imported calendar to the "created" section
     private func copyToCreatedSection() {
         let copiedCalendar = CalendarModel(
             name: "\(calendar.name) (Copied)",
@@ -104,10 +91,9 @@ struct CalendarGridItem: View {
             source: .created
         )
         context.insert(copiedCalendar)
-        onSwitchToCreatedTab?() // Notify parent to switch tabs
+        onSwitchToCreatedTab?()
     }
 
-    /// Deletes the calendar from the persistence context
     private func deleteCalendar() {
         context.delete(calendar)
     }

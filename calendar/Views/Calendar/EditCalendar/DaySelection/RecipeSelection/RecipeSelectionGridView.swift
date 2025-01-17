@@ -35,5 +35,6 @@ struct RecipeSelectionGridView: View {
                 )
             }
         }
+        .padding()
     }
 }

@@ -1,5 +1,5 @@
 //
-//  CalendarView.swift
+//  CalendarsView.swift
 //  calendar
 //
 //  Created by Vincent Nahn on 2024/12/18.
@@ -17,16 +17,15 @@ enum CalendarTab: String, CaseIterable {
 struct CalendarsView: View {
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .imported
-
-    // State for imported and created calendars
-    @Query private var allCalendars: [CalendarModel]
     @State private var isImportingJSON = false
-    @State private var navigateToAddView = false
+    @State private var navigationPath = NavigationPath()
+    @State private var selectedCalendarForEditing: CalendarModel? // State for calendar being edited
 
+    @Query private var allCalendars: [CalendarModel]
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             CardsView(
                 items: selectedCalendars,
                 addButton: AnyView(
@@ -54,9 +53,9 @@ struct CalendarsView: View {
                     .padding(.bottom)
                 }
             ) { calendar in
-                CalendarGridItem(
+                CalendarCard(
                     calendar: calendar,
-                    onSwitchToCreatedTab: { switchToCreatedTab() } // Handle tab switch
+                    onEdit: { editCalendar(calendar) }
                 )
             }
             .navigationTitle("Calendars")
@@ -72,13 +71,15 @@ struct CalendarsView: View {
                     }
                 }
             }
-            .navigationDestination(isPresented: $navigateToAddView) {
-                EditCalendarView() // Create mode
+            .sheet(item: $selectedCalendarForEditing) { calendar in
+                EditCalendarView(calendar: Binding(get: {
+                    calendar
+                }, set: { updatedCalendar in
+                    updateCalendar(updatedCalendar)
+                }))
             }
         }
     }
-
-    // MARK: - Computed Properties
 
     private var selectedCalendars: [CalendarModel] {
         switch selection {
@@ -90,49 +91,72 @@ struct CalendarsView: View {
     }
 
     private var addButtonIcon: Image {
-        selection == .created
-            ? Image(systemName: "plus")
-            : Image(systemName: "tray.and.arrow.down")
+        selection == .created ? Image(systemName: "plus") : Image(systemName: "tray.and.arrow.down")
     }
 
     private var addButtonText: String {
         selection == .created ? "Create new calendar" : "Import calendar"
     }
 
-    // MARK: - Actions
-
     private func handleAddAction() {
-        switch selection {
-        case .imported:
+        if selection == .created {
+            let newCalendar = CalendarModel(name: "", startDate: Date(), endDate: Date())
+            context.insert(newCalendar)
+            selectedCalendarForEditing = newCalendar
+        } else {
             isImportingJSON = true
-        case .created:
-            navigateToAddView = true
         }
     }
 
-    private func switchToCreatedTab() {
-        selection = .created // Change to the "Created" tab
+    private func editCalendar(_ calendar: CalendarModel) {
+        selectedCalendarForEditing = calendar
     }
+
+    private func updateCalendar(_ updatedCalendar: CalendarModel) {
+        if let existingCalendar = allCalendars.first(where: { $0.id == updatedCalendar.id }) {
+            existingCalendar.name = updatedCalendar.name
+            existingCalendar.startDate = updatedCalendar.startDate
+            existingCalendar.endDate = updatedCalendar.endDate
+            existingCalendar.recipes = updatedCalendar.recipes
+            existingCalendar.thumbnailData = updatedCalendar.thumbnailData
+
+            // Save changes to the context
+            try? context.save()
+        }
+    }
+
 
     private func handleFileImport(_ result: Result<URL, Error>) {
         switch result {
         case .success(let url):
-            // Request access to the file's data (if security-scoped resource)
             guard url.startAccessingSecurityScopedResource() else {
                 print("Failed to access the security-scoped resource.")
                 return
             }
             defer { url.stopAccessingSecurityScopedResource() }
-            
-            // Decode calendar from the file
+
             if let calendar = CalendarSerialization.decodeCalendar(from: url) {
-                calendar.source = .imported // Mark as imported
+                calendar.source = .imported
                 context.insert(calendar)
             } else {
                 print("Failed to decode calendar.")
             }
         case .failure(let error):
             print("File import failed: \(error.localizedDescription)")
+        }
+    }
+    
+    struct BindingViewWrapper<Model: ObservableObject, Content: View>: View {
+        @ObservedObject var model: Model
+        let content: (Binding<Model>) -> Content
+
+        init(model: Model, @ViewBuilder content: @escaping (Binding<Model>) -> Content) {
+            self.model = model
+            self.content = content
+        }
+
+        var body: some View {
+            content(.constant(model))
         }
     }
 }
