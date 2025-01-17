@@ -54,7 +54,10 @@ struct CalendarView: View {
                     .padding(.bottom)
                 }
             ) { calendar in
-                CalendarGridItem(calendar: calendar)
+                CalendarGridItem(
+                    calendar: calendar,
+                    onSwitchToCreatedTab: { switchToCreatedTab() } // Handle tab switch
+                )
             }
             .navigationTitle("Calendars")
             .toolbar {
@@ -70,7 +73,7 @@ struct CalendarView: View {
                 }
             }
             .navigationDestination(isPresented: $navigateToAddView) {
-                    EditCalendarView() // Create mode
+                EditCalendarView() // Create mode
             }
         }
     }
@@ -105,6 +108,10 @@ struct CalendarView: View {
         case .created:
             navigateToAddView = true
         }
+    }
+
+    private func switchToCreatedTab() {
+        selection = .created // Change to the "Created" tab
     }
 
     private func handleFileImport(_ result: Result<URL, Error>) {
