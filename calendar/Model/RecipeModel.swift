@@ -15,6 +15,7 @@ class RecipeModel: Identifiable, Codable {
     var ingredients: String
     var steps: String
     var thumbnailData: Data? // Store the image data for the thumbnail
+    static let fallbackSymbols = ["book.pages.fill", "carrot.fill", "fork.knife", "stove.fill"]
 
     // Computed property to convert thumbnail data to a SwiftUI Image
     var thumbnailImage: Image? {
