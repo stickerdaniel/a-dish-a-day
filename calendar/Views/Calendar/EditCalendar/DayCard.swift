@@ -1,5 +1,5 @@
 //
-//  DayCardView.swift
+//  DayCard.swift
 //  calendar
 //
 //  Created by Daniel Sticker on 17.01.25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DayCardView: View {
+struct DayCard: View {
     let date: Date
     let recipeAssigned: RecipeModel? // Optional currently assigned recipe
     let onTap: () -> Void            // Action when user taps this card

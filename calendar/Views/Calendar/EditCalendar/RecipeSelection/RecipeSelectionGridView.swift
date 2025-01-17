@@ -2,7 +2,7 @@
 //  RecipeSelectionGridView.swift
 //  calendar
 //
-//  Created by Daniel Sticker on 17.01.25.
+//  Created by Lucy May Plassmann on 12.01.25.
 //
 
 import SwiftUI

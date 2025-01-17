@@ -38,7 +38,7 @@ struct ContentView: View {
             }
             // Recipes
             NavigationStack() {
-                RecipeView()
+                RecipesView()
                     .tag(Tab.recipe)
             }
             .tabItem {
@@ -47,7 +47,7 @@ struct ContentView: View {
         }
         .modelContainer(for: CalendarModel.self)
         .modelContainer(for: RecipeModel.self)
-        .environment(\.horizontalSizeClass, .compact) // 👈 Use this modifier to change to
+        .environment(\.horizontalSizeClass, .compact) // 👈 Use this modifier to change to old navbar style
         // Padding 16 bottom only on MacOS not on iOS and iPadOS
         .padding(.bottom, bottomPadding)
     }

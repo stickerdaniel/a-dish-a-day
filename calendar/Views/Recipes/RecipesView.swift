@@ -8,7 +8,7 @@
 import SwiftUI
 import SwiftData
 
-struct RecipeView: View {
+struct RecipesView: View {
     @Query private var recipes: [RecipeModel]
     @State private var navigateToAddRecipe = false // Trigger for adding a recipe
     @State private var isShowingSettings = false
