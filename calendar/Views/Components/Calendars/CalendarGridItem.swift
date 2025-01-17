@@ -9,7 +9,8 @@ import SwiftUI
 
 struct CalendarGridItem: View {
     var calendar: CalendarModel
-    @State private var showErrorAlert = false // Controls error alert visibility
+    @State private var showDeleteConfirmation = false // Controls delete confirmation visibility
+    @State private var navigateToEditView = false // Controls navigation to the edit view
     @Environment(\.modelContext) private var context
 
     var body: some View {
@@ -45,7 +46,9 @@ struct CalendarGridItem: View {
 
             Divider()
 
-            Button(role: .destructive, action: deleteCalendar) {
+            Button(role: .destructive) {
+                showDeleteConfirmation = true
+            } label: {
                 Label("Delete", systemImage: "trash")
             }
         }
@@ -54,8 +57,10 @@ struct CalendarGridItem: View {
             isPresented: $showDeleteConfirmation,
             titleVisibility: .visible
         ) {
-            Button("Delete", role: .destructive, action: deleteCalendar)
-            Button("Cancel", role: .cancel, action: {})
+            Button("Delete", role: .destructive) {
+                deleteCalendar()
+            }
+            Button("Cancel", role: .cancel) {}
         }
         .navigationDestination(isPresented: $navigateToEditView) {
             EditCalendarView(calendarToEdit: calendar)
@@ -73,8 +78,7 @@ struct CalendarGridItem: View {
 
     /// Opens the edit view for the calendar
     private func editCalendar() {
-        // Navigate to the edit view (already handled via the NavigationLink)
-        // Alternatively, you can show a sheet or perform other navigation.
+        navigateToEditView = true
     }
 
     /// Duplicates the calendar and adds it to the "created" section
