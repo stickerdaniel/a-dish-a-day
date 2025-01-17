@@ -46,11 +46,15 @@ struct CalendarsView: View {
                         }
                     )
                 ) { calendar in
-                    CalendarCard(calendar: calendar) {
-                        if calendar.source == .created {
-                            selectedCalendar = calendar
-                        }
-                    }
+                    CalendarCard(
+                        calendar: calendar,
+                        onEdit: {
+                            if calendar.source == .created {
+                                selectedCalendar = calendar
+                            }
+                        },
+                        onSwitchToCreatedTab: nil
+                    )
                 }
             }
             .navigationTitle("Calendars")
