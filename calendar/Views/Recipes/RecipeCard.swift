@@ -10,11 +10,10 @@ import SwiftUI
 struct RecipeCard: View {
     var recipe: RecipeModel
     @State private var showDeleteConfirmation = false
-    @State private var navigateToEditRecipe = false
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        NavigationLink(value: recipe) {
+        NavigationLink(destination: OpenRecipeView(recipe: recipe)) {
             Card(
                 image: recipe.thumbnailImage,
                 description: recipe.name,
@@ -22,7 +21,7 @@ struct RecipeCard: View {
             )
         }
         .contextMenu {
-            Button(action: { navigateToEditRecipe = true }) {
+            NavigationLink(destination: EditRecipeView(recipeToEdit: recipe)) {
                 Label("Edit", systemImage: "pencil")
             }
 
@@ -43,9 +42,6 @@ struct RecipeCard: View {
         ) {
             Button("Delete", role: .destructive, action: deleteRecipe)
             Button("Cancel", role: .cancel) {}
-        }
-        .navigationDestination(isPresented: $navigateToEditRecipe) {
-            EditRecipeView(recipeToEdit: recipe)
         }
     }
 
