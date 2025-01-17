@@ -30,7 +30,7 @@ struct ContentView: View {
         TabView(selection: $selection) {
             // Calendar
             NavigationStack(path: $calendarPath) {
-                CalendarView()
+                CalendarsView()
                     .tag(Tab.calendar)
             }
             .tabItem {

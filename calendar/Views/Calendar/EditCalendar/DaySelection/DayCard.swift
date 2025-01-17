@@ -19,7 +19,7 @@ struct DayCard: View {
             icon: nil,
             badgeType: .none,            // Or logic to show a badge if needed
             description: recipeAssigned?.name ?? "Tap to pick recipe",
-            fallbackSymbols: [],
+            fallbackSymbols: RecipeModel.fallbackSymbols,
             day: date.dayOfMonth
         )
         .onTapGesture {

@@ -12,7 +12,7 @@ struct CalendarGridView: View {
     let addButton: AnyView
 
     var body: some View {
-        CardGridView(
+        CardsView(
             items: calendars,
             addButton: addButton
         ) { calendar in

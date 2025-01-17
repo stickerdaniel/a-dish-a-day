@@ -14,7 +14,7 @@ enum CalendarTab: String, CaseIterable {
     case created = "Created"
 }
 
-struct CalendarView: View {
+struct CalendarsView: View {
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .imported
 
@@ -27,7 +27,7 @@ struct CalendarView: View {
 
     var body: some View {
         NavigationStack {
-            CardGridView(
+            CardsView(
                 items: selectedCalendars,
                 addButton: AnyView(
                     Card(

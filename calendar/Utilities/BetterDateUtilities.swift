@@ -68,10 +68,3 @@ extension Date {
         return date
     }
 }
-
-extension Date: Identifiable {
-    public var id: TimeInterval {
-        // time interval as a unique identifier
-        self.timeIntervalSince1970
-    }
-}

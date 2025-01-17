@@ -63,24 +63,18 @@ struct EditCalendarView: View {
                 // (4) Days in range
                 if editingCalendar.startDate <= editingCalendar.endDate {
                     Section(header: Text("Days (\(editingCalendar.daysBetween))")) {
-                        CardGridView(
-                            items: editingCalendar.allDates,     // Must be Identifiable + Hashable
-                            addButton: AnyView(EmptyView())
-                        ) { date in
-                            // Check if there's already a recipe for this day
-                            let existingEntry = editingCalendar.recipes.first {
-                                $0.date == date.midnight
-                            }
-                            let assignedRecipe = existingEntry?.recipe
-
-                            // Use your custom day card
-                            DayCard(
-                                date: date,
-                                recipeAssigned: assignedRecipe
-                            ) {
-                                // On tap, store the date and show the sheet to pick a recipe
-                                currentSelectedDate = date
-                                isPickingRecipe = true
+                        let columns = [GridItem(.adaptive(minimum: Card.minimumWidth), spacing: Card.spacing)]
+                        
+                        LazyVGrid(columns: columns, spacing: Card.spacing) {
+                            ForEach(editingCalendar.dateRange, id: \.self) { date in
+                                DayCard(
+                                    date: date,
+                                    recipeAssigned: editingCalendar.recipes.first(where: { $0.date == date })?.recipe,
+                                    onTap: {
+                                        currentSelectedDate = date
+                                        isPickingRecipe = true
+                                    }
+                                )
                             }
                         }
                     }

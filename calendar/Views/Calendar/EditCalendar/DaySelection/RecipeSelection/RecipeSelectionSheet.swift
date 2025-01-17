@@ -28,8 +28,7 @@ struct RecipeSelectionSheet: View {
                 onRecipeTapped: { chosen in
                     onRecipeSelected(chosen)
                     isPresented = false
-                },
-                addButton: AnyView(EmptyView())  // Or pass a "create new recipe" button if desired
+                }
             )
             .navigationTitle("Select a Recipe")
             .toolbar {

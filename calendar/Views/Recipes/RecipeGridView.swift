@@ -15,7 +15,7 @@ struct RecipeGridView: View {
     var onSelect: ((RecipeModel) -> Void)? = nil
 
     var body: some View {
-        CardGridView(
+        CardsView(
             items: recipes,
             addButton: addButton
         ) { recipe in
