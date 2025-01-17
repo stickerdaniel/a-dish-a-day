@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CalendarGridItem: View {
     var calendar: CalendarModel
+    var onSwitchToCreatedTab: (() -> Void)? // Callback to notify parent
     @State private var showDeleteConfirmation = false // Controls delete confirmation visibility
     @State private var navigateToEditView = false // Controls navigation to the edit view
     @Environment(\.modelContext) private var context
@@ -103,6 +104,7 @@ struct CalendarGridItem: View {
             source: .created
         )
         context.insert(copiedCalendar)
+        onSwitchToCreatedTab?() // Notify parent to switch tabs
     }
 
     /// Deletes the calendar from the persistence context
