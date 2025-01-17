@@ -21,54 +21,56 @@ struct CalendarView: View {
     // State for imported and created calendars
     @Query private var allCalendars: [CalendarModel]
     @State private var isImportingJSON = false
-    @State private var isShowingForm = false
+    @State private var navigateToAddView = false
 
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        CardGridView(
-            items: selectedCalendars,
-            addButton: AnyView(
-                Card(
-                    icon: addButtonIcon,
-                    description: addButtonText
-                )
-                .onTapGesture {
-                    handleAddAction()
+        NavigationStack {
+            CardGridView(
+                items: selectedCalendars,
+                addButton: AnyView(
+                    Card(
+                        icon: addButtonIcon,
+                        description: addButtonText
+                    )
+                    .onTapGesture {
+                        handleAddAction()
+                    }
+                    .fileImporter(
+                        isPresented: $isImportingJSON,
+                        allowedContentTypes: [.json],
+                        onCompletion: handleFileImport
+                    )
+                ),
+                header: {
+                    Picker("Select Calendar Tab", selection: $selection) {
+                        ForEach(CalendarTab.allCases, id: \.self) {
+                            Text($0.rawValue)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 500)
+                    .padding(.bottom)
                 }
-                .sheet(isPresented: $isShowingForm) {
-                    AddCalendarView()
-                }
-                .fileImporter(
-                    isPresented: $isImportingJSON,
-                    allowedContentTypes: [.json],
-                    onCompletion: handleFileImport
-                )
-            ),
-            header: {
-                Picker("Select Calendar Tab", selection: $selection) {
-                    ForEach(CalendarTab.allCases, id: \.self) {
-                        Text($0.rawValue)
+            ) { calendar in
+                CalendarGridItem(calendar: calendar)
+            }
+            .navigationTitle("Calendars")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingSettings.toggle()
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .sheet(isPresented: $isShowingSettings) {
+                        SettingsView()
                     }
                 }
-                .pickerStyle(.segmented)
-                .frame(maxWidth: 500)
-                .padding(.bottom)
             }
-        ) { calendar in
-            CalendarGridItem(calendar: calendar)
-        }
-        .navigationTitle("Calendars")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    isShowingSettings.toggle()
-                } label: {
-                    Image(systemName: "gearshape")
-                }
-                .sheet(isPresented: $isShowingSettings) {
-                    SettingsView()
-                }
+            .navigationDestination(isPresented: $navigateToAddView) {
+                    EditCalendarView() // Create mode
             }
         }
     }
@@ -101,7 +103,7 @@ struct CalendarView: View {
         case .imported:
             isImportingJSON = true
         case .created:
-            isShowingForm = true
+            navigateToAddView = true
         }
     }
 

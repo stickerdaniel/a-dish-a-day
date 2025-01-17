@@ -10,36 +10,38 @@ import SwiftData
 
 struct RecipeView: View {
     @Query private var recipes: [RecipeModel]
-    @State private var isShowingAddRecipe = false
+    @State private var navigateToAddRecipe = false // Trigger for adding a recipe
     @State private var isShowingSettings = false
 
     var body: some View {
-        RecipeGridView(
-            recipes: recipes,
-            addButton: AnyView(
-                Card(
-                    icon: Image(systemName: "plus"),
-                    description: "Create new Recipe"
+        NavigationStack {
+            RecipeGridView(
+                recipes: recipes,
+                addButton: AnyView(
+                    Card(
+                        icon: Image(systemName: "plus"),
+                        description: "Create new Recipe"
+                    )
+                    .onTapGesture {
+                        navigateToAddRecipe = true
+                    }
                 )
-                .onTapGesture {
-                    isShowingAddRecipe.toggle()
-                }
-                .sheet(isPresented: $isShowingAddRecipe) {
-                    AddRecipeView()
-                }
             )
-        )
-        .navigationTitle("Recipes")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    isShowingSettings.toggle()
-                } label: {
-                    Image(systemName: "gearshape")
+            .navigationTitle("Recipes")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isShowingSettings.toggle()
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .sheet(isPresented: $isShowingSettings) {
+                        SettingsView()
+                    }
                 }
-                .sheet(isPresented: $isShowingSettings) {
-                    SettingsView()
-                }
+            }
+            .navigationDestination(isPresented: $navigateToAddRecipe) {
+                EditRecipeView()
             }
         }
     }

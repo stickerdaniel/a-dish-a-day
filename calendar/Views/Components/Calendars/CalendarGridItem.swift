@@ -13,9 +13,9 @@ struct CalendarGridItem: View {
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        NavigationLink(destination: EditCalendarView(calendar: calendar)) {
+        VStack {
             Card(
-                image: calendar.thumbnailImage, // Computed property to handle thumbnail
+                image: calendar.thumbnailImage,
                 description: calendar.name,
                 fallbackSymbols: ["frying.pan.fill", "stove.fill", "fork.knife", "calendar"]
             )
@@ -49,10 +49,16 @@ struct CalendarGridItem: View {
                 Label("Delete", systemImage: "trash")
             }
         }
-        .alert("Export Failed", isPresented: $showErrorAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("We couldn't export your calendar. Please try again.")
+        .confirmationDialog(
+            "Are you sure you want to delete this calendar?",
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive, action: deleteCalendar)
+            Button("Cancel", role: .cancel, action: {})
+        }
+        .navigationDestination(isPresented: $navigateToEditView) {
+            EditCalendarView(calendarToEdit: calendar)
         }
     }
 
@@ -61,9 +67,7 @@ struct CalendarGridItem: View {
     /// Handles exporting and sharing the calendar as JSON
     private func exportCalendar() {
         if let url = ExportManager.exportCalendar(calendar) {
-            ExportManager.shareFile(url: url) // Share the exported file
-        } else {
-            showErrorAlert = true // Show an error alert if encoding fails
+            ExportManager.shareFile(url: url)
         }
     }
 
