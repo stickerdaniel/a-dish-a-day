@@ -9,14 +9,14 @@ import SwiftUI
 
 struct RecipeCard: View {
     var recipe: RecipeModel
-    @State private var showDeleteConfirmation = false // Trigger for delete confirmation dialog
-    @State private var navigateToEditRecipe = false // Trigger for editing recipe
+    @State private var showDeleteConfirmation = false
+    @State private var navigateToEditRecipe = false
     @Environment(\.modelContext) private var context
 
     var body: some View {
         NavigationLink(value: recipe) {
             Card(
-                image: recipe.thumbnailImage, // Computed property to handle thumbnail
+                image: recipe.thumbnailImage,
                 description: recipe.name,
                 fallbackSymbols: RecipeModel.fallbackSymbols
             )
@@ -30,7 +30,7 @@ struct RecipeCard: View {
                 Label("Duplicate", systemImage: "doc.on.doc")
             }
 
-            Divider() // Divider before the destructive delete option
+            Divider()
 
             Button(role: .destructive, action: { showDeleteConfirmation = true }) {
                 Label("Delete", systemImage: "trash")
@@ -44,11 +44,13 @@ struct RecipeCard: View {
             Button("Delete", role: .destructive, action: deleteRecipe)
             Button("Cancel", role: .cancel) {}
         }
+        .navigationDestination(isPresented: $navigateToEditRecipe) {
+            EditRecipeView(recipeToEdit: recipe)
+        }
     }
 
     // MARK: - Context Menu Actions
 
-    /// Duplicates the recipe and adds it to the context
     private func duplicateRecipe() {
         let duplicatedRecipe = RecipeModel(
             name: "\(recipe.name) (Copy)",
@@ -59,7 +61,6 @@ struct RecipeCard: View {
         context.insert(duplicatedRecipe)
     }
 
-    /// Deletes the recipe from the context
     private func deleteRecipe() {
         context.delete(recipe)
     }
