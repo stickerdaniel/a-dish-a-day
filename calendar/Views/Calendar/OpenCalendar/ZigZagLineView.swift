@@ -12,6 +12,11 @@ struct ZigZagLineView<Content: View>: View {
     let lineHeight: CGFloat
     let maxWidth: CGFloat
     
+    let variationIndex: Int = 3
+    let variationFactor: CGFloat = 0.6
+    let variationIndexY: Int = 4
+    let variationFactorY: CGFloat = 0.8
+    
     init(views: [Content], lineHeight: CGFloat = 200, maxWidth: CGFloat = 900) {
         self.views = views
         self.lineHeight = lineHeight
@@ -21,7 +26,7 @@ struct ZigZagLineView<Content: View>: View {
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = min(geometry.size.width, maxWidth) // Constrain to max width
-            let spacing = availableWidth / 4 // Dynamically calculate spacing
+            let spacing = availableWidth / 3.5 // Dynamically calculate spacing
             let centerX = availableWidth / 2 // Center of the screen
             
             ZStack {
@@ -37,13 +42,18 @@ struct ZigZagLineView<Content: View>: View {
                         let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
                         let offsetY = CGFloat(index + 1) * lineHeight
                         
+                        // Introduce variation based on index (every other point or pattern-based)
+                        let inwardOffsetFactor: CGFloat = (index % variationIndex == variationIndex-1) ? variationFactor : 1.0
+                        
+                        let yOffsetFactor: CGFloat = (index % variationIndexY == 0) ? variationFactorY : 1.0
+                        
                         // Adjust control points dynamically based on available width
                         let previousPoint = CGPoint(
                             x: startX + (index > 0 ? spacing * ((index - 1) % 2 == 0 ? 1 : -1) : 0),
                             y: CGFloat(index) * lineHeight
                         )
                         
-                        let currentPoint = CGPoint(x: startX + offsetX, y: offsetY)
+                        let currentPoint = CGPoint(x: startX + offsetX * inwardOffsetFactor, y: offsetY * yOffsetFactor)
                         
                         // Dynamic control points based on available width
                         let controlFactor: CGFloat = availableWidth / 450 // Factor that increases as width increases
@@ -62,10 +72,10 @@ struct ZigZagLineView<Content: View>: View {
                 .stroke(
                     Color(.secondaryLabel), // Dynamic background color
                     style: StrokeStyle(
-                        lineWidth: 6, // Thicker line
+                        lineWidth: 10, // Thicker line
                         lineCap: .round,
                         lineJoin: .round,
-                        dash: [20, 15] // More dash spacing
+                        dash: [40, 25] // More dash spacing
                     )
                 )
                 
@@ -74,9 +84,13 @@ struct ZigZagLineView<Content: View>: View {
                     let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
                     let offsetY = CGFloat(index + 1) * lineHeight
                     
+                    // Apply the inward offset to some points
+                    let inwardOffsetFactor: CGFloat = (index % variationIndex == variationIndex-1) ? variationFactor : 1.0
+                    
+                    let yOffsetFactor: CGFloat = (index % variationIndexY == 0) ? variationFactorY : 1.0
                     views[index]
                         .frame(width: 50, height: 50)
-                        .position(x: centerX + offsetX, y: offsetY)
+                        .position(x: centerX + offsetX * inwardOffsetFactor, y: offsetY * yOffsetFactor)
                 }
             }
             .frame(maxWidth: .infinity) // Make sure the content is centered on the X-axis
