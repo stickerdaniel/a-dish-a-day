@@ -127,14 +127,22 @@ struct EditCalendarView: View {
             existing.name = editingCalendar.name
             existing.startDate = editingCalendar.startDate
             existing.endDate = editingCalendar.endDate
-            existing.recipes = editingCalendar.recipes.map { $0.copy() } // Deep copy recipes
+            existing.recipes = editingCalendar.recipes.map { $0.copy() }
             existing.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
         } else {
             editingCalendar.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
             context.insert(editingCalendar)
         }
+
+        do {
+            try context.save()
+        } catch {
+            print("Saving error: \(error)")
+        }
+
         dismiss()
     }
+
 
     /// Assign a recipe to a specific date.
     private func assignRecipe(_ recipe: RecipeModel, to date: Date) {
