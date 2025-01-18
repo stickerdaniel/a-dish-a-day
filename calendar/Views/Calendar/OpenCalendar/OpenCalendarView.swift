@@ -16,7 +16,7 @@ struct OpenCalendarView: View {
                 // Create a Card for each recipe
                 NavigationLink(destination: OpenRecipeView(thumbnailImage: recipeData.thumbnailImage, name: recipeData.name, ingredients: recipeData.ingredients, steps: recipeData.steps)) {
                     
-                    var unlocked = false
+                    let unlocked = false
                     
                     Card(
                         image: recipeData.thumbnailImage,
@@ -29,7 +29,6 @@ struct OpenCalendarView: View {
                     )
                     .frame(width: 96)
                     .offset(x: 0, y: 96)
-                    .scaleEffect(1.5)
                 }
             }, seed: abs(calendar.id.hashValue))
         }

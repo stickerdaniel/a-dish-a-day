@@ -28,7 +28,7 @@ struct Card: View {
     static let spacing: CGFloat = 16
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             ZStack(alignment: .topTrailing) {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(Color.cardBackground)
@@ -83,6 +83,9 @@ struct Card: View {
                         .frame(maxWidth: .infinity, alignment: .top)
                 }
             }
+            .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone || pinned != true ? 1 : 1.3)
+            
+            Spacer(minLength: UIDevice.current.userInterfaceIdiom == .phone || pinned != true ? 0 : 18)
 
             Text(description)
                 .font(.subheadline)
