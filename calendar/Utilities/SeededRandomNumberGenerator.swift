@@ -19,8 +19,9 @@ struct SeededRandomNumberGenerator {
         // Linear congruential generator
         state = state &* 6364136223846793005 &+ 1
         
-        // Normalize the value to the range [0, 1]
-        let fraction = Double(state >> 32) / Double(UInt64.max)
+        // Normalize the value to the range [0, 1] using the full state (64-bit)
+        let fraction = Double(state & 0xFFFFFFFFFFFF) / Double(0xFFFFFFFFFFFF)
+        print("Generated random number: \(fraction)")
         return fraction
     }
 }
