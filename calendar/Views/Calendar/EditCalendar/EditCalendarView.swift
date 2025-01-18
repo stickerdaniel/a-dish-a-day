@@ -138,8 +138,8 @@ struct EditCalendarView: View {
 
     /// Assign a recipe to a specific date.
     private func assignRecipe(_ recipe: RecipeModel, to date: Date) {
-        if let entry = editingCalendar.recipes.first(where: { $0.date == date.midnight }) {
-            entry.recipe = recipe
+        if let index = editingCalendar.recipes.firstIndex(where: { $0.date == date.midnight }) {
+            editingCalendar.recipes[index].recipe = recipe
         } else {
             let newEntry = RecipeEntry(date: date.midnight, recipe: recipe)
             editingCalendar.recipes.append(newEntry)

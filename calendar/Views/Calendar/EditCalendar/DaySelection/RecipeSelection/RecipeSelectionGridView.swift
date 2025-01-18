@@ -23,15 +23,15 @@ struct RecipeSelectionGridView: View {
             LazyVGrid(columns: columns, spacing: Card.spacing) {
                 // Render the recipe items
                 ForEach(recipes, id: \.id) { recipe in
-                    RecipeSelectionGridItem(
-                        recipe: recipe,
-                        isSelected: recipe.id == selectedRecipe?.id, // Compare IDs to check selection
-                        onTap: { tappedRecipe in
-                            // Update selection and trigger callback
-                            selectedRecipe = tappedRecipe
-                            onRecipeTapped(tappedRecipe)
-                        }
-                    )
+                    Card(
+                        image: recipe.thumbnailImage,
+                        description: recipe.name,
+                        fallbackSymbols: RecipeModel.fallbackSymbols
+                    ).onTapGesture {
+                        // Update selection and trigger callback
+                        selectedRecipe = recipe
+                        onRecipeTapped(recipe)
+                    }
                 }
             }
             .padding()
