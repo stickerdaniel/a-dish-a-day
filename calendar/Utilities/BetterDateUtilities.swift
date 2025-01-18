@@ -14,15 +14,12 @@ extension Date {
     }
 
     /// Enumerates every day from `self` up to (and including) `endDate`.
-    /// Returns an array of daily `Date`s, each at midnight.
     func allDates(upTo endDate: Date) -> [Date] {
         var dates: [Date] = []
         let cal = Calendar.current
         
-        // Make sure our range is valid
         guard self <= endDate else { return dates }
         
-        // Start enumerating from the day before `self`, so that first enumerated date is `self`.
         cal.enumerateDates(
             startingAfter: self.midnight.addingTimeInterval(-1),
             matching: DateComponents(hour: 0, minute: 0, second: 0),
@@ -37,7 +34,13 @@ extension Date {
         }
         return dates
     }
-    
+
+    /// Converts the date to an ISO8601 formatted string.
+    var iso8601String: String {
+        let formatter = ISO8601DateFormatter()
+        return formatter.string(from: self)
+    }
+
     /// Convenience for grabbing the "day of month" integer, e.g., 1–31.
     var dayOfMonth: Int {
         Calendar.current.component(.day, from: self)
@@ -47,8 +50,8 @@ extension Date {
     var month: Int {
         Calendar.current.component(.month, from: self)
     }
-    
-    /// Start of the current month. (We could also do `Calendar.current.dateInterval(of: .month, for: self)?.start`.)
+
+    /// Start of the current month.
     var startOfMonth: Date {
         guard let date = Calendar.current.date(from:
             Calendar.current.dateComponents([.year, .month], from: self))
@@ -58,7 +61,7 @@ extension Date {
         return date
     }
     
-    /// End of the current month. (One day before the start of next month.)
+    /// End of the current month.
     var endOfMonth: Date {
         guard let date = Calendar.current.date(byAdding: DateComponents(month: 1, day: -1),
                                                to: self.startOfMonth)

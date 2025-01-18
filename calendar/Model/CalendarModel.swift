@@ -19,10 +19,11 @@ class CalendarModel: Identifiable, Codable {
     var name: String
     var startDate: Date
     var endDate: Date
-    var recipes: [Date: RecipeData] = [:] // Maps date to recipe data
+    var recipes: [String: RecipeData] = [:]
     var thumbnailData: Data?
     var source: CalendarSource?
 
+    // Computed Properties
     var daysBetween: Int {
         let days = Calendar.current.dateComponents([.day], from: startDate.midnight, to: endDate.midnight).day ?? 0
         return days + 1
@@ -40,6 +41,7 @@ class CalendarModel: Identifiable, Codable {
         }
     }
 
+    // Initializer
     init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created) {
         self.name = name
         self.startDate = startDate
@@ -48,18 +50,21 @@ class CalendarModel: Identifiable, Codable {
         self.source = source
     }
 
-    func assignRecipe(_ recipe: RecipeModel, to date: Date) {
-        recipes[date] = RecipeData(recipe: recipe) // Directly assign snapshot
+    // Convenience initializer to create a copy of an existing calendar
+    static func copy(from calendar: CalendarModel) -> CalendarModel {
+        let copiedCalendar = CalendarModel(
+            name: calendar.name,
+            startDate: calendar.startDate,
+            endDate: calendar.endDate,
+            thumbnailData: calendar.thumbnailData,
+            source: calendar.source
+        )
+        // Copy recipes
+        copiedCalendar.recipes = calendar.recipes.mapValues { $0 }
+        return copiedCalendar
     }
 
-    func removeRecipe(from date: Date) {
-        recipes.removeValue(forKey: date) // Remove recipe for a given date
-    }
-
-    func recipe(for date: Date) -> RecipeData? {
-        return recipes[date] // Fetch recipe snapshot for a date
-    }
-
+    // Codable Conformance
     private enum CodingKeys: String, CodingKey {
         case id, name, startDate, endDate, recipes, thumbnailData, source
     }
@@ -70,7 +75,7 @@ class CalendarModel: Identifiable, Codable {
         name = try container.decode(String.self, forKey: .name)
         startDate = try container.decode(Date.self, forKey: .startDate)
         endDate = try container.decode(Date.self, forKey: .endDate)
-        recipes = try container.decode([Date: RecipeData].self, forKey: .recipes)
+        recipes = try container.decode([String: RecipeData].self, forKey: .recipes)
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
         source = try container.decodeIfPresent(CalendarSource.self, forKey: .source)
     }
@@ -84,17 +89,5 @@ class CalendarModel: Identifiable, Codable {
         try container.encode(recipes, forKey: .recipes)
         try container.encode(thumbnailData, forKey: .thumbnailData)
         try container.encode(source, forKey: .source)
-    }
-    
-    func copy() -> CalendarModel {
-        let copiedCalendar = CalendarModel(
-            name: self.name,
-            startDate: self.startDate,
-            endDate: self.endDate,
-            thumbnailData: self.thumbnailData,
-            source: self.source
-        )
-        copiedCalendar.recipes = self.recipes // Copy the dictionary
-        return copiedCalendar
     }
 }
