@@ -30,8 +30,10 @@ struct SettingsView: View {
     // MARK: - Notifications Toggle
     @State private var notificationsEnabled: Bool = false
 
-    // MARK: - Clear Data Confirmation
+    // MARK: - Clear Data Confirmation & Feedback
     @State private var showClearDataConfirmation = false
+    @State private var showClearDataSuccess = false
+    @State private var clearDataError: String?
 
     var body: some View {
         NavigationStack {
@@ -61,12 +63,30 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
-            .confirmationDialog("Are you sure you want to clear all data? This action cannot be undone.", isPresented: $showClearDataConfirmation, titleVisibility: .visible) {
+            .confirmationDialog(
+                "Are you sure you want to clear all data? This action cannot be undone.",
+                isPresented: $showClearDataConfirmation,
+                titleVisibility: .visible
+            ) {
                 Button("Confirm", role: .destructive) {
                     clearAllData()
-                    // Dismiss the view to close the sheet
                 }
                 Button("Cancel", role: .cancel) {}
+            }
+            .alert("Success", isPresented: $showClearDataSuccess) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("All data was cleared successfully.")
+            }
+            .alert("Error", isPresented: Binding(
+                get: { clearDataError != nil },
+                set: { if !$0 { clearDataError = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                if let error = clearDataError {
+                    Text("Failed to clear data: \(error)")
+                }
             }
             .onChange(of: appearance) {
                 applyAppearance()
@@ -90,11 +110,10 @@ struct SettingsView: View {
             // Explicitly save to ensure deletions are committed
             try modelContext.save()
             print("All data cleared successfully.")
-            
-            // TODO show dialog that says success
+            showClearDataSuccess = true
         } catch {
             print("Failed to clear data: \(error.localizedDescription)")
-            // TODO show dialog that says failure with error
+            clearDataError = error.localizedDescription
         }
     }
 
