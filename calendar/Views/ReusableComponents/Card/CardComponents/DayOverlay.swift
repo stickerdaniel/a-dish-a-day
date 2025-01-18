@@ -13,7 +13,7 @@ struct DayOverlay: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(.thinMaterial)
+                .fill(.ultraThinMaterial)
                 .frame(width: 72, height: 72)
 
             Text("\(day)")

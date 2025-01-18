@@ -1,5 +1,5 @@
 //
-//  RecipeView.swift
+//  RecipesView.swift
 //  calendar
 //
 //  Created by Vincent Nahn on 2024/12/18.
@@ -8,25 +8,28 @@
 import SwiftUI
 import SwiftData
 
-struct RecipeView: View {
+import SwiftUI
+import SwiftData
+
+struct RecipesView: View {
     @Query private var recipes: [RecipeModel]
-    @State private var navigateToAddRecipe = false // Trigger for adding a recipe
     @State private var isShowingSettings = false
 
     var body: some View {
         NavigationStack {
-            RecipeGridView(
-                recipes: recipes,
+            CardsView(
+                items: recipes,
                 addButton: AnyView(
-                    Card(
-                        icon: Image(systemName: "plus"),
-                        description: "Create new Recipe"
-                    )
-                    .onTapGesture {
-                        navigateToAddRecipe = true
+                    NavigationLink(destination: EditRecipeView()) {
+                        Card(
+                            icon: Image(systemName: "plus"),
+                            description: "Create new Recipe"
+                        )
                     }
                 )
-            )
+            ) { recipe in
+                RecipeCard(recipe: recipe)
+            }
             .navigationTitle("Recipes")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -39,9 +42,6 @@ struct RecipeView: View {
                         SettingsView()
                     }
                 }
-            }
-            .navigationDestination(isPresented: $navigateToAddRecipe) {
-                EditRecipeView()
             }
         }
     }

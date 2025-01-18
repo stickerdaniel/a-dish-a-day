@@ -25,8 +25,14 @@ class CalendarModel: Identifiable, Codable {
 
     // Computed property to calculate days between startDate and endDate
     var daysBetween: Int {
-        let days = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
-        return days + 1 // Include the end date
+        let days = Calendar.current.dateComponents([.day], from: startDate.midnight, to: endDate.midnight).day ?? 0
+        return days + 1
+    }
+
+    // Returns an array of daily dates in [startDate, endDate].
+    // date extension function used here
+    var allDates: [Date] {
+        startDate.midnight.allDates(upTo: endDate.midnight)
     }
 
     // Computed property to convert thumbnail data to a SwiftUI Image

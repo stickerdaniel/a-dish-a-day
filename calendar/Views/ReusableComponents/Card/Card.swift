@@ -13,12 +13,15 @@ struct Card: View {
     var description: String
     var fallbackSymbols: [String] = [] // Pass SF Symbols for the grid
     var day: Int? = nil // Optional day to display as overlay
+    
+    static let minimumWidth: CGFloat = 96
+    static let spacing: CGFloat = 16
 
     var body: some View {
         VStack(spacing: 8) {
             ZStack(alignment: .topTrailing) {
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.cardBackground) // Dynamically adjust based on color scheme
+                    .fill(Color.cardBackground)
                     .overlay(
                         ZStack {
                             if let image = image {
