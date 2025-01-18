@@ -13,7 +13,7 @@ struct RecipeCard: View {
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        NavigationLink(destination: OpenRecipeView(recipe: recipe)) {
+        NavigationLink(destination: OpenRecipeView(thumbnailImage: recipe.thumbnailImage, name: recipe.name, ingredients: recipe.ingredients, steps: recipe.steps)) {
             Card(
                 image: recipe.thumbnailImage,
                 description: recipe.name,

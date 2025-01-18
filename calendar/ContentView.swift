@@ -15,7 +15,6 @@ enum Tab: String, CaseIterable {
 struct ContentView: View {
     
     @State private var selection: Tab = .calendar
-    @State private var calendarPath: NavigationPath = NavigationPath()
     
     // Padding 16 bottom only on MacOS not on iOS and iPadOS
     var bottomPadding: CGFloat {
@@ -29,18 +28,9 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selection) {
             // Calendar
-            NavigationStack(path: $calendarPath) {
-                ScrollView {
-                    ZigZagLineView(
-                        views: [
-                            Color.red.cornerRadius(25),
-                            Color.green.cornerRadius(25),
-                            Color.blue.cornerRadius(25),
-                            Color.yellow.cornerRadius(25)
-                        ]
-                    )
-                    .frame(height: 1000)
-                }
+            NavigationStack() {
+                CalendarsView()
+                    .tag(Tab.calendar)
             }
             .tabItem {
                 Label("Calendars", systemImage: "calendar")

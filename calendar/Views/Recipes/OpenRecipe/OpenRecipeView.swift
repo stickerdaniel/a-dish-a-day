@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct OpenRecipeView: View {
-    var recipe: RecipeModel
+    var thumbnailImage: Image? = nil // Optional thumbnail image
+    var name: String = "Recipe Name" // Recipe name
+    var ingredients: String = "Ingredients" // Ingredients list
+    var steps: String = "Instructions" // Recipe steps
     var day: Int? = nil // Optional day to display
 
     var body: some View {
@@ -16,7 +19,7 @@ struct OpenRecipeView: View {
             VStack(alignment: .leading, spacing: 16) {
                 ZStack(alignment: .bottomLeading) {
                     // Expand thumbnail image full width
-                    if let thumbnail = recipe.thumbnailImage {
+                    if let thumbnail = thumbnailImage {
                         thumbnail
                             .resizable()
                             .scaledToFill()
@@ -35,7 +38,7 @@ struct OpenRecipeView: View {
 
                 VStack(alignment: .leading, spacing: 16) {
                     // Recipe Name
-                    Text(recipe.name)
+                    Text(name)
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundColor(.primary)
@@ -47,7 +50,7 @@ struct OpenRecipeView: View {
                             .font(.headline)
                             .foregroundColor(.secondary)
 
-                        Text(recipe.ingredients)
+                        Text(ingredients)
                             .font(.body)
                             .foregroundColor(.primary)
                     }
@@ -58,7 +61,7 @@ struct OpenRecipeView: View {
                             .font(.headline)
                             .foregroundColor(.secondary)
 
-                        Text(recipe.steps)
+                        Text(steps)
                             .font(.body)
                             .foregroundColor(.primary)
                     }
