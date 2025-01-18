@@ -12,21 +12,26 @@ struct OpenCalendarView: View {
     
     var body: some View {
         ScrollView {
-            ZigZagLineView(
-                views: calendar.recipes.values.map { recipeData in
-                    // Create a Card for each recipe
-                    NavigationLink(destination: OpenRecipeView(thumbnailImage: recipeData.thumbnailImage, name: recipeData.name, ingredients: recipeData.ingredients, steps: recipeData.steps)) {
-                        Card(
-                            image: recipeData.thumbnailImage ?? Image(systemName: "photo"),
-                            description: recipeData.name,
-                            fallbackSymbols: RecipeModel.fallbackSymbols
-                        ).frame(width: 96)
+            ZStack {
+                ZigZagLineView(
+                    seed: 1,
+                    views: calendar.recipes.values.map { recipeData in
+                        // Create a Card for each recipe
+                        NavigationLink(destination: OpenRecipeView(thumbnailImage: recipeData.thumbnailImage, name: recipeData.name, ingredients: recipeData.ingredients, steps: recipeData.steps)) {
+                            Card(
+                                image: recipeData.thumbnailImage ?? Image(systemName: "photo"),
+                                description: recipeData.name,
+                                fallbackSymbols: RecipeModel.fallbackSymbols
+                            ).frame(width: 96)
+                        }
                     }
-                }
-            )
+                )
+                .frame(maxWidth: .infinity)  // Ensure full width
+                
+                Rectangle().opacity(0).frame(height: 1600)  // Spacer
+            }
         }
-        .frame(maxWidth: .infinity) // Ensure full width
         .navigationTitle("Calendar Details")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.inline)  // Adjust the navigation bar display mode
     }
 }
