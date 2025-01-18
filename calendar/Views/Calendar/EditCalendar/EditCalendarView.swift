@@ -93,11 +93,6 @@ struct EditCalendarView: View {
                     }
                     .disabled(editingCalendar.name.isEmpty || editingCalendar.startDate > editingCalendar.endDate)
                 }
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
             }
             .onAppear(perform: loadCalendarData)
             .sheet(isPresented: $isPickingRecipe) {

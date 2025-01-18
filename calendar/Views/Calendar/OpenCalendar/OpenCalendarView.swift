@@ -9,8 +9,7 @@ import SwiftUI
 
 struct OpenCalendarView: View {
     var calendar: CalendarModel
-    var day: Int? = nil // Optional day to display
-
+    
     var body: some View {
         ScrollView {
 
