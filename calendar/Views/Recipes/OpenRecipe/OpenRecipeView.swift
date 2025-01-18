@@ -71,7 +71,7 @@ struct OpenRecipeView: View {
             }
         }
         .frame(maxWidth: .infinity) // Ensure full width
-        .navigationTitle("Recipe Details")
+        .navigationTitle(name)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

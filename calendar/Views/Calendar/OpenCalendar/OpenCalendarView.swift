@@ -19,7 +19,7 @@ struct OpenCalendarView: View {
                     var unlocked = false
                     
                     Card(
-                        image: recipeData.thumbnailImage ?? Image(systemName: "photo"),
+                        image: recipeData.thumbnailImage,
                         blurred: true,
                         badgeType: unlocked ? .none : .locked,
                         description: unlocked ? recipeData.name : "Unlocked in",
@@ -29,10 +29,11 @@ struct OpenCalendarView: View {
                     )
                     .frame(width: 96)
                     .offset(x: 0, y: 96)
+                    .scaleEffect(1.5)
                 }
             }, seed: abs(calendar.id.hashValue))
         }
-        .navigationTitle("Calendar Details")
+        .navigationTitle(calendar.name)
         .navigationBarTitleDisplayMode(.inline)  // Adjust the navigation bar display mode
     }
 }
