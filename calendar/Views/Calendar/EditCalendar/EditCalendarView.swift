@@ -74,6 +74,7 @@ struct EditCalendarView: View {
                 }
             }
             .navigationTitle(calendarToEdit == nil ? "New Calendar" : "Edit Calendar")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: saveCalendar) {

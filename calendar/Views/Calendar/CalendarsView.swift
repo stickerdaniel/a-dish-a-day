@@ -18,44 +18,39 @@ struct CalendarsView: View {
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .created
     @State private var isImportingJSON = false
-    @State private var selectedCalendar: CalendarModel? = nil
-
     @Query private var allCalendars: [CalendarModel]
     @Environment(\.modelContext) private var context
 
     var body: some View {
         NavigationStack {
-            VStack {
-                Picker("Select Calendar Tab", selection: $selection) {
-                    ForEach(CalendarTab.allCases, id: \.self) { tab in
-                        Text(tab.rawValue)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-
-                CardsView(
-                    items: filteredCalendars,
-                    addButton: AnyView(
+            CardsView(
+                items: filteredCalendars,
+                addButton: AnyView(
+                    NavigationLink(
+                        destination: selection == .created ? EditCalendarView() : nil
+                    ) {
                         Card(
                             icon: addButtonIcon,
                             description: addButtonText
                         )
-                        .onTapGesture {
-                            handleAddOrImportAction()
+                    }
+                    .onTapGesture {
+                        if selection == .imported {
+                            isImportingJSON = true
                         }
-                    )
-                ) { calendar in
-                    CalendarCard(
-                        calendar: calendar,
-                        onEdit: {
-                            if calendar.source == .created {
-                                selectedCalendar = calendar
-                            }
-                        },
-                        onSwitchToCreatedTab: nil
-                    )
+                    }
+                ),
+                header: {
+                    Picker("Select Calendar Tab", selection: $selection) {
+                        ForEach(CalendarTab.allCases, id: \.self) { tab in
+                            Text(tab.rawValue)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
                 }
+            ) { calendar in
+                CalendarCard(calendar: calendar)
             }
             .navigationTitle("Calendars")
             .toolbar {
@@ -69,9 +64,6 @@ struct CalendarsView: View {
                         SettingsView()
                     }
                 }
-            }
-            .sheet(item: $selectedCalendar) { calendar in
-                EditCalendarView(calendarToEdit: calendar)
             }
             .fileImporter(
                 isPresented: $isImportingJSON,
@@ -96,16 +88,6 @@ struct CalendarsView: View {
 
     private var addButtonText: String {
         selection == .created ? "Create new calendar" : "Import calendar"
-    }
-
-    private func handleAddOrImportAction() {
-        if selection == .created {
-            let newCalendar = CalendarModel(name: "", startDate: Date(), endDate: Date())
-            context.insert(newCalendar)
-            selectedCalendar = newCalendar
-        } else {
-            isImportingJSON = true
-        }
     }
 
     private func handleFileImport(_ result: Result<URL, Error>) {

@@ -9,24 +9,24 @@ import SwiftUI
 
 struct CalendarCard: View {
     var calendar: CalendarModel
-    var onEdit: (() -> Void)?
-    var onSwitchToCreatedTab: (() -> Void)?
     @State private var showDeleteConfirmation = false
     @Environment(\.modelContext) private var context
 
     var body: some View {
-        Card(
-            image: calendar.thumbnailImage,
-            description: calendar.name,
-            fallbackSymbols: ["frying.pan.fill", "stove.fill", "fork.knife", "calendar"]
-        )
+        NavigationLink(destination: OpenCalendarView(calendar: calendar)) {
+            Card(
+                image: calendar.thumbnailImage,
+                description: calendar.name,
+                fallbackSymbols: ["frying.pan.fill", "stove.fill", "fork.knife", "calendar"]
+            )
+        }
         .contextMenu {
             Button(action: exportCalendar) {
                 Label("Export Calendar", systemImage: "square.and.arrow.up")
             }
 
             if calendar.source == .created {
-                Button(action: { onEdit?() }) { // Ensure `onEdit` is called
+                NavigationLink(destination: EditCalendarView(calendarToEdit: calendar)) {
                     Label("Edit", systemImage: "pencil")
                 }
             }
@@ -91,7 +91,6 @@ struct CalendarCard: View {
             source: .created
         )
         context.insert(copiedCalendar)
-        onSwitchToCreatedTab?()
     }
 
     private func deleteCalendar() {
