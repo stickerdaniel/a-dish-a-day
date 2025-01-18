@@ -19,32 +19,27 @@ class CalendarModel: Identifiable, Codable {
     var name: String
     var startDate: Date
     var endDate: Date
-    var recipes: [RecipeEntry] = [] // Store recipes with assigned days
-    var thumbnailData: Data? // Store the image data for the thumbnail
-    var source: CalendarSource? // Optional source (nil defaults to .imported)
+    var recipes: [Date: RecipeData] = [:] // Maps date to recipe data
+    var thumbnailData: Data?
+    var source: CalendarSource?
 
-    // Computed property to calculate days between startDate and endDate
     var daysBetween: Int {
         let days = Calendar.current.dateComponents([.day], from: startDate.midnight, to: endDate.midnight).day ?? 0
         return days + 1
     }
 
-    // Returns an array of daily dates in [startDate, endDate].
-    // date extension function used here
     var allDates: [Date] {
         startDate.midnight.allDates(upTo: endDate.midnight)
     }
 
-    // Computed property to convert thumbnail data to a SwiftUI Image
     var thumbnailImage: Image? {
         if let data = thumbnailData, let uiImage = UIImage(data: data) {
             return Image(uiImage: uiImage)
         } else {
-            return nil // No image
+            return nil
         }
     }
 
-    // MARK: - Initializer
     init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created) {
         self.name = name
         self.startDate = startDate
@@ -53,23 +48,20 @@ class CalendarModel: Identifiable, Codable {
         self.source = source
     }
 
-    // MARK: - Copy Method
-    func copy() -> CalendarModel {
-        let copiedCalendar = CalendarModel(
-            name: self.name,
-            startDate: self.startDate,
-            endDate: self.endDate,
-            thumbnailData: self.thumbnailData,
-            source: self.source
-        )
-        // Deep copy of recipes
-        copiedCalendar.recipes = self.recipes.map { $0.copy() }
-        return copiedCalendar
+    func assignRecipe(_ recipe: RecipeModel, to date: Date) {
+        recipes[date] = RecipeData(recipe: recipe) // Directly assign snapshot
     }
 
-    // MARK: - Codable Conformance
+    func removeRecipe(from date: Date) {
+        recipes.removeValue(forKey: date) // Remove recipe for a given date
+    }
+
+    func recipe(for date: Date) -> RecipeData? {
+        return recipes[date] // Fetch recipe snapshot for a date
+    }
+
     private enum CodingKeys: String, CodingKey {
-        case id, name, startDate, endDate, recipes, thumbnailData
+        case id, name, startDate, endDate, recipes, thumbnailData, source
     }
 
     required init(from decoder: Decoder) throws {
@@ -78,9 +70,9 @@ class CalendarModel: Identifiable, Codable {
         name = try container.decode(String.self, forKey: .name)
         startDate = try container.decode(Date.self, forKey: .startDate)
         endDate = try container.decode(Date.self, forKey: .endDate)
-        recipes = try container.decode([RecipeEntry].self, forKey: .recipes)
+        recipes = try container.decode([Date: RecipeData].self, forKey: .recipes)
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
-        source = .imported // Default to imported for backward compatibility
+        source = try container.decodeIfPresent(CalendarSource.self, forKey: .source)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -91,5 +83,18 @@ class CalendarModel: Identifiable, Codable {
         try container.encode(endDate, forKey: .endDate)
         try container.encode(recipes, forKey: .recipes)
         try container.encode(thumbnailData, forKey: .thumbnailData)
+        try container.encode(source, forKey: .source)
+    }
+    
+    func copy() -> CalendarModel {
+        let copiedCalendar = CalendarModel(
+            name: self.name,
+            startDate: self.startDate,
+            endDate: self.endDate,
+            thumbnailData: self.thumbnailData,
+            source: self.source
+        )
+        copiedCalendar.recipes = self.recipes // Copy the dictionary
+        return copiedCalendar
     }
 }

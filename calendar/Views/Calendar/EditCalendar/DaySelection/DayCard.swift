@@ -9,7 +9,7 @@ import SwiftUI
 
 struct DayCard: View {
     let date: Date
-    let recipeAssigned: RecipeModel? // Optional currently assigned recipe
+    let recipeAssigned: RecipeData? // Optional currently assigned recipe
     let onTap: () -> Void            // Action when user taps this card
 
     var body: some View {
