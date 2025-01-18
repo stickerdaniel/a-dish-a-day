@@ -53,6 +53,20 @@ class CalendarModel: Identifiable, Codable {
         self.source = source
     }
 
+    // MARK: - Copy Method
+    func copy() -> CalendarModel {
+        let copiedCalendar = CalendarModel(
+            name: self.name,
+            startDate: self.startDate,
+            endDate: self.endDate,
+            thumbnailData: self.thumbnailData,
+            source: self.source
+        )
+        // Deep copy of recipes
+        copiedCalendar.recipes = self.recipes.map { $0.copy() }
+        return copiedCalendar
+    }
+
     // MARK: - Codable Conformance
     private enum CodingKeys: String, CodingKey {
         case id, name, startDate, endDate, recipes, thumbnailData
@@ -80,7 +94,11 @@ class CalendarModel: Identifiable, Codable {
     }
 }
 
-
+extension RecipeEntry {
+    func copy() -> RecipeEntry {
+        RecipeEntry(date: self.date, recipe: self.recipe)
+    }
+}
 
 // Model for storing recipe entries with assigned dates
 @Model

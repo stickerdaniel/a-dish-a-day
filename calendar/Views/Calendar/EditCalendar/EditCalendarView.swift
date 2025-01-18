@@ -31,8 +31,7 @@ struct EditCalendarView: View {
 
         // Use the existing calendar or create a new one
         _editingCalendar = State(initialValue:
-            calendarToEdit ??
-            CalendarModel(name: "", startDate: Date(), endDate: Date())
+            calendarToEdit?.copy() ?? CalendarModel(name: "", startDate: Date(), endDate: Date())
         )
     }
 
@@ -84,6 +83,11 @@ struct EditCalendarView: View {
                         }
                     }
                     .disabled(editingCalendar.name.isEmpty || editingCalendar.startDate > editingCalendar.endDate)
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             }
             .onAppear(perform: loadCalendarData)
