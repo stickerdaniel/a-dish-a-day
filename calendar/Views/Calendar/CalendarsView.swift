@@ -26,17 +26,22 @@ struct CalendarsView: View {
             CardsView(
                 items: filteredCalendars,
                 addButton: AnyView(
-                    NavigationLink(
-                        destination: selection == .created ? EditCalendarView() : nil
-                    ) {
-                        Card(
-                            icon: addButtonIcon,
-                            description: addButtonText
-                        )
-                    }
-                    .onTapGesture {
-                        if selection == .imported {
-                            isImportingJSON = true
+                    Group {
+                        if selection == .created {
+                            NavigationLink(destination: EditCalendarView()) {
+                                Card(
+                                    icon: Image(systemName: "plus"),
+                                    description: "Create new calendar"
+                                )
+                            }
+                        } else if selection == .imported {
+                            Card(
+                                icon: Image(systemName: "tray.and.arrow.down"),
+                                description: "Import calendar"
+                            )
+                            .onTapGesture {
+                                isImportingJSON = true // Trigger the file import
+                            }
                         }
                     }
                 ),
@@ -80,14 +85,6 @@ struct CalendarsView: View {
         case .created:
             return allCalendars.filter { $0.source == .created }
         }
-    }
-
-    private var addButtonIcon: Image {
-        selection == .created ? Image(systemName: "plus") : Image(systemName: "tray.and.arrow.down")
-    }
-
-    private var addButtonText: String {
-        selection == .created ? "Create new calendar" : "Import calendar"
     }
 
     private func handleFileImport(_ result: Result<URL, Error>) {
