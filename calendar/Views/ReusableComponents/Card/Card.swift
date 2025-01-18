@@ -22,6 +22,7 @@ struct Card: View {
     var description: String
     var fallbackSymbols: [String] = [] // Pass SF Symbols for the grid
     var day: Int? = nil // Optional day to display as overlay
+    var pinned: Bool = false // Optional pinned icon
     
     static let minimumWidth: CGFloat = 96
     static let spacing: CGFloat = 16
@@ -70,6 +71,17 @@ struct Card: View {
                 // Display badge based on `badgeType`
                 badgeView
                     .offset(x: 5, y: -5)
+                
+                if pinned {
+                    Image(systemName: "pin.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.secondary)
+                        .offset(x: 0, y: -10)
+                        .rotationEffect(.degrees(-15))
+                        .frame(maxWidth: .infinity, alignment: .top)
+                }
             }
 
             Text(description)
@@ -104,16 +116,17 @@ struct Card: View {
                         .foregroundColor(Color(.systemBackground))
                         .offset(y: -1)
                 )
-
-
         case .locked:
-            Image(systemName: "lock.circle.fill")
-                .resizable()
-                .scaledToFit()
+            Circle()
                 .frame(width: 24, height: 24)
-                .foregroundColor(.secondary)
-                .background(Color(UIColor.systemBackground))
-                .clipShape(Circle())
+                .foregroundColor(Color(UIColor.systemBackground))
+                .overlay(
+                    Image(systemName: "lock.circle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.secondary)
+                )
         }
     }
 }
