@@ -4,11 +4,13 @@ enum BadgeType {
     case none
     case indicator // Red dot indicator
     case warning   // Warning triangle
+    case locked    // Locked symbol
 }
 
 struct Card: View {
     var image: Image? = nil // Optional image
     var icon: Image? = nil // Optional icon
+    var blurred: Bool = false // Optional blurr
     var badgeType: BadgeType = .none // Badge type
     var description: String
     var fallbackSymbols: [String] = [] // Pass SF Symbols for the grid
@@ -37,6 +39,15 @@ struct Card: View {
                                     .foregroundColor(.gray)
                             } else if !fallbackSymbols.isEmpty {
                                 IconGrid(symbols: fallbackSymbols)
+                                if blurred {
+                                    Rectangle() // black overlay
+                                        .fill(Color.black.opacity(0.4))
+                                }
+                            }
+                            
+                            if blurred {
+                                Rectangle()
+                                    .fill(.ultraThinMaterial)
                             }
 
                             if let day = day {
@@ -75,11 +86,27 @@ struct Card: View {
                 .fill(Color.red)
                 .frame(width: 20, height: 20)
         case .warning:
-            Image(systemName: "exclamationmark.triangle.fill")
+            Circle()
+                .frame(width: 24, height: 24)
+                .foregroundColor(.yellow)
+                .overlay(
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 14, height: 14)
+                        .foregroundColor(Color(.systemBackground))
+                        .offset(y: -1)
+                )
+
+
+        case .locked:
+            Image(systemName: "lock.circle.fill")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 20, height: 20)
-                .foregroundColor(.yellow)
+                .frame(width: 24, height: 24)
+                .foregroundColor(.secondary)
+                .background(Color(UIColor.systemBackground))
+                .clipShape(Circle())
         }
     }
 }
