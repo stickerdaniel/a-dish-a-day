@@ -16,6 +16,7 @@ struct ZigZagLineView<Content: View>: View {
     let variationFactor: CGFloat = 0.6
     let variationIndexY: Int = 4
     let variationFactorY: CGFloat = 0.8
+    let variationFactorYLineHeight: CGFloat = 0.9
     
     init(views: [Content], lineHeight: CGFloat = 200, maxWidth: CGFloat = 900) {
         self.views = views
@@ -40,7 +41,8 @@ struct ZigZagLineView<Content: View>: View {
                     for index in 0..<views.count {
                         // Dynamically calculate horizontal offset
                         let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
-                        let offsetY = CGFloat(index + 1) * lineHeight
+                        let lineHeightFactor = (index % variationIndexY == 0) ? variationFactorYLineHeight : 1.0
+                        let offsetY = CGFloat(index + 1) * lineHeight * lineHeightFactor
                         
                         // Introduce variation based on index (every other point or pattern-based)
                         let inwardOffsetFactor: CGFloat = (index % variationIndex == variationIndex-1) ? variationFactor : 1.0
@@ -82,7 +84,8 @@ struct ZigZagLineView<Content: View>: View {
                 // Add views at alternating positions
                 ForEach(views.indices, id: \.self) { index in
                     let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
-                    let offsetY = CGFloat(index + 1) * lineHeight
+                    let lineHeightFactor = (index % variationIndexY == 0) ? variationFactorYLineHeight : 1.0
+                    let offsetY = CGFloat(index + 1) * lineHeight * lineHeightFactor
                     
                     // Apply the inward offset to some points
                     let inwardOffsetFactor: CGFloat = (index % variationIndex == variationIndex-1) ? variationFactor : 1.0
