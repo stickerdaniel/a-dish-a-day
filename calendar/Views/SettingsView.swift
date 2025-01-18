@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 enum Appearance: String, CaseIterable {
     case light, dark, system
@@ -13,8 +14,12 @@ enum Appearance: String, CaseIterable {
 }
 
 struct SettingsView: View {
-    @AppStorage("appearance") private var appearance: Appearance = .system // Persist choice
-
+    // MARK: - SwiftData model context
+    @Environment(\.modelContext) private var modelContext
+    
+    // MARK: - Appearance
+    @AppStorage("appearance") private var appearance: Appearance = .system
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -59,6 +64,14 @@ struct SettingsView: View {
                         SettingsRow(title: "Log out")
                     }
                 }
+                
+                // Data Management: Clear All Data Button
+                Section("Data Management") {
+                    Button("Clear All Data") {
+                        clearAllData()
+                    }
+                    .foregroundColor(.red)
+                }
             }
             .navigationTitle("Settings")
             .onChange(of: appearance) {
@@ -66,8 +79,24 @@ struct SettingsView: View {
             }
         }
     }
-
-    /// Apply appearance mode based on selection
+    
+    // MARK: - Clear All Data
+    private func clearAllData() {
+        do {
+            // Delete all objects for each of your SwiftData model types
+            try modelContext.delete(model: RecipeModel.self)
+            try modelContext.delete(model: CalendarModel.self)
+            // Add additional model deletes as necessary
+            
+            // Explicitly save to ensure deletions are committed
+            try modelContext.save()
+            print("All data cleared successfully.")
+        } catch {
+            print("Failed to clear data: \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - Appearance
     private func applyAppearance() {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             for window in windowScene.windows {
@@ -83,6 +112,7 @@ struct SettingsView: View {
         }
     }
     
+    // MARK: - SettingsRow View
     struct SettingsRow: View {
         var title: String
         
@@ -91,6 +121,7 @@ struct SettingsView: View {
                 Text(title)
                     .foregroundColor(.primary)
                 Spacer()
-            }        }
+            }
+        }
     }
 }

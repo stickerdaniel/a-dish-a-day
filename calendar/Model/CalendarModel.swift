@@ -19,7 +19,7 @@ class CalendarModel: Identifiable, Codable {
     var name: String
     var startDate: Date
     var endDate: Date
-    var recipes: [String: RecipeData] = [:]
+    var recipes: [String: RecipeData] = [:] // DateString: RecipeData
     var thumbnailData: Data?
     var source: CalendarSource?
 
@@ -48,6 +48,18 @@ class CalendarModel: Identifiable, Codable {
         self.endDate = endDate
         self.thumbnailData = thumbnailData
         self.source = source
+    }
+    
+    /// Assigns a recipe to a specific date.
+    func assignRecipe(_ recipe: RecipeModel, to date: Date) {
+        // Convert the date to a string key
+        let dateKey = date.midnight.description
+
+        // Create a `RecipeData` object from `RecipeModel`
+        let recipeData = RecipeData(recipe: recipe)
+
+        // Assign the recipe to the date key
+        recipes[dateKey] = recipeData
     }
 
     // Convenience initializer to create a copy of an existing calendar

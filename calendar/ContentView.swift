@@ -45,8 +45,6 @@ struct ContentView: View {
                 Label("Recipes", systemImage: "book.pages")
             }
         }
-        .modelContainer(for: CalendarModel.self)
-        .modelContainer(for: RecipeModel.self)
         .environment(\.horizontalSizeClass, .compact) // 👈 Use this modifier to change to old navbar style
         // Padding 16 bottom only on MacOS not on iOS and iPadOS
         .padding(.bottom, bottomPadding)

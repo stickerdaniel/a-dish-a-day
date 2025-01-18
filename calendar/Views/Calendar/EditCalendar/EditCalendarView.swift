@@ -31,7 +31,7 @@ struct EditCalendarView: View {
 
         let initialCalendar: CalendarModel
         if let existingCalendar = calendarToEdit {
-            initialCalendar = existingCalendar.copy() // Use the copy method
+            initialCalendar = CalendarModel.copy(from: existingCalendar) // Corrected the method call
         } else {
             initialCalendar = CalendarModel(name: "", startDate: Date(), endDate: Date())
         }
@@ -65,7 +65,11 @@ struct EditCalendarView: View {
 
                     LazyVGrid(columns: columns, spacing: Card.spacing) {
                         ForEach(editingCalendar.allDates, id: \.self) { date in
-                            let assignedRecipe = editingCalendar.recipes[date.midnight]
+                            // Convert the date to a String key
+                            let dateKey = date.midnight.description  // Ensure this matches how keys are stored in `recipes`
+
+                            // Access the assigned recipe safely
+                            let assignedRecipe = editingCalendar.recipes[dateKey]
 
                             DayCard(date: date, recipeAssigned: assignedRecipe) {
                                 currentSelectedDate = date
@@ -74,6 +78,7 @@ struct EditCalendarView: View {
                         }
                     }
                     .padding(.top, 8)
+
                 }
             }
             .navigationTitle(calendarToEdit == nil ? "New Calendar" : "Edit Calendar")
