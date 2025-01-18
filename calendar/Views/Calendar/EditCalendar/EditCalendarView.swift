@@ -113,7 +113,7 @@ struct EditCalendarView: View {
         editingCalendar.name = existing.name
         editingCalendar.startDate = existing.startDate
         editingCalendar.endDate = existing.endDate
-        editingCalendar.recipes = existing.recipes
+        editingCalendar.recipes = existing.recipes.map { $0.copy() } // Copy recipe entries
         editingCalendar.thumbnailData = existing.thumbnailData
 
         if let data = existing.thumbnailData, let image = UIImage(data: data) {
@@ -127,7 +127,7 @@ struct EditCalendarView: View {
             existing.name = editingCalendar.name
             existing.startDate = editingCalendar.startDate
             existing.endDate = editingCalendar.endDate
-            existing.recipes = editingCalendar.recipes
+            existing.recipes = editingCalendar.recipes.map { $0.copy() } // Deep copy recipes
             existing.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
         } else {
             editingCalendar.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
