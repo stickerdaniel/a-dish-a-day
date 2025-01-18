@@ -21,7 +21,7 @@ struct ZigZagLineView<Content: View>: View {
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = min(geometry.size.width, maxWidth) // Constrain to max width
-            let spacing = availableWidth / 6 // Dynamically calculate spacing
+            let spacing = availableWidth / 4 // Dynamically calculate spacing
             let centerX = availableWidth / 2 // Center of the screen
             
             ZStack {
@@ -46,7 +46,7 @@ struct ZigZagLineView<Content: View>: View {
                         let currentPoint = CGPoint(x: startX + offsetX, y: offsetY)
                         
                         // Dynamic control points based on available width
-                        let controlFactor: CGFloat = availableWidth / 650 // Factor that increases as width increases
+                        let controlFactor: CGFloat = availableWidth / 450 // Factor that increases as width increases
                         let control1 = CGPoint(
                             x: previousPoint.x,
                             y: previousPoint.y + (lineHeight / 2 * controlFactor)
