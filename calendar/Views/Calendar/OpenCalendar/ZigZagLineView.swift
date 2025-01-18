@@ -1,0 +1,74 @@
+//
+//  ZigZagLineView.swift
+//  calendar
+//
+//  Created by Daniel Sticker on 18.01.25.
+//
+
+import SwiftUI
+
+struct ZigZagLineView<Content: View>: View {
+    let views: [Content]
+    let lineHeight: CGFloat
+    let maxWidth: CGFloat
+    
+    init(views: [Content], lineHeight: CGFloat = 200, maxWidth: CGFloat = 800) {
+        self.views = views
+        self.lineHeight = lineHeight
+        self.maxWidth = maxWidth
+    }
+    
+    var body: some View {
+        GeometryReader { geometry in
+            let availableWidth = min(geometry.size.width, maxWidth) // Constrain to max width
+            let spacing = availableWidth / 4 // Dynamically calculate spacing
+            
+            ZStack {
+                // Draw the bezier path as a dashed line
+                Path { path in
+                    let startX = availableWidth / 2
+                    let startY: CGFloat = 0
+                    
+                    path.move(to: CGPoint(x: startX, y: startY))
+                    
+                    for index in 0..<views.count {
+                        let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
+                        let offsetY = CGFloat(index + 1) * lineHeight
+                        
+                        // Calculate control points
+                        let previousPoint = CGPoint(
+                            x: startX + (index > 0 ? spacing * ((index - 1) % 2 == 0 ? 1 : -1) : 0),
+                            y: CGFloat(index) * lineHeight
+                        )
+                        
+                        let currentPoint = CGPoint(x: startX + offsetX, y: offsetY)
+                        let control1 = CGPoint(x: previousPoint.x, y: previousPoint.y + lineHeight / 2)
+                        let control2 = CGPoint(x: currentPoint.x, y: currentPoint.y - lineHeight / 2)
+                        
+                        path.addCurve(to: currentPoint, control1: control1, control2: control2)
+                    }
+                }
+                .stroke(
+                    Color.accentColor,
+                    style: StrokeStyle(
+                        lineWidth: 4, // Thicker line
+                        lineCap: .round,
+                        lineJoin: .round,
+                        dash: [10, 5] // Dashed pattern
+                    )
+                )
+                
+                // Add views at alternating positions
+                ForEach(views.indices, id: \.self) { index in
+                    let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
+                    let offsetY = CGFloat(index + 1) * lineHeight
+                    
+                    views[index]
+                        .frame(width: 50, height: 50)
+                        .position(x: availableWidth / 2 + offsetX, y: offsetY)
+                }
+            }
+            .frame(maxWidth: maxWidth) // Constrain the total width
+        }
+    }
+}

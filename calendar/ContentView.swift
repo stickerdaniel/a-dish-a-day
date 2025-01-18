@@ -30,8 +30,17 @@ struct ContentView: View {
         TabView(selection: $selection) {
             // Calendar
             NavigationStack(path: $calendarPath) {
-                CalendarsView()
-                    .tag(Tab.calendar)
+                ScrollView {
+                    ZigZagLineView(
+                        views: [
+                            Color.red.cornerRadius(25),
+                            Color.green.cornerRadius(25),
+                            Color.blue.cornerRadius(25),
+                            Color.yellow.cornerRadius(25)
+                        ]
+                    )
+                    .frame(height: 1000)
+                }
             }
             .tabItem {
                 Label("Calendars", systemImage: "calendar")

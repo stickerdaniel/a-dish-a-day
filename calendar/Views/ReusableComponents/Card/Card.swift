@@ -1,3 +1,10 @@
+//
+//  Cards.swift
+//  calendar
+//
+//  Created by Daniel Sticker on 14.01.25.
+//
+
 import SwiftUI
 
 enum BadgeType {
