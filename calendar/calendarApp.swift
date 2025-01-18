@@ -20,7 +20,6 @@ struct calendarApp: App {
                 .modelContainer(for: [
                     RecipeModel.self,
                     CalendarModel.self,
-                    RecipeEntry.self // Add RecipeEntry explicitly
                 ])
         }
     }

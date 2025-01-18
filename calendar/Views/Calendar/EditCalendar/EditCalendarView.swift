@@ -29,11 +29,14 @@ struct EditCalendarView: View {
     init(calendarToEdit: CalendarModel? = nil) {
         self.calendarToEdit = calendarToEdit
 
-        // Use the existing calendar or create a new one
-        _editingCalendar = State(initialValue:
-            calendarToEdit ??
-            CalendarModel(name: "", startDate: Date(), endDate: Date())
-        )
+        let initialCalendar: CalendarModel
+        if let existingCalendar = calendarToEdit {
+            initialCalendar = existingCalendar.copy() // Use the copy method
+        } else {
+            initialCalendar = CalendarModel(name: "", startDate: Date(), endDate: Date())
+        }
+
+        _editingCalendar = State(initialValue: initialCalendar)
     }
 
     // MARK: - Body
@@ -62,7 +65,7 @@ struct EditCalendarView: View {
 
                     LazyVGrid(columns: columns, spacing: Card.spacing) {
                         ForEach(editingCalendar.allDates, id: \.self) { date in
-                            let assignedRecipe = editingCalendar.recipes.first(where: { $0.date == date.midnight })?.recipe
+                            let assignedRecipe = editingCalendar.recipes[date.midnight]
 
                             DayCard(date: date, recipeAssigned: assignedRecipe) {
                                 currentSelectedDate = date
@@ -84,6 +87,11 @@ struct EditCalendarView: View {
                         }
                     }
                     .disabled(editingCalendar.name.isEmpty || editingCalendar.startDate > editingCalendar.endDate)
+                }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
                 }
             }
             .onAppear(perform: loadCalendarData)
@@ -109,7 +117,7 @@ struct EditCalendarView: View {
         editingCalendar.name = existing.name
         editingCalendar.startDate = existing.startDate
         editingCalendar.endDate = existing.endDate
-        editingCalendar.recipes = existing.recipes
+        editingCalendar.recipes = existing.recipes // Assign recipes directly
         editingCalendar.thumbnailData = existing.thumbnailData
 
         if let data = existing.thumbnailData, let image = UIImage(data: data) {
@@ -123,22 +131,23 @@ struct EditCalendarView: View {
             existing.name = editingCalendar.name
             existing.startDate = editingCalendar.startDate
             existing.endDate = editingCalendar.endDate
-            existing.recipes = editingCalendar.recipes
+            existing.recipes = editingCalendar.recipes // Copy recipes correctly
             existing.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
         } else {
             editingCalendar.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
             context.insert(editingCalendar)
         }
-        dismiss()
+
+        do {
+            try context.save()
+            dismiss()
+        } catch {
+            print("Saving error: \(error)")
+        }
     }
 
     /// Assign a recipe to a specific date.
     private func assignRecipe(_ recipe: RecipeModel, to date: Date) {
-        if let entry = editingCalendar.recipes.first(where: { $0.date == date.midnight }) {
-            entry.recipe = recipe
-        } else {
-            let newEntry = RecipeEntry(date: date.midnight, recipe: recipe)
-            editingCalendar.recipes.append(newEntry)
-        }
+        editingCalendar.assignRecipe(recipe, to: date)
     }
 }
