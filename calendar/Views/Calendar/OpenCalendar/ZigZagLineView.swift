@@ -21,7 +21,7 @@ struct ZigZagLineView<Content: View>: View {
     var body: some View {
         GeometryReader { geometry in
             let availableWidth = min(geometry.size.width, maxWidth) // Constrain to max width
-            let spacing = availableWidth / 4 // Dynamically calculate spacing
+            let spacing = availableWidth / 6 // Dynamically calculate spacing
             let centerX = availableWidth / 2 // Center of the screen
             
             ZStack {
@@ -37,15 +37,24 @@ struct ZigZagLineView<Content: View>: View {
                         let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
                         let offsetY = CGFloat(index + 1) * lineHeight
                         
-                        // Calculate control points dynamically
+                        // Adjust control points dynamically based on available width
                         let previousPoint = CGPoint(
                             x: startX + (index > 0 ? spacing * ((index - 1) % 2 == 0 ? 1 : -1) : 0),
                             y: CGFloat(index) * lineHeight
                         )
                         
                         let currentPoint = CGPoint(x: startX + offsetX, y: offsetY)
-                        let control1 = CGPoint(x: previousPoint.x, y: previousPoint.y + lineHeight / 2)
-                        let control2 = CGPoint(x: currentPoint.x, y: currentPoint.y - lineHeight / 2)
+                        
+                        // Dynamic control points based on available width
+                        let controlFactor: CGFloat = availableWidth / 650 // Factor that increases as width increases
+                        let control1 = CGPoint(
+                            x: previousPoint.x,
+                            y: previousPoint.y + (lineHeight / 2 * controlFactor)
+                        )
+                        let control2 = CGPoint(
+                            x: currentPoint.x,
+                            y: currentPoint.y - (lineHeight / 2 * controlFactor)
+                        )
                         
                         path.addCurve(to: currentPoint, control1: control1, control2: control2)
                     }
