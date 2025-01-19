@@ -102,6 +102,11 @@ class CalendarModel: Identifiable, Codable {
             recipes[index].hasBeenOpened = true
         }
     }
+    
+    /// Checks if there are any unlocked recipes that haven't been opened yet
+    var hasNewUnlockedRecipes: Bool {
+        return recipes.contains { $0.isUnlocked && !$0.hasBeenOpened }
+    }
 
     // Convenience initializer to create a copy of an existing calendar
     static func copy(from calendar: CalendarModel) -> CalendarModel {
