@@ -19,24 +19,31 @@ struct OpenCalendarView: View {
                 guard let recipeData = calendar.getRecipe(for: date) else { return nil }
                         
                 // If we have a recipe, build a NavigationLink with a Card
-                let unlocked = false // Your own logic here
                 let dayNumber = Calendar.current.component(.day, from: date)
                 
+                let card = Card(
+                        image: recipeData.thumbnailImage,
+                        blurred: !recipeData.isUnlocked,
+                        badgeType: recipeData.isUnlocked ? .none : .locked,
+                        description: recipeData.isUnlocked ? recipeData.name : recipeData.formattedTimeUntilUnlock,
+                        fallbackSymbols: RecipeModel.fallbackSymbols,
+                        day: dayNumber, // Or nil, if you prefer
+                        pinned: true
+                    )
+                    .frame(width: 96)
+                    .offset(x: 0, y: 96)
+                
                 return AnyView(
-                    NavigationLink(
-                        destination: OpenCalendarRecipeView(recipe: recipeData)
-                    ) {
-                        Card(
-                            image: recipeData.thumbnailImage,
-                            blurred: true,
-                            badgeType: unlocked ? .none : .locked,
-                            description: unlocked ? recipeData.name : recipeData.formattedTimeUntilUnlock,
-                            fallbackSymbols: RecipeModel.fallbackSymbols,
-                            day: dayNumber, // Or nil, if you prefer
-                            pinned: true
-                        )
-                        .frame(width: 96)
-                        .offset(x: 0, y: 96)
+                    Group {
+                        if recipeData.isUnlocked {
+                            NavigationLink(
+                                destination: OpenCalendarRecipeView(recipe: recipeData)
+                            ) {
+                                card
+                            }
+                        } else {
+                            card
+                        }
                     }
                 )
             }
