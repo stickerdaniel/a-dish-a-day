@@ -34,7 +34,7 @@ struct ZigZagLineView<Content: View>: View {
                 // Draw the bezier path as a dashed line
                 Path { path in
                     let startX = centerX // Start from the middle
-                    let startY: CGFloat = 0
+                    let startY: CGFloat = 44 // Start with some padding
                     
                     path.move(to: CGPoint(x: startX, y: startY))
                     

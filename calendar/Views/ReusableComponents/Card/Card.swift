@@ -115,6 +115,7 @@ struct Card: View {
                 .overlay(
                     Text(badgeText)
                         .foregroundColor(.white)
+                        .offset(x: -0.5)
                 )
         case .warning:
             Circle()

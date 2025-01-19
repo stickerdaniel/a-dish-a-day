@@ -28,7 +28,14 @@ struct RecipesPath<Content: View>: View {
                 let baseOffsetY = CGFloat(index + 1) * lineHeight
                 
                 // Use the random number generator to calculate variation
-                let randomVariation = CGFloat(rng.next()) * 2.0 - 1.0 // Random number between -1 and 1
+                // Random number between -1 and 1
+                var randomVariation = CGFloat(rng.next()) * 2.0 - 1.0
+                
+                // reduce rando variation for first
+                if index == 0 {
+                    randomVariation = randomVariation / 2
+                }
+                
                 return baseOffsetY + (randomVariation * maxLineHeightVariation)
             }
 
