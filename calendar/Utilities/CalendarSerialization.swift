@@ -11,12 +11,21 @@ class CalendarSerialization {
     
     /// Encodes a `CalendarModel` into a JSON file
     /// - Parameter calendar: `CalendarModel` to encode
-    /// - Returns: `URL` pointing to  JSON file
+    /// - Returns: `URL` pointing to JSON file
     static func encodeCalendar(_ calendar: CalendarModel, resetStartDate: Bool = true) -> URL? {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
+        
+        // mutable copy of the calendar to reset `hasBeenOpened` for all recipes
+        let calendarCopy = CalendarModel.copy(from: calendar)
+        calendarCopy.recipes = calendarCopy.recipes.map { recipe in
+            var modifiedRecipe = recipe
+            modifiedRecipe.hasBeenOpened = false
+            return modifiedRecipe
+        }
+
         do {
-            let data = try encoder.encode(calendar)
+            let data = try encoder.encode(calendarCopy)
             let fileName = "\(calendar.name).json"
             let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
             try data.write(to: fileURL)
@@ -40,6 +49,10 @@ class CalendarSerialization {
         do {
             let data = try Data(contentsOf: fileURL)
             let calendar = try decoder.decode(CalendarModel.self, from: data)
+            if(calendar.adjustDatesOnImport) {
+                // Adjust dates for imported calendar
+                calendar.adjustDatesToCurrent()
+            }
             return calendar
         } catch {
             print("Error decoding calendar: \(error)")

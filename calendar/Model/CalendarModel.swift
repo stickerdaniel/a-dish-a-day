@@ -45,26 +45,31 @@ class CalendarModel: Identifiable, Codable {
     // Initializer
     init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
         self.name = name
-        self.startDate = startDate
-        self.endDate = endDate
+        self.startDate = startDate.midnight
+        self.endDate = endDate.midnight
         self.thumbnailData = thumbnailData
         self.source = source
         self.adjustDatesOnImport = adjustDatesOnImport
-
-        if adjustDatesOnImport {
-            adjustDatesToCurrent()
-        }
-
-        print("start: \(startDate)")
     }
     
-    /// Adjusts the calendar dates based on the current time
-    private func adjustDatesToCurrent() {
-        let now = Date()
-        let offset = now.timeIntervalSince(startDate)
+    /// Adjusts the calendar dates based on the current time (midnight adjustment included)
+    func adjustDatesToCurrent() {
+        // detailed debug prints
+        print("start: \(self.startDate)")
+        print("end: \(self.endDate)")
+        
+        let now = Date().midnight
+        let offset = now.timeIntervalSince(self.startDate)
+        
+        print("now: \(now)")
+        print("offset: \(offset)")
+        
         self.startDate = now
-        self.endDate = endDate.addingTimeInterval(offset)
-
+        self.endDate = self.endDate.addingTimeInterval(offset)
+        
+        print("start: \(self.startDate)")
+        print("end: \(self.endDate)")
+        
         for i in 0..<recipes.count {
             if let unlockDate = recipes[i].unlockDate {
                 recipes[i].unlockDate = unlockDate.addingTimeInterval(offset)
@@ -167,10 +172,6 @@ class CalendarModel: Identifiable, Codable {
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
         source = try container.decodeIfPresent(CalendarSource.self, forKey: .source)
         adjustDatesOnImport = try container.decodeIfPresent(Bool.self, forKey: .adjustDatesOnImport) ?? false
-
-        if adjustDatesOnImport {
-            adjustDatesToCurrent()
-        }
     }
 
     func encode(to encoder: Encoder) throws {

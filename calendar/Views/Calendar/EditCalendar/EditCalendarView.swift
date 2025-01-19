@@ -58,8 +58,15 @@ struct EditCalendarView: View {
 
                 // (3) Date Range
                 Section(header: Text("Date Range")) {
-                    DatePicker("Start Date", selection: $editingCalendar.startDate, displayedComponents: .date)
-                    DatePicker("End Date", selection: $editingCalendar.endDate, in: editingCalendar.startDate..., displayedComponents: .date)
+                    DatePicker("Start Date", selection: Binding(
+                        get: { editingCalendar.startDate.midnight },
+                        set: { editingCalendar.startDate = $0.midnight }
+                    ), displayedComponents: .date)
+
+                    DatePicker("End Date", selection: Binding(
+                        get: { editingCalendar.endDate.midnight },
+                        set: { editingCalendar.endDate = $0.midnight }
+                    ), in: editingCalendar.startDate..., displayedComponents: .date)
                 }
                 
                 // (4) Import Settings
