@@ -45,29 +45,36 @@ class CalendarModel: Identifiable, Codable {
     // Initializer
     init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
         self.name = name
-        self.startDate = startDate
-        self.endDate = endDate
+        self.startDate = startDate.midnight
+        self.endDate = endDate.midnight
         self.thumbnailData = thumbnailData
         self.source = source
         self.adjustDatesOnImport = adjustDatesOnImport
-
-        if adjustDatesOnImport {
-            adjustDatesToCurrent()
-        }
-
-        print("start: \(startDate)")
     }
     
-    /// Adjusts the calendar dates based on the current time
-    private func adjustDatesToCurrent() {
-        let now = Date()
-        let offset = now.timeIntervalSince(startDate)
-        self.startDate = now
-        self.endDate = endDate.addingTimeInterval(offset)
+    /// Adjusts the calendar dates based on the current time (midnight adjustment included)
+    func adjustDatesToCurrent() {
+        // Convert current date to midnight
+        let now = Date().midnight
+        let offset = now.timeIntervalSince(self.startDate.midnight)
 
+        // Debugging output before changes
+        print("Before Adjustment:")
+        print("Start Date: \(self.startDate), End Date: \(self.endDate)")
+        print("Now: \(now), Offset: \(offset)")
+
+        // Set both start and end dates to midnight adjusted values
+        self.startDate = now
+        self.endDate = self.endDate.midnight.addingTimeInterval(offset)
+
+        // Debugging output after changes
+        print("After Adjustment:")
+        print("Start Date: \(self.startDate), End Date: \(self.endDate)")
+
+        // Adjust recipe unlock dates to midnight as well
         for i in 0..<recipes.count {
             if let unlockDate = recipes[i].unlockDate {
-                recipes[i].unlockDate = unlockDate.addingTimeInterval(offset)
+                recipes[i].unlockDate = unlockDate.midnight.addingTimeInterval(offset)
             }
         }
     }
@@ -167,10 +174,6 @@ class CalendarModel: Identifiable, Codable {
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
         source = try container.decodeIfPresent(CalendarSource.self, forKey: .source)
         adjustDatesOnImport = try container.decodeIfPresent(Bool.self, forKey: .adjustDatesOnImport) ?? false
-
-        if adjustDatesOnImport {
-            adjustDatesToCurrent()
-        }
     }
 
     func encode(to encoder: Encoder) throws {
