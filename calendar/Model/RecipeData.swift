@@ -14,6 +14,7 @@ struct RecipeData: Codable, Identifiable {
     var steps: String
     var thumbnailData: Data?
     var unlockDate: Date?
+    var hasBeenOpened: Bool = false
 
     // Computed property to convert thumbnail data to a SwiftUI Image
     var thumbnailImage: Image? {
@@ -55,5 +56,6 @@ struct RecipeData: Codable, Identifiable {
         self.steps = recipe.steps
         self.thumbnailData = recipe.thumbnailData
         self.unlockDate = unlockDate
+        self.hasBeenOpened = false
     }
 }

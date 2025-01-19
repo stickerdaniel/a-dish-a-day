@@ -24,7 +24,11 @@ struct OpenCalendarView: View {
                 let card = Card(
                         image: recipeData.thumbnailImage,
                         blurred: !recipeData.isUnlocked,
-                        badgeType: recipeData.isUnlocked ? .none : .locked,
+                        badgeType: recipeData.isUnlocked
+                            ? (recipeData.hasBeenOpened
+                               ? .none
+                               : .indicator)
+                            : .locked,
                         description: recipeData.isUnlocked ? recipeData.name : recipeData.formattedTimeUntilUnlock,
                         fallbackSymbols: RecipeModel.fallbackSymbols,
                         day: dayNumber, // Or nil, if you prefer
@@ -38,6 +42,9 @@ struct OpenCalendarView: View {
                         if recipeData.isUnlocked {
                             NavigationLink(
                                 destination: OpenCalendarRecipeView(recipe: recipeData)
+                                    .onAppear {
+                                        calendar.markRecipeAsOpened(for: recipeData.id)
+                                    }
                             ) {
                                 card
                             }
