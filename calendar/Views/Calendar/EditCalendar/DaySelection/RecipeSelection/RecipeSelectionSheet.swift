@@ -22,14 +22,27 @@ struct RecipeSelectionSheet: View {
 
     var body: some View {
         NavigationStack {
-            RecipeSelectionGridView(
-                recipes: recipes,
-                selectedRecipe: $selectedRecipe, // Local state for highlighting
-                onRecipeTapped: { chosen in
-                    onRecipeSelected(chosen)
-                    isPresented = false
+            Group {
+                if recipes.isEmpty {
+                    VStack {
+                        Spacer()
+                        Text("No recipes available.\nPlease create or save recipes first.")
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .padding()
+                } else {
+                    RecipeSelectionGridView(
+                        recipes: recipes,
+                        selectedRecipe: $selectedRecipe, // Local state for highlighting
+                        onRecipeTapped: { chosen in
+                            onRecipeSelected(chosen)
+                            isPresented = false
+                        }
+                    )
                 }
-            )
+            }
             .navigationTitle("Select a Recipe")
             .navigationBarTitleDisplayMode(.inline) // Inline title display mode
             .toolbar {
