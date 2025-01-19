@@ -12,27 +12,54 @@ struct OpenCalendarView: View {
     
     var body: some View {
         ScrollView {
-            RecipesPath(views: calendar.recipes.values.map { recipeData in
-                // Create a Card for each recipe
-                NavigationLink(destination: OpenRecipeView(thumbnailImage: recipeData.thumbnailImage, name: recipeData.name, ingredients: recipeData.ingredients, steps: recipeData.steps)) {
-                    
-                    var unlocked = false
-                    
-                    Card(
-                        image: recipeData.thumbnailImage ?? Image(systemName: "photo"),
-                        blurred: true,
-                        badgeType: unlocked ? .none : .locked,
-                        description: unlocked ? recipeData.name : "Unlocked in",
-                        fallbackSymbols: RecipeModel.fallbackSymbols,
-                        day: 15,
-                        pinned: true
-                    )
-                    .frame(width: 96)
-                    .offset(x: 0, y: 96)
+            // (1) Build only the valid views for dates in [startDate ... endDate]
+            let cardViews = calendar.allDates.compactMap { date -> AnyView? in
+                // Convert the date to the key used in `calendar.recipes`
+                let dateKey = date.midnight.description
+                
+                // See if there's a recipe assigned for this date
+                guard let recipeData = calendar.recipes[dateKey] else {
+                    // No recipe assigned => skip
+                    return nil
                 }
-            }, seed: abs(calendar.id.hashValue))
+                
+                // If we have a recipe, build a NavigationLink with a Card
+                let unlocked = false // Your own logic here
+                let dayNumber = Calendar.current.component(.day, from: date)
+                
+                return AnyView(
+                    NavigationLink(
+                        destination: OpenCalendarRecipeView(recipe: recipeData)
+                    ) {
+                        Card(
+                            image: recipeData.thumbnailImage,
+                            blurred: true,
+                            badgeType: unlocked ? .none : .locked,
+                            description: unlocked ? recipeData.name : "Unlocked in",
+                            fallbackSymbols: RecipeModel.fallbackSymbols,
+                            day: dayNumber, // Or nil, if you prefer
+                            pinned: true
+                        )
+                        .frame(width: 96)
+                        .offset(x: 0, y: 96)
+                    }
+                )
+            }
+            
+            // (2) Use the built array of valid card views in your RecipesPath
+            RecipesPath(views: cardViews, seed: abs(calendar.id.hashValue))
         }
-        .navigationTitle("Calendar Details")
-        .navigationBarTitleDisplayMode(.inline)  // Adjust the navigation bar display mode
+        .navigationTitle(calendar.name)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            // Show the pencil Edit button if this is a user-created calendar
+            if calendar.source == .created {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink(destination: EditCalendarView(calendarToEdit: calendar)) {
+                        Image(systemName: "pencil")
+                    }
+                }
+            }
+        }
     }
 }

@@ -39,7 +39,7 @@ struct CalendarCard: View {
 
             if calendar.source == .imported {
                 Button(action: copyToCreatedSection) {
-                    Label("Copy to Created", systemImage: "folder.badge.plus")
+                    Label("Copy to Created", systemImage: "square.and.arrow.down.on.square")
                 }
             }
 

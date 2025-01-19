@@ -28,6 +28,7 @@ struct ZigZagLineView<Content: View>: View {
             let availableWidth = min(geometry.size.width, maxWidth) // Constrain to max width
             let spacing = availableWidth / 5 // Dynamically calculate spacing
             let centerX = availableWidth / 2 // Center of the screen
+            let lineWidth : CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 16 : 20
             
             ZStack {
                 // Draw the bezier path as a dashed line
@@ -94,7 +95,7 @@ struct ZigZagLineView<Content: View>: View {
                 .stroke(
                     .ultraThinMaterial,
                     style: StrokeStyle(
-                        lineWidth: 16, // Thicker line
+                        lineWidth: lineWidth,
                         lineCap: .round,
                         lineJoin: .round
                         //dash: [40, 25] // More dash spacing
