@@ -38,6 +38,16 @@ struct RecipeData: Codable, Identifiable {
         let remainingTime = unlockDate.timeIntervalSinceNow
         return remainingTime > 0 ? remainingTime : nil
     }
+
+    // Computed property to get a formatted string "18:49h" for time remaining until unlock
+    var formattedTimeUntilUnlock: String? {
+        guard let remaining = timeUntilUnlock else { return nil }
+        
+        let hours = Int(remaining) / 3600
+        let minutes = (Int(remaining) % 3600) / 60
+        
+        return String(format: "%02d:%02dh", hours, minutes)
+    }
     
     init(recipe: RecipeModel, unlockDate: Date? = nil) {
         self.name = recipe.name
