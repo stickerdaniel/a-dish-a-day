@@ -23,6 +23,7 @@ struct DisplayRecipeDataView: View {
                         thumbnail
                             .resizable()
                             .scaledToFill()
+                            .frame(maxWidth: UIScreen.main.bounds.width)
                             .frame(height: 200)
                             .clipped()
                             .cornerRadius(16)
