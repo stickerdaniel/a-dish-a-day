@@ -29,12 +29,7 @@ struct OpenCalendarView: View {
                 
                 return AnyView(
                     NavigationLink(
-                        destination: OpenRecipeView(
-                            thumbnailImage: recipeData.thumbnailImage,
-                            name: recipeData.name,
-                            ingredients: recipeData.ingredients,
-                            steps: recipeData.steps
-                        )
+                        destination: SeeRecipeView(recipe: recipeData)
                     ) {
                         Card(
                             image: recipeData.thumbnailImage,
