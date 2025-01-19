@@ -39,7 +39,7 @@ struct HoneycombOverlay: View {
         let gridItems = Array(repeating: GridItem(.fixed(hexagonWidth), spacing: spacing), count: cols)
 
         LazyVGrid(columns: gridItems, spacing: spacing) {
-            ForEach(0..<200) { idx in
+            ForEach(0..<30) { idx in
                 VStack(spacing: 0) {
                     Image(systemName: symbols[idx % symbols.count]) // Repeat symbols
                         .resizable()
