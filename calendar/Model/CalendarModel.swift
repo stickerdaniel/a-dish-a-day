@@ -95,6 +95,13 @@ class CalendarModel: Identifiable, Codable {
             return Calendar.current.isDate(unlockDate, inSameDayAs: date)
         }
     }
+    
+    /// Marks a recipe as opened by updating the `hasBeenOpened` flag
+    func markRecipeAsOpened(for recipeID: UUID) {
+        if let index = recipes.firstIndex(where: { $0.id == recipeID }) {
+            recipes[index].hasBeenOpened = true
+        }
+    }
 
     // Convenience initializer to create a copy of an existing calendar
     static func copy(from calendar: CalendarModel) -> CalendarModel {
