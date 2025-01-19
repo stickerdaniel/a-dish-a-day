@@ -16,6 +16,7 @@ struct calendarApp: App {
             ContentView()
                 .onAppear {
                     applyAppearance()
+                    NotificationManager.requestAuthorization()
                 }
                 .modelContainer(for: [
                     RecipeModel.self,
