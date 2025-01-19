@@ -65,11 +65,8 @@ struct EditCalendarView: View {
 
                     LazyVGrid(columns: columns, spacing: Card.spacing) {
                         ForEach(editingCalendar.allDates, id: \.self) { date in
-                            // Convert the date to a String key
-                            let dateKey = date.midnight.description  // Ensure this matches how keys are stored in `recipes`
-
-                            // Access the assigned recipe safely
-                            let assignedRecipe = editingCalendar.recipes[dateKey]
+                            // Fetch the assigned recipe for this date
+                            let assignedRecipe = editingCalendar.getRecipe(for: date)
 
                             DayCard(date: date, recipeAssigned: assignedRecipe) {
                                 currentSelectedDate = date
@@ -78,7 +75,6 @@ struct EditCalendarView: View {
                         }
                     }
                     .padding(.top, 8)
-
                 }
             }
             .navigationTitle(calendarToEdit == nil ? "New Calendar" : "Edit Calendar")
@@ -148,6 +144,13 @@ struct EditCalendarView: View {
 
     /// Assign a recipe to a specific date.
     private func assignRecipe(_ recipe: RecipeModel, to date: Date) {
-        editingCalendar.assignRecipe(recipe, to: date)
+        // Remove any existing recipe assigned to the same date
+        editingCalendar.recipes.removeAll { existingRecipe in
+            guard let unlockDate = existingRecipe.unlockDate else { return false }
+            return Calendar.current.isDate(unlockDate, inSameDayAs: date)
+        }
+
+        // Assign the new recipe with the specified unlock date
+        editingCalendar.assignRecipe(recipe, unlockDate: date.midnight)
     }
 }
