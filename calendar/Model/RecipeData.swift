@@ -40,14 +40,19 @@ struct RecipeData: Codable, Identifiable {
         return remainingTime > 0 ? remainingTime : nil
     }
 
-    // Computed property to get a formatted string "18:49h" for time remaining until unlock
+    // Computed property to get a formatted string "2d 18h" for time remaining until unlock
     var formattedTimeUntilUnlock: String {
         guard let remaining = timeUntilUnlock else { return self.name }
         
-        let hours = Int(remaining) / 3600
-        let minutes = (Int(remaining) % 3600) / 60
-        
-        return String(format: "Unlock in %02d:%02dh", hours, minutes)
+        let days = Int(remaining) / (3600 * 24)   // Convert seconds to days
+        let hours = (Int(remaining) % (3600 * 24)) / 3600  // Get remaining hours after full days
+
+        if days > 0 {
+            return String(format: "Unlock in %dd %02dh", days, hours)
+        } else {
+            let minutes = (Int(remaining) % 3600) / 60
+            return String(format: "Unlock in %02dh %02dm", hours, minutes)
+        }
     }
     
     // Helper function to check if the recipe is within the given date range
