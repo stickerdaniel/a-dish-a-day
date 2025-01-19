@@ -54,25 +54,27 @@ class CalendarModel: Identifiable, Codable {
     
     /// Adjusts the calendar dates based on the current time (midnight adjustment included)
     func adjustDatesToCurrent() {
-        // detailed debug prints
-        print("start: \(self.startDate)")
-        print("end: \(self.endDate)")
-        
+        // Convert current date to midnight
         let now = Date().midnight
-        let offset = now.timeIntervalSince(self.startDate)
-        
-        print("now: \(now)")
-        print("offset: \(offset)")
-        
+        let offset = now.timeIntervalSince(self.startDate.midnight)
+
+        // Debugging output before changes
+        print("Before Adjustment:")
+        print("Start Date: \(self.startDate), End Date: \(self.endDate)")
+        print("Now: \(now), Offset: \(offset)")
+
+        // Set both start and end dates to midnight adjusted values
         self.startDate = now
-        self.endDate = self.endDate.addingTimeInterval(offset)
-        
-        print("start: \(self.startDate)")
-        print("end: \(self.endDate)")
-        
+        self.endDate = self.endDate.midnight.addingTimeInterval(offset)
+
+        // Debugging output after changes
+        print("After Adjustment:")
+        print("Start Date: \(self.startDate), End Date: \(self.endDate)")
+
+        // Adjust recipe unlock dates to midnight as well
         for i in 0..<recipes.count {
             if let unlockDate = recipes[i].unlockDate {
-                recipes[i].unlockDate = unlockDate.addingTimeInterval(offset)
+                recipes[i].unlockDate = unlockDate.midnight.addingTimeInterval(offset)
             }
         }
     }
