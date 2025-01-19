@@ -19,7 +19,7 @@ class CalendarModel: Identifiable, Codable {
     var name: String
     var startDate: Date
     var endDate: Date
-    var recipes: [String: RecipeData] = [:] // DateString: RecipeData
+    var recipes: [RecipeData] = []  // list of RecipeData
     var thumbnailData: Data?
     var source: CalendarSource?
 
@@ -50,16 +50,39 @@ class CalendarModel: Identifiable, Codable {
         self.source = source
     }
     
-    /// Assigns a recipe to a specific date.
-    func assignRecipe(_ recipe: RecipeModel, to date: Date) {
-        // Convert the date to a string key
-        let dateKey = date.midnight.description
+    /// Assigns a recipe to the calendar.
+    func assignRecipe(_ recipe: RecipeModel, unlockDate: Date? = nil) {
+        let recipeData = RecipeData(recipe: recipe, unlockDate: unlockDate)
+        recipes.append(recipeData)
+    }
 
-        // Create a `RecipeData` object from `RecipeModel`
-        let recipeData = RecipeData(recipe: recipe)
+    /// Returns recipes sorted by unlock date (earliest to latest), placing unlocked ones first.
+    func sortedRecipesByUnlockDate() -> [RecipeData] {
+        recipes.sorted {
+            switch ($0.unlockDate, $1.unlockDate) {
+            case (nil, _): return true   // Recipes without unlock dates come first (already unlocked)
+            case (_, nil): return false  // Recipes without unlock dates come first
+            case let (date1?, date2?): return date1 < date2
+            }
+        }
+    }
 
-        // Assign the recipe to the date key
-        recipes[dateKey] = recipeData
+    /// Get the next recipe unlock time (earliest future unlock).
+    var nextUnlockTime: TimeInterval? {
+        recipes
+            .compactMap { $0.timeUntilUnlock }
+            .filter { $0 > 0 }
+            .min()
+    }
+
+    /// Check if all recipes are unlocked.
+    var allRecipesUnlocked: Bool {
+        recipes.allSatisfy { $0.isUnlocked }
+    }
+
+    /// Get the number of locked recipes.
+    var lockedRecipesCount: Int {
+        recipes.filter { !$0.isUnlocked }.count
     }
 
     // Convenience initializer to create a copy of an existing calendar
@@ -71,8 +94,7 @@ class CalendarModel: Identifiable, Codable {
             thumbnailData: calendar.thumbnailData,
             source: calendar.source
         )
-        // Copy recipes
-        copiedCalendar.recipes = calendar.recipes.mapValues { $0 }
+        copiedCalendar.recipes = calendar.recipes.map { $0 }
         return copiedCalendar
     }
 
@@ -87,7 +109,7 @@ class CalendarModel: Identifiable, Codable {
         name = try container.decode(String.self, forKey: .name)
         startDate = try container.decode(Date.self, forKey: .startDate)
         endDate = try container.decode(Date.self, forKey: .endDate)
-        recipes = try container.decode([String: RecipeData].self, forKey: .recipes)
+        recipes = try container.decode([RecipeData].self, forKey: .recipes)
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
         source = try container.decodeIfPresent(CalendarSource.self, forKey: .source)
     }
