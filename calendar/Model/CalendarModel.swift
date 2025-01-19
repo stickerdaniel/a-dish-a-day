@@ -48,6 +48,9 @@ class CalendarModel: Identifiable, Codable {
         self.endDate = endDate
         self.thumbnailData = thumbnailData
         self.source = source
+        
+        // print startt
+        print("start: \(startDate)")
     }
     
     /// Assigns a recipe to the calendar.
