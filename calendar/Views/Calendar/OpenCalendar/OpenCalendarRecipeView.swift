@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SeeRecipeView: View {
+struct OpenCalendarRecipeView: View {
     var recipe: RecipeData
 
     @Environment(\.modelContext) private var context

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct OpenRecipeView: View {
     var recipe: RecipeModel
+    
+    @Environment(\.modelContext) private var context
 
     var body: some View {
         ScrollView {
@@ -17,5 +19,12 @@ struct OpenRecipeView: View {
         .frame(maxWidth: .infinity) // Ensure full width
         .navigationTitle(recipe.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink(destination: EditRecipeView(recipeToEdit: recipe)) {
+                    Image(systemName: "pencil")
+                }
+            }
+        }
     }
 }
