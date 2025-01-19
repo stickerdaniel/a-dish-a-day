@@ -14,15 +14,10 @@ struct OpenCalendarView: View {
         ScrollView {
             // (1) Build only the valid views for dates in [startDate ... endDate]
             let cardViews = calendar.allDates.compactMap { date -> AnyView? in
-                // Convert the date to the key used in `calendar.recipes`
-                let dateKey = date.midnight.description
                 
                 // See if there's a recipe assigned for this date
-                guard let recipeData = calendar.recipes[dateKey] else {
-                    // No recipe assigned => skip
-                    return nil
-                }
-                
+                guard let recipeData = calendar.getRecipe(for: date) else { return nil }
+                        
                 // If we have a recipe, build a NavigationLink with a Card
                 let unlocked = false // Your own logic here
                 let dayNumber = Calendar.current.component(.day, from: date)
@@ -35,7 +30,7 @@ struct OpenCalendarView: View {
                             image: recipeData.thumbnailImage,
                             blurred: true,
                             badgeType: unlocked ? .none : .locked,
-                            description: unlocked ? recipeData.name : "Unlocked in",
+                            description: unlocked ? recipeData.name : recipeData.formattedTimeUntilUnlock,
                             fallbackSymbols: RecipeModel.fallbackSymbols,
                             day: dayNumber, // Or nil, if you prefer
                             pinned: true
