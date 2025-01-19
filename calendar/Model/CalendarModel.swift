@@ -48,6 +48,9 @@ class CalendarModel: Identifiable, Codable {
         self.endDate = endDate
         self.thumbnailData = thumbnailData
         self.source = source
+        
+        // print startt
+        print("start: \(startDate)")
     }
     
     /// Assigns a recipe to the calendar.
@@ -90,6 +93,13 @@ class CalendarModel: Identifiable, Codable {
         return recipes.first { recipe in
             guard let unlockDate = recipe.unlockDate else { return false }
             return Calendar.current.isDate(unlockDate, inSameDayAs: date)
+        }
+    }
+    
+    /// Marks a recipe as opened by updating the `hasBeenOpened` flag
+    func markRecipeAsOpened(for recipeID: UUID) {
+        if let index = recipes.firstIndex(where: { $0.id == recipeID }) {
+            recipes[index].hasBeenOpened = true
         }
     }
 
