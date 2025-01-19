@@ -18,6 +18,9 @@ struct EditCalendarView: View {
     // For showing the recipe picker sheet
     @State private var isPickingRecipe = false
     @State private var currentSelectedDate: Date? = nil
+    
+    // For import settings
+    @State private var showingImportAlert: Bool = false
 
     /// Real recipes fetched via SwiftData
     @Query private var allRecipes: [RecipeModel]
@@ -76,6 +79,20 @@ struct EditCalendarView: View {
                     }
                     .padding(.top, 8)
                 }
+                
+                // (5) Import Settings
+                Section(header: Text("Import Settings")) {
+                    Toggle("Adjust Dates When Importing", isOn: $editingCalendar.adjustDatesOnImport)
+                        .toggleStyle(SwitchToggleStyle())
+                        .onChange(of: editingCalendar.adjustDatesOnImport) {
+                            showingImportAlert = true
+                        }
+                }
+                .alert("Adjust Dates When Importing", isPresented: $showingImportAlert) {
+                    Button("OK", role: .cancel) { }
+                } message: {
+                    Text("If enabled, the calendar start date will be set to the imported date. The end date and recipe dates will be updated accordingly.")
+                }
             }
             .navigationTitle(calendarToEdit == nil ? "New Calendar" : "Edit Calendar")
             .navigationBarTitleDisplayMode(.inline)
@@ -115,6 +132,7 @@ struct EditCalendarView: View {
         editingCalendar.endDate = existing.endDate
         editingCalendar.recipes = existing.recipes // Assign recipes directly
         editingCalendar.thumbnailData = existing.thumbnailData
+        editingCalendar.adjustDatesOnImport = existing.adjustDatesOnImport
 
         if let data = existing.thumbnailData, let image = UIImage(data: data) {
             thumbnailImage = image
@@ -129,6 +147,8 @@ struct EditCalendarView: View {
             existing.endDate = editingCalendar.endDate
             existing.recipes = editingCalendar.recipes // Copy recipes correctly
             existing.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
+            existing.adjustDatesOnImport = editingCalendar.adjustDatesOnImport
+            
         } else {
             editingCalendar.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
             context.insert(editingCalendar)

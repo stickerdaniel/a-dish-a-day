@@ -78,33 +78,49 @@ class CalendarModel: Identifiable, Codable {
         recipes.append(recipeData)
     }
 
-    /// Returns recipes sorted by unlock date (earliest to latest), placing unlocked ones first.
-    func sortedRecipesByUnlockDate() -> [RecipeData] {
-        recipes.sorted {
-            switch ($0.unlockDate, $1.unlockDate) {
-            case (nil, _): return true   // Recipes without unlock dates come first (already unlocked)
-            case (_, nil): return false  // Recipes without unlock dates come first
-            case let (date1?, date2?): return date1 < date2
-            }
-        }
+    /// Check if all recipes within the date range are unlocked.
+    var allRecipesUnlocked: Bool {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .allSatisfy { $0.isUnlocked }
     }
 
-    /// Get the next recipe unlock time (earliest future unlock).
+    /// Get the number of locked recipes within the date range.
+    var lockedRecipesCount: Int {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { !$0.isUnlocked }
+            .count
+    }
+
+    /// Returns recipes within the date range sorted by unlock date (earliest to latest).
+    func sortedRecipesByUnlockDate() -> [RecipeData] {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .sorted {
+                switch ($0.unlockDate, $1.unlockDate) {
+                case (nil, _): return true
+                case (_, nil): return false
+                case let (date1?, date2?): return date1 < date2
+                }
+            }
+    }
+
+    /// Get the next recipe unlock time within the date range.
     var nextUnlockTime: TimeInterval? {
         recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
             .compactMap { $0.timeUntilUnlock }
             .filter { $0 > 0 }
             .min()
     }
 
-    /// Check if all recipes are unlocked.
-    var allRecipesUnlocked: Bool {
-        recipes.allSatisfy { $0.isUnlocked }
-    }
-
-    /// Get the number of locked recipes.
-    var lockedRecipesCount: Int {
-        recipes.filter { !$0.isUnlocked }.count
+    /// Checks if there are any unlocked recipes within the date range that haven't been opened yet.
+    var hasNewUnlockedRecipes: Int {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { $0.isUnlocked && !$0.hasBeenOpened }
+            .count
     }
     
     /// Returns the recipe assigned for a specific date, if available.
@@ -120,11 +136,6 @@ class CalendarModel: Identifiable, Codable {
         if let index = recipes.firstIndex(where: { $0.id == recipeID }) {
             recipes[index].hasBeenOpened = true
         }
-    }
-    
-    /// Checks if there are any unlocked recipes that haven't been opened yet
-    var hasNewUnlockedRecipes: Int {
-        recipes.filter { $0.isUnlocked && !$0.hasBeenOpened }.count
     }
 
     // Convenience initializer to create a copy of an existing calendar

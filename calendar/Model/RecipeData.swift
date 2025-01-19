@@ -50,6 +50,12 @@ struct RecipeData: Codable, Identifiable {
         return String(format: "Unlock in %02d:%02dh", hours, minutes)
     }
     
+    // Helper function to check if the recipe is within the given date range
+    func isWithinDateRange(startDate: Date, endDate: Date) -> Bool {
+        guard let unlockDate = unlockDate else { return false }
+        return unlockDate >= startDate && unlockDate <= endDate
+    }
+    
     init(recipe: RecipeModel, unlockDate: Date? = nil) {
         self.name = recipe.name
         self.ingredients = recipe.ingredients
