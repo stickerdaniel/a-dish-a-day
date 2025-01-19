@@ -22,6 +22,7 @@ class CalendarModel: Identifiable, Codable {
     var recipes: [RecipeData] = []  // list of RecipeData
     var thumbnailData: Data?
     var source: CalendarSource?
+    var adjustDatesOnImport: Bool = false  // Automatically adjust dates upon import
 
     // Computed Properties
     var daysBetween: Int {
@@ -42,50 +43,84 @@ class CalendarModel: Identifiable, Codable {
     }
 
     // Initializer
-    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created) {
+    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
         self.name = name
         self.startDate = startDate
         self.endDate = endDate
         self.thumbnailData = thumbnailData
         self.source = source
-        
-        // print startt
+        self.adjustDatesOnImport = adjustDatesOnImport
+
+        if adjustDatesOnImport {
+            adjustDatesToCurrent()
+        }
+
         print("start: \(startDate)")
     }
     
+    /// Adjusts the calendar dates based on the current time
+    private func adjustDatesToCurrent() {
+        let now = Date()
+        let offset = now.timeIntervalSince(startDate)
+        self.startDate = now
+        self.endDate = endDate.addingTimeInterval(offset)
+
+        for i in 0..<recipes.count {
+            if let unlockDate = recipes[i].unlockDate {
+                recipes[i].unlockDate = unlockDate.addingTimeInterval(offset)
+            }
+        }
+    }
+
     /// Assigns a recipe to the calendar.
     func assignRecipe(_ recipe: RecipeModel, unlockDate: Date? = nil) {
         let recipeData = RecipeData(recipe: recipe, unlockDate: unlockDate)
         recipes.append(recipeData)
     }
 
-    /// Returns recipes sorted by unlock date (earliest to latest), placing unlocked ones first.
-    func sortedRecipesByUnlockDate() -> [RecipeData] {
-        recipes.sorted {
-            switch ($0.unlockDate, $1.unlockDate) {
-            case (nil, _): return true   // Recipes without unlock dates come first (already unlocked)
-            case (_, nil): return false  // Recipes without unlock dates come first
-            case let (date1?, date2?): return date1 < date2
-            }
-        }
+    /// Check if all recipes within the date range are unlocked.
+    var allRecipesUnlocked: Bool {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .allSatisfy { $0.isUnlocked }
     }
 
-    /// Get the next recipe unlock time (earliest future unlock).
+    /// Get the number of locked recipes within the date range.
+    var lockedRecipesCount: Int {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { !$0.isUnlocked }
+            .count
+    }
+
+    /// Returns recipes within the date range sorted by unlock date (earliest to latest).
+    func sortedRecipesByUnlockDate() -> [RecipeData] {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .sorted {
+                switch ($0.unlockDate, $1.unlockDate) {
+                case (nil, _): return true
+                case (_, nil): return false
+                case let (date1?, date2?): return date1 < date2
+                }
+            }
+    }
+
+    /// Get the next recipe unlock time within the date range.
     var nextUnlockTime: TimeInterval? {
         recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
             .compactMap { $0.timeUntilUnlock }
             .filter { $0 > 0 }
             .min()
     }
 
-    /// Check if all recipes are unlocked.
-    var allRecipesUnlocked: Bool {
-        recipes.allSatisfy { $0.isUnlocked }
-    }
-
-    /// Get the number of locked recipes.
-    var lockedRecipesCount: Int {
-        recipes.filter { !$0.isUnlocked }.count
+    /// Checks if there are any unlocked recipes within the date range that haven't been opened yet.
+    var hasNewUnlockedRecipes: Int {
+        recipes
+            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { $0.isUnlocked && !$0.hasBeenOpened }
+            .count
     }
     
     /// Returns the recipe assigned for a specific date, if available.
@@ -102,11 +137,6 @@ class CalendarModel: Identifiable, Codable {
             recipes[index].hasBeenOpened = true
         }
     }
-    
-    /// Checks if there are any unlocked recipes that haven't been opened yet
-    var hasNewUnlockedRecipes: Int {
-        recipes.filter { $0.isUnlocked && !$0.hasBeenOpened }.count
-    }
 
     // Convenience initializer to create a copy of an existing calendar
     static func copy(from calendar: CalendarModel) -> CalendarModel {
@@ -115,7 +145,8 @@ class CalendarModel: Identifiable, Codable {
             startDate: calendar.startDate,
             endDate: calendar.endDate,
             thumbnailData: calendar.thumbnailData,
-            source: calendar.source
+            source: calendar.source,
+            adjustDatesOnImport: calendar.adjustDatesOnImport
         )
         copiedCalendar.recipes = calendar.recipes.map { $0 }
         return copiedCalendar
@@ -123,7 +154,7 @@ class CalendarModel: Identifiable, Codable {
 
     // Codable Conformance
     private enum CodingKeys: String, CodingKey {
-        case id, name, startDate, endDate, recipes, thumbnailData, source
+        case id, name, startDate, endDate, recipes, thumbnailData, source, adjustDatesOnImport
     }
 
     required init(from decoder: Decoder) throws {
@@ -135,6 +166,11 @@ class CalendarModel: Identifiable, Codable {
         recipes = try container.decode([RecipeData].self, forKey: .recipes)
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
         source = try container.decodeIfPresent(CalendarSource.self, forKey: .source)
+        adjustDatesOnImport = try container.decodeIfPresent(Bool.self, forKey: .adjustDatesOnImport) ?? false
+
+        if adjustDatesOnImport {
+            adjustDatesToCurrent()
+        }
     }
 
     func encode(to encoder: Encoder) throws {
@@ -146,5 +182,6 @@ class CalendarModel: Identifiable, Codable {
         try container.encode(recipes, forKey: .recipes)
         try container.encode(thumbnailData, forKey: .thumbnailData)
         try container.encode(source, forKey: .source)
+        try container.encode(adjustDatesOnImport, forKey: .adjustDatesOnImport)
     }
 }

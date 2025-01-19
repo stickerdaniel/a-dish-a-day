@@ -12,7 +12,7 @@ class CalendarSerialization {
     /// Encodes a `CalendarModel` into a JSON file
     /// - Parameter calendar: `CalendarModel` to encode
     /// - Returns: `URL` pointing to  JSON file
-    static func encodeCalendar(_ calendar: CalendarModel) -> URL? {
+    static func encodeCalendar(_ calendar: CalendarModel, resetStartDate: Bool = true) -> URL? {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         do {
