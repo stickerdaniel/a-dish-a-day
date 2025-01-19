@@ -16,7 +16,8 @@ struct CalendarCard: View {
         NavigationLink(destination: OpenCalendarView(calendar: calendar)) {
             Card(
                 image: calendar.thumbnailImage,
-                badgeType: calendar.hasNewUnlockedRecipes ? .indicator : .none,
+                badgeType: calendar.hasNewUnlockedRecipes > 0 ? .indicator : .none,
+                badgeNumber: calendar.hasNewUnlockedRecipes,
                 description: calendar.name,
                 fallbackSymbols: ["frying.pan.fill", "stove.fill", "fork.knife", "calendar"]
             )
