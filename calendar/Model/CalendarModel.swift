@@ -84,6 +84,14 @@ class CalendarModel: Identifiable, Codable {
     var lockedRecipesCount: Int {
         recipes.filter { !$0.isUnlocked }.count
     }
+    
+    /// Returns the recipe assigned for a specific date, if available.
+    func getRecipe(for date: Date) -> RecipeData? {
+        return recipes.first { recipe in
+            guard let unlockDate = recipe.unlockDate else { return false }
+            return Calendar.current.isDate(unlockDate, inSameDayAs: date)
+        }
+    }
 
     // Convenience initializer to create a copy of an existing calendar
     static func copy(from calendar: CalendarModel) -> CalendarModel {
