@@ -15,6 +15,7 @@ enum CalendarTab: String, CaseIterable {
 }
 
 struct CalendarsView: View {
+    var notificationManager = NotificationManager.shared
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .created
     @State private var isImportingJSON = false
@@ -99,6 +100,7 @@ struct CalendarsView: View {
             if let importedCalendar = CalendarSerialization.decodeCalendar(from: url) {
                 importedCalendar.source = .imported
                 context.insert(importedCalendar)
+                notificationManager.scheduleNotifications(for: importedCalendar)
             } else {
                 print("Failed to decode calendar.")
             }
