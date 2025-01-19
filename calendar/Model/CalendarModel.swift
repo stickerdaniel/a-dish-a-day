@@ -22,6 +22,7 @@ class CalendarModel: Identifiable, Codable {
     var recipes: [RecipeData] = []  // list of RecipeData
     var thumbnailData: Data?
     var source: CalendarSource?
+    var adjustDatesOnImport: Bool = false  // Automatically adjust dates upon import
 
     // Computed Properties
     var daysBetween: Int {
@@ -42,17 +43,35 @@ class CalendarModel: Identifiable, Codable {
     }
 
     // Initializer
-    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created) {
+    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
         self.name = name
         self.startDate = startDate
         self.endDate = endDate
         self.thumbnailData = thumbnailData
         self.source = source
-        
-        // print startt
+        self.adjustDatesOnImport = adjustDatesOnImport
+
+        if adjustDatesOnImport {
+            adjustDatesToCurrent()
+        }
+
         print("start: \(startDate)")
     }
     
+    /// Adjusts the calendar dates based on the current time
+    private func adjustDatesToCurrent() {
+        let now = Date()
+        let offset = now.timeIntervalSince(startDate)
+        self.startDate = now
+        self.endDate = endDate.addingTimeInterval(offset)
+
+        for i in 0..<recipes.count {
+            if let unlockDate = recipes[i].unlockDate {
+                recipes[i].unlockDate = unlockDate.addingTimeInterval(offset)
+            }
+        }
+    }
+
     /// Assigns a recipe to the calendar.
     func assignRecipe(_ recipe: RecipeModel, unlockDate: Date? = nil) {
         let recipeData = RecipeData(recipe: recipe, unlockDate: unlockDate)
@@ -115,7 +134,8 @@ class CalendarModel: Identifiable, Codable {
             startDate: calendar.startDate,
             endDate: calendar.endDate,
             thumbnailData: calendar.thumbnailData,
-            source: calendar.source
+            source: calendar.source,
+            adjustDatesOnImport: calendar.adjustDatesOnImport
         )
         copiedCalendar.recipes = calendar.recipes.map { $0 }
         return copiedCalendar
@@ -123,7 +143,7 @@ class CalendarModel: Identifiable, Codable {
 
     // Codable Conformance
     private enum CodingKeys: String, CodingKey {
-        case id, name, startDate, endDate, recipes, thumbnailData, source
+        case id, name, startDate, endDate, recipes, thumbnailData, source, adjustDatesOnImport
     }
 
     required init(from decoder: Decoder) throws {
@@ -135,6 +155,11 @@ class CalendarModel: Identifiable, Codable {
         recipes = try container.decode([RecipeData].self, forKey: .recipes)
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
         source = try container.decodeIfPresent(CalendarSource.self, forKey: .source)
+        adjustDatesOnImport = try container.decodeIfPresent(Bool.self, forKey: .adjustDatesOnImport) ?? false
+
+        if adjustDatesOnImport {
+            adjustDatesToCurrent()
+        }
     }
 
     func encode(to encoder: Encoder) throws {
@@ -146,5 +171,6 @@ class CalendarModel: Identifiable, Codable {
         try container.encode(recipes, forKey: .recipes)
         try container.encode(thumbnailData, forKey: .thumbnailData)
         try container.encode(source, forKey: .source)
+        try container.encode(adjustDatesOnImport, forKey: .adjustDatesOnImport)
     }
 }
