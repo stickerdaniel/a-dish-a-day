@@ -40,13 +40,13 @@ struct RecipeData: Codable, Identifiable {
     }
 
     // Computed property to get a formatted string "18:49h" for time remaining until unlock
-    var formattedTimeUntilUnlock: String? {
-        guard let remaining = timeUntilUnlock else { return nil }
+    var formattedTimeUntilUnlock: String {
+        guard let remaining = timeUntilUnlock else { return self.name }
         
         let hours = Int(remaining) / 3600
         let minutes = (Int(remaining) % 3600) / 60
         
-        return String(format: "%02d:%02dh", hours, minutes)
+        return String(format: "Unlock in %02d:%02dh", hours, minutes)
     }
     
     init(recipe: RecipeModel, unlockDate: Date? = nil) {
