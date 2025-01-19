@@ -19,6 +19,7 @@ struct Card: View {
     var icon: Image? = nil // Optional icon
     var blurred: Bool = false // Optional blurr
     var badgeType: BadgeType = .none // Badge type
+    var badgeNumber: Int? = nil // Badge number
     var description: String
     var fallbackSymbols: [String] = [] // Pass SF Symbols for the grid
     var day: Int? = nil // Optional day to display as overlay
@@ -70,7 +71,7 @@ struct Card: View {
 
                 // Display badge based on `badgeType`
                 badgeView
-                    .offset(x: 5, y: -5)
+                    .offset(x: 6, y: -6)
                 
                 if pinned {
                     Image(systemName: "pin.fill")
@@ -104,9 +105,17 @@ struct Card: View {
         case .none:
             EmptyView()
         case .indicator:
-            Circle()
+            // badgenumber > 99 show 99+
+            let badgeText = badgeNumber.map { $0 > 99 ? "99+" : "\($0)" } ?? ""
+            
+            RoundedRectangle(cornerRadius: 12)
                 .fill(Color.red)
-                .frame(width: 20, height: 20)
+                // width depends on badgeText char count
+                .frame(width: badgeText.count > 1 ? badgeText.count > 2 ? 40 : 30 : 24, height: 24)
+                .overlay(
+                    Text(badgeText)
+                        .foregroundColor(.white)
+                )
         case .warning:
             Circle()
                 .frame(width: 24, height: 24)
@@ -121,13 +130,13 @@ struct Card: View {
                 )
         case .locked:
             Circle()
-                .frame(width: 24, height: 24)
+                .frame(width: 28, height: 28)
                 .foregroundColor(Color(UIColor.systemBackground))
                 .overlay(
                     Image(systemName: "lock.circle.fill")
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 28, height: 28)
                         .foregroundColor(.secondary)
                 )
         }

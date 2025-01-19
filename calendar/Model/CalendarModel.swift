@@ -104,8 +104,8 @@ class CalendarModel: Identifiable, Codable {
     }
     
     /// Checks if there are any unlocked recipes that haven't been opened yet
-    var hasNewUnlockedRecipes: Bool {
-        return recipes.contains { $0.isUnlocked && !$0.hasBeenOpened }
+    var hasNewUnlockedRecipes: Int {
+        recipes.filter { $0.isUnlocked && !$0.hasBeenOpened }.count
     }
 
     // Convenience initializer to create a copy of an existing calendar
