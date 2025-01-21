@@ -8,13 +8,14 @@
 import UniformTypeIdentifiers
 
 extension UTType {
-    static let dailydish = UTType(filenameExtension: "dailydish") ?? UTType.text
+    static let dailydishcal = UTType(filenameExtension: CalendarSerialization.customCalendarFileExtension) ?? UTType.text
     static let markdown = UTType(filenameExtension: "md") ?? UTType.text
 }
 
 import Foundation
 
 class CalendarSerialization {
+    static let customCalendarFileExtension = "ddcal"
     
     /// Encodes a `CalendarModel` into a JSON file
     /// - Parameter calendar: `CalendarModel` to encode
@@ -33,7 +34,7 @@ class CalendarSerialization {
 
         do {
             let data = try encoder.encode(calendarCopy)
-            let fileName = "\(calendar.name).dailydish"
+            let fileName = "\(calendar.name).\(customCalendarFileExtension)"
             let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
             try data.write(to: fileURL)
             
