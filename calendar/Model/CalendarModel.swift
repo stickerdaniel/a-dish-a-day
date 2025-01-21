@@ -145,9 +145,9 @@ class CalendarModel: Identifiable, Codable {
     }
 
     // Convenience initializer to create a copy of an existing calendar
-    static func copy(from calendar: CalendarModel, setSource source: CalendarSource? = nil) -> CalendarModel {
+    static func copy(from calendar: CalendarModel, setName: String? = nil, setSource source: CalendarSource? = nil) -> CalendarModel {
         let copiedCalendar = CalendarModel(
-            name: calendar.name + " (Copy)",
+            name: setName ?? calendar.name,
             startDate: calendar._startDate,
             endDate: calendar.endDate,
             recipes: calendar.recipes,

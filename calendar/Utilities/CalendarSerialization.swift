@@ -16,7 +16,7 @@ class CalendarSerialization {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         
-        // mutable copy of the calendar to reset `hasBeenOpened` for all recipes
+        // copy of the calendar to reset `hasBeenOpened` for all recipes while keeping calendar recipes state as is
         let calendarCopy = CalendarModel.copy(from: calendar)
         calendarCopy.recipes = calendarCopy.recipes.map { recipe in
             var modifiedRecipe = recipe
