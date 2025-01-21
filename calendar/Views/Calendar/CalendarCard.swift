@@ -43,7 +43,7 @@ struct CalendarCard: View {
 
             if calendar.source == .imported {
                 Button(action: copyToCreatedSection) {
-                    Label("Copy to Created", systemImage: "square.and.arrow.down.on.square")
+                    Label("Copy to \(CalendarTab.created.rawValue)", systemImage: "square.and.arrow.down.on.square")
                 }
             }
 
