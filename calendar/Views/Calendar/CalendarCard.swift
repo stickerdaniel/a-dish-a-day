@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CalendarCard: View {
     var calendar: CalendarModel
+    @Binding var selectedTab: CalendarTab
     @State private var showDeleteConfirmation = false
     @State private var showUnlockAlert = false  // State to control alert visibility
     @Environment(\.modelContext) private var context
@@ -85,7 +86,7 @@ struct CalendarCard: View {
     private func copyToCreatedSection() {
         // check if all recipes are unlocked
         guard calendar.allRecipesUnlocked else {
-            // #TODO show an alert "All recipes must be unlocked to copy and edit this calendar."
+            // show an alert "All recipes must be unlocked to copy and edit this calendar."
             showUnlockAlert = true
             return
         }
@@ -93,6 +94,9 @@ struct CalendarCard: View {
         let copiedCalendar = CalendarModel.copy(from: calendar, setName: calendar.name + " (imported copy)",
                                                 setSource: CalendarSource.created)
         context.insert(copiedCalendar)
+        
+        // Navigate to "Created" tab after successful copy
+        selectedTab = .created
     }
 
     private func deleteCalendar() {

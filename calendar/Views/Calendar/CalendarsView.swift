@@ -56,7 +56,7 @@ struct CalendarsView: View {
                     .padding()
                 }
             ) { calendar in
-                CalendarCard(calendar: calendar)
+                CalendarCard(calendar: calendar, selectedTab: $selection)
             }
             .navigationTitle("Calendars")
             .toolbar {
