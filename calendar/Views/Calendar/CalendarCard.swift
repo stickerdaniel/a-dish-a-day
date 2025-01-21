@@ -74,24 +74,12 @@ struct CalendarCard: View {
     }
 
     private func duplicateCalendar() {
-        let duplicatedCalendar = CalendarModel(
-            name: "\(calendar.name) (Copy)",
-            startDate: calendar.startDate,
-            endDate: calendar.endDate,
-            thumbnailData: calendar.thumbnailData,
-            source: .created
-        )
+        let duplicatedCalendar = CalendarModel.copy(from: calendar)
         context.insert(duplicatedCalendar)
     }
 
     private func copyToCreatedSection() {
-        let copiedCalendar = CalendarModel(
-            name: "\(calendar.name) (Copied)",
-            startDate: calendar.startDate,
-            endDate: calendar.endDate,
-            thumbnailData: calendar.thumbnailData,
-            source: .created
-        )
+        let copiedCalendar = CalendarModel.copy(from: calendar, setSource: CalendarSource.created)
         context.insert(copiedCalendar)
     }
 

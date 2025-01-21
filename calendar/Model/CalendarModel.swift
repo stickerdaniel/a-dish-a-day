@@ -48,10 +48,12 @@ class CalendarModel: Identifiable, Codable {
     }
 
     // Initializer
-    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
+    init(name: String, startDate: Date, endDate: Date, recipes: [RecipeData] = [], thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
+
         self.name = name
         self._startDate = startDate.midnight
         self.endDate = endDate.midnight
+        self.recipes = recipes
         self.thumbnailData = thumbnailData
         self.source = source
         self.adjustDatesOnImport = adjustDatesOnImport
@@ -143,16 +145,17 @@ class CalendarModel: Identifiable, Codable {
     }
 
     // Convenience initializer to create a copy of an existing calendar
-    static func copy(from calendar: CalendarModel) -> CalendarModel {
+    static func copy(from calendar: CalendarModel, setSource source: CalendarSource? = nil) -> CalendarModel {
         let copiedCalendar = CalendarModel(
-            name: calendar.name,
+            name: calendar.name + " (Copy)",
             startDate: calendar._startDate,
             endDate: calendar.endDate,
+            recipes: calendar.recipes,
             thumbnailData: calendar.thumbnailData,
-            source: calendar.source,
+            source: source ?? calendar.source,
             adjustDatesOnImport: calendar.adjustDatesOnImport
         )
-        copiedCalendar.recipes = calendar.recipes.map { $0 }
+        
         return copiedCalendar
     }
 
