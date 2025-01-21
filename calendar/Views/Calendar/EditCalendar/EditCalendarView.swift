@@ -34,9 +34,11 @@ struct EditCalendarView: View {
 
         let initialCalendar: CalendarModel
         if let existingCalendar = calendarToEdit {
-            initialCalendar = CalendarModel.copy(from: existingCalendar) // Corrected the method call
+            initialCalendar = CalendarModel.copy(from: existingCalendar)
         } else {
-            initialCalendar = CalendarModel(name: "", startDate: Date(), endDate: Date())
+            initialCalendar = CalendarModel(name: "",
+                                            startDate: Date().midnight,
+                                            endDate: Date().addingTimeInterval(60 * 60 * 24 * 6).midnight)
         }
 
         _editingCalendar = State(initialValue: initialCalendar)
@@ -47,7 +49,7 @@ struct EditCalendarView: View {
         Form {
             // (1) Calendar Name
             Section(header: Text("Name")) {
-                TextField("Calendar Title", text: $editingCalendar.name)
+                TextField("Set a Calendar Title", text: $editingCalendar.name)
             }
             
             // (2) Thumbnail Image
@@ -146,7 +148,7 @@ struct EditCalendarView: View {
             existing.name = editingCalendar.name
             existing.startDate = editingCalendar.startDate
             existing.endDate = editingCalendar.endDate
-            existing.recipes = editingCalendar.recipes // Copy recipes correctly
+            existing.recipes = editingCalendar.recipes
             existing.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
             existing.adjustDatesOnImport = editingCalendar.adjustDatesOnImport
             
