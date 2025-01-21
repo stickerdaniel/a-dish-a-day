@@ -8,7 +8,7 @@
 import UniformTypeIdentifiers
 
 extension UTType {
-    static let dailydishcal = UTType(filenameExtension: CalendarSerialization.customCalendarFileExtension) ?? UTType.text
+    static let customcalendar = UTType(filenameExtension: CalendarSerialization.customCalendarFileExtension) ?? UTType.text
     static let markdown = UTType(filenameExtension: "md") ?? UTType.text
 }
 
