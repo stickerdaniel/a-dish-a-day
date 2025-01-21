@@ -68,20 +68,6 @@ struct EditCalendarView: View {
                         set: { editingCalendar.endDate = $0.midnight }
                     ), in: editingCalendar.startDate..., displayedComponents: .date)
                 }
-                
-                // (4) Import Settings
-                Section(header: Text("Import Settings")) {
-                    Toggle("Adjust Dates When Importing", isOn: $editingCalendar.adjustDatesOnImport)
-                        .toggleStyle(SwitchToggleStyle())
-                        .onChange(of: editingCalendar.adjustDatesOnImport) {
-                            showingImportAlert = true
-                        }
-                }
-                .alert("Adjust Dates When Importing", isPresented: $showingImportAlert) {
-                    Button("OK", role: .cancel) { }
-                } message: {
-                    Text("If enabled, the calendar start date will be set to the imported date. The end date and recipe dates will be updated accordingly.")
-                }
 
                 // (5) Days in Range
                 Section(header: Text("Days (\(editingCalendar.daysBetween))")) {
@@ -99,6 +85,15 @@ struct EditCalendarView: View {
                         }
                     }
                     .padding(.top, 8)
+                }
+                
+                // (4) Import Settings
+                Section(header: Text("Import Settings"), footer: Text("If enabled, the calendar's start date will be set to the import date. The end date and all recipe unlock dates will be adjusted accordingly.")) {
+                    Toggle("Adjust dates on import", isOn: $editingCalendar.adjustDatesOnImport)
+                        .toggleStyle(SwitchToggleStyle())
+                        .onChange(of: editingCalendar.adjustDatesOnImport) {
+                            showingImportAlert = true
+                        }
                 }
             }
             .navigationTitle(calendarToEdit == nil ? "New Calendar" : "Edit Calendar")
