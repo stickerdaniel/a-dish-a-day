@@ -5,6 +5,13 @@
 //  Created by Daniel Sticker on 14.01.25.
 //
 
+import UniformTypeIdentifiers
+
+extension UTType {
+    static let dailydish = UTType(filenameExtension: "dailydish") ?? UTType.text
+    static let markdown = UTType(filenameExtension: "md") ?? UTType.text
+}
+
 import Foundation
 
 class CalendarSerialization {
@@ -26,7 +33,7 @@ class CalendarSerialization {
 
         do {
             let data = try encoder.encode(calendarCopy)
-            let fileName = "\(calendar.name).json"
+            let fileName = "\(calendar.name).dailydish"
             let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
             try data.write(to: fileURL)
             

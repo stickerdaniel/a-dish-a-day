@@ -73,7 +73,7 @@ struct CalendarsView: View {
             }
             .fileImporter(
                 isPresented: $isImportingJSON,
-                allowedContentTypes: [.json],
+                allowedContentTypes: [.dailydish, .markdown],
                 onCompletion: handleFileImport
             )
         }
