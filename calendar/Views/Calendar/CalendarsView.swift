@@ -19,6 +19,7 @@ struct CalendarsView: View {
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .imported
     @State private var isImportingJSON = false
+    @State private var showReplaceAlert = false
     @Query private var allCalendars: [CalendarModel]
     @Environment(\.modelContext) private var context
 
@@ -76,6 +77,9 @@ struct CalendarsView: View {
                 allowedContentTypes: [.customcalendar],
                 onCompletion: handleFileImport
             )
+            .alert("Existing calendar was replaced.", isPresented: $showReplaceAlert) {
+                Button("OK", role: .cancel) { }
+            }
         }
     }
 
@@ -104,8 +108,8 @@ struct CalendarsView: View {
                     $0.id == importedCalendar.id && $0.source == .imported
                 }) {
                     context.delete(existingCalendar)
-                    // #DOTO show alert that existing calendar was replaced
-                    
+                    // show alert that existing calendar was replaced
+                    showReplaceAlert = true
                 }
                 
                 context.insert(importedCalendar)
