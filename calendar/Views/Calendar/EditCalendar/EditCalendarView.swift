@@ -44,85 +44,79 @@ struct EditCalendarView: View {
 
     // MARK: - Body
     var body: some View {
-        NavigationStack {
-            Form {
-                // (1) Calendar Name
-                Section(header: Text("Name")) {
-                    TextField("Calendar Title", text: $editingCalendar.name)
-                }
-
-                // (2) Thumbnail Image
-                Section(header: Text("Thumbnail Image")) {
-                    PhotoPicker(title: "Select Image", selectedImage: $thumbnailImage)
-                }
-
-                // (3) Date Range
-                Section(header: Text("Date Range")) {
-                    DatePicker("Start Date", selection: Binding(
-                        get: { editingCalendar.startDate.midnight },
-                        set: { editingCalendar.startDate = $0.midnight }
-                    ), displayedComponents: .date)
-
-                    DatePicker("End Date", selection: Binding(
-                        get: { editingCalendar.endDate.midnight },
-                        set: { editingCalendar.endDate = $0.midnight }
-                    ), in: editingCalendar.startDate..., displayedComponents: .date)
-                }
+        Form {
+            // (1) Calendar Name
+            Section(header: Text("Name")) {
+                TextField("Calendar Title", text: $editingCalendar.name)
+            }
+            
+            // (2) Thumbnail Image
+            Section(header: Text("Thumbnail Image")) {
+                PhotoPicker(title: "Select Image", selectedImage: $thumbnailImage)
+            }
+            
+            // (3) Date Range
+            Section(header: Text("Date Range")) {
+                DatePicker("Start Date", selection: Binding(
+                    get: { editingCalendar.startDate.midnight },
+                    set: { editingCalendar.startDate = $0.midnight }
+                ), displayedComponents: .date)
                 
-                // (4) Import Settings
-                Section(header: Text("Import Settings")) {
-                    Toggle("Adjust Dates When Importing", isOn: $editingCalendar.adjustDatesOnImport)
-                        .toggleStyle(SwitchToggleStyle())
-                        .onChange(of: editingCalendar.adjustDatesOnImport) {
-                            showingImportAlert = true
-                        }
-                }
-                .alert("Adjust Dates When Importing", isPresented: $showingImportAlert) {
-                    Button("OK", role: .cancel) { }
-                } message: {
-                    Text("If enabled, the calendar start date will be set to the imported date. The end date and recipe dates will be updated accordingly.")
-                }
-
-                // (5) Days in Range
-                Section(header: Text("Days (\(editingCalendar.daysBetween))")) {
-                    let columns = [GridItem(.adaptive(minimum: Card.minimumWidth), spacing: Card.spacing)]
-
-                    LazyVGrid(columns: columns, spacing: Card.spacing) {
-                        ForEach(editingCalendar.allDates, id: \.self) { date in
-                            // Fetch the assigned recipe for this date
-                            let assignedRecipe = editingCalendar.getRecipe(for: date)
-
-                            DayCard(date: date, recipeAssigned: assignedRecipe) {
-                                currentSelectedDate = date
-                                isPickingRecipe = true
-                            }
-                        }
-                    }
-                    .padding(.top, 8)
-                }
+                DatePicker("End Date", selection: Binding(
+                    get: { editingCalendar.endDate.midnight },
+                    set: { editingCalendar.endDate = $0.midnight }
+                ), in: editingCalendar.startDate..., displayedComponents: .date)
             }
-            .navigationTitle(calendarToEdit == nil ? "New Calendar" : "Edit Calendar")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: saveCalendar) {
-                        HStack {
-                            Text(calendarToEdit == nil ? "Add" : "Save")
-                            Image(systemName: calendarToEdit == nil ? "plus" : "checkmark")
+            
+            // (5) Days in Range
+            Section(header: Text("Days (\(editingCalendar.daysBetween))")) {
+                let columns = [GridItem(.adaptive(minimum: Card.minimumWidth), spacing: Card.spacing)]
+                
+                LazyVGrid(columns: columns, spacing: Card.spacing) {
+                    ForEach(editingCalendar.allDates, id: \.self) { date in
+                        // Fetch the assigned recipe for this date
+                        let assignedRecipe = editingCalendar.getRecipe(for: date)
+                        
+                        DayCard(date: date, recipeAssigned: assignedRecipe) {
+                            currentSelectedDate = date
+                            isPickingRecipe = true
                         }
                     }
-                    .disabled(editingCalendar.name.isEmpty || editingCalendar.startDate > editingCalendar.endDate)
                 }
+                .padding(.top, 8)
             }
-            .onAppear(perform: loadCalendarData)
-            .sheet(isPresented: $isPickingRecipe) {
-                if let date = currentSelectedDate {
-                    RecipeSelectionSheet(
-                        isPresented: $isPickingRecipe,
-                        recipes: allRecipes
-                    ) { chosenRecipe in
-                        assignRecipe(chosenRecipe, to: date)
+            
+            // (4) Import Settings
+            Section(header: Text("Import Settings"), footer: Text("If enabled, the calendar's start date will be set to the import date. The end date and all recipe unlock dates will be adjusted accordingly.")) {
+                Toggle("Adjust dates on import", isOn: $editingCalendar.adjustDatesOnImport)
+                    .toggleStyle(SwitchToggleStyle())
+                    .onChange(of: editingCalendar.adjustDatesOnImport) {
+                        showingImportAlert = true
                     }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .navigationTitle(calendarToEdit == nil ? "New Calendar" : "Edit Calendar")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: saveCalendar) {
+                    HStack {
+                        Text(calendarToEdit == nil ? "Add" : "Save")
+                        Image(systemName: calendarToEdit == nil ? "plus" : "checkmark")
+                    }
+                }
+                .disabled(editingCalendar.name.isEmpty || editingCalendar.startDate > editingCalendar.endDate)
+            }
+        }
+        .onAppear(perform: loadCalendarData)
+        .sheet(isPresented: $isPickingRecipe) {
+            if let date = currentSelectedDate {
+                RecipeSelectionSheet(
+                    isPresented: $isPickingRecipe,
+                    recipes: allRecipes
+                ) { chosenRecipe in
+                    assignRecipe(chosenRecipe, to: date)
                 }
             }
         }

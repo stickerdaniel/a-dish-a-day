@@ -78,10 +78,16 @@ struct Card: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 24, height: 24)
-                        .foregroundColor(.secondary)
-                        .offset(x: 0, y: -10)
-                        .rotationEffect(.degrees(-15))
+                        .foregroundColor(.primary)
                         .frame(maxWidth: .infinity, alignment: .top)
+                        .rotationEffect(.degrees(-15))
+                        .offset(x: 0, y: 2)
+                        // cut of bottom part
+                        .frame(height: 22, alignment: .top)
+                        .clipped()
+                        // offset
+                        .offset(x: 0, y: -12)
+                        .shadow(radius: 2, x: -2, y: 4)
                 }
             }
             .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone || pinned != true ? 1 : 1.3)

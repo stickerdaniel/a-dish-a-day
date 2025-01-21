@@ -5,9 +5,17 @@
 //  Created by Daniel Sticker on 14.01.25.
 //
 
+import UniformTypeIdentifiers
+
+extension UTType {
+    static let customcalendar = UTType(filenameExtension: CalendarSerialization.customCalendarFileExtension) ?? UTType.text
+    static let markdown = UTType(filenameExtension: "md") ?? UTType.text
+}
+
 import Foundation
 
 class CalendarSerialization {
+    static let customCalendarFileExtension = "ddcal"
     
     /// Encodes a `CalendarModel` into a JSON file
     /// - Parameter calendar: `CalendarModel` to encode
@@ -16,7 +24,7 @@ class CalendarSerialization {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         
-        // mutable copy of the calendar to reset `hasBeenOpened` for all recipes
+        // copy of the calendar to reset `hasBeenOpened` for all recipes while keeping calendar recipes state as is
         let calendarCopy = CalendarModel.copy(from: calendar)
         calendarCopy.recipes = calendarCopy.recipes.map { recipe in
             var modifiedRecipe = recipe
@@ -26,7 +34,7 @@ class CalendarSerialization {
 
         do {
             let data = try encoder.encode(calendarCopy)
-            let fileName = "\(calendar.name).json"
+            let fileName = "\(calendar.name).\(customCalendarFileExtension)"
             let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
             try data.write(to: fileURL)
             

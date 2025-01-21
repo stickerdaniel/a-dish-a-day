@@ -11,13 +11,13 @@ import UniformTypeIdentifiers
 
 enum CalendarTab: String, CaseIterable {
     case imported = "Imported"
-    case created = "Created"
+    case created = "My Calendars"
 }
 
 struct CalendarsView: View {
     var notificationManager = NotificationManager.shared
     @State private var isShowingSettings = false
-    @State private var selection: CalendarTab = .created
+    @State private var selection: CalendarTab = .imported
     @State private var isImportingJSON = false
     @Query private var allCalendars: [CalendarModel]
     @Environment(\.modelContext) private var context
@@ -56,7 +56,7 @@ struct CalendarsView: View {
                     .padding()
                 }
             ) { calendar in
-                CalendarCard(calendar: calendar)
+                CalendarCard(calendar: calendar, selectedTab: $selection)
             }
             .navigationTitle("Calendars")
             .toolbar {
@@ -73,7 +73,7 @@ struct CalendarsView: View {
             }
             .fileImporter(
                 isPresented: $isImportingJSON,
-                allowedContentTypes: [.json],
+                allowedContentTypes: [.customcalendar],
                 onCompletion: handleFileImport
             )
         }

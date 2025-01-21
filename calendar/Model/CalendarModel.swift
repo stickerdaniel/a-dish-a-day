@@ -17,36 +17,43 @@ enum CalendarSource: String, Codable {
 class CalendarModel: Identifiable, Codable {
     var id: UUID = UUID()
     var name: String
-    var startDate: Date
+    private var _startDate: Date
     var endDate: Date
-    var recipes: [RecipeData] = []  // list of RecipeData
+    var recipes: [RecipeData] = []
     var thumbnailData: Data?
     var source: CalendarSource?
-    var adjustDatesOnImport: Bool = false  // Automatically adjust dates upon import
+    var adjustDatesOnImport: Bool = false
+
+    // Computed property to expose startDate while adjusting dates if changed
+    var startDate: Date {
+        get { return _startDate }
+        set { adjustDatesToNewStartDate(newStartDate: newValue) }
+    }
 
     // Computed Properties
     var daysBetween: Int {
-        let days = Calendar.current.dateComponents([.day], from: startDate.midnight, to: endDate.midnight).day ?? 0
+        let days = Calendar.current.dateComponents([.day], from: _startDate.midnight, to: endDate.midnight).day ?? 0
         return days + 1
     }
 
     var allDates: [Date] {
-        startDate.midnight.allDates(upTo: endDate.midnight)
+        _startDate.midnight.allDates(upTo: endDate.midnight)
     }
 
     var thumbnailImage: Image? {
         if let data = thumbnailData, let uiImage = UIImage(data: data) {
             return Image(uiImage: uiImage)
-        } else {
-            return nil
         }
+        return nil
     }
 
     // Initializer
-    init(name: String, startDate: Date, endDate: Date, thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
+    init(name: String, startDate: Date, endDate: Date, recipes: [RecipeData] = [], thumbnailData: Data? = nil, source: CalendarSource? = .created, adjustDatesOnImport: Bool = false) {
+
         self.name = name
-        self.startDate = startDate.midnight
+        self._startDate = startDate.midnight
         self.endDate = endDate.midnight
+        self.recipes = recipes
         self.thumbnailData = thumbnailData
         self.source = source
         self.adjustDatesOnImport = adjustDatesOnImport
@@ -54,24 +61,16 @@ class CalendarModel: Identifiable, Codable {
     
     /// Adjusts the calendar dates based on the current time (midnight adjustment included)
     func adjustDatesToCurrent() {
-        // Convert current date to midnight
-        let now = Date().midnight
-        let offset = now.timeIntervalSince(self.startDate.midnight)
+        adjustDatesToNewStartDate(newStartDate: Date().midnight)
+    }
 
-        // Debugging output before changes
-        print("Before Adjustment:")
-        print("Start Date: \(self.startDate), End Date: \(self.endDate)")
-        print("Now: \(now), Offset: \(offset)")
+    /// Adjusts calendar dates based on a new start date, preserving existing durations
+    private func adjustDatesToNewStartDate(newStartDate: Date) {
+        let offset = newStartDate.midnight.timeIntervalSince(_startDate.midnight)
+        
+        _startDate = newStartDate.midnight
+        endDate = endDate.midnight.addingTimeInterval(offset)
 
-        // Set both start and end dates to midnight adjusted values
-        self.startDate = now
-        self.endDate = self.endDate.midnight.addingTimeInterval(offset)
-
-        // Debugging output after changes
-        print("After Adjustment:")
-        print("Start Date: \(self.startDate), End Date: \(self.endDate)")
-
-        // Adjust recipe unlock dates to midnight as well
         for i in 0..<recipes.count {
             if let unlockDate = recipes[i].unlockDate {
                 recipes[i].unlockDate = unlockDate.midnight.addingTimeInterval(offset)
@@ -88,14 +87,14 @@ class CalendarModel: Identifiable, Codable {
     /// Check if all recipes within the date range are unlocked.
     var allRecipesUnlocked: Bool {
         recipes
-            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { $0.isWithinDateRange(startDate: _startDate, endDate: endDate) }
             .allSatisfy { $0.isUnlocked }
     }
 
     /// Get the number of locked recipes within the date range.
     var lockedRecipesCount: Int {
         recipes
-            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { $0.isWithinDateRange(startDate: _startDate, endDate: endDate) }
             .filter { !$0.isUnlocked }
             .count
     }
@@ -103,7 +102,7 @@ class CalendarModel: Identifiable, Codable {
     /// Returns recipes within the date range sorted by unlock date (earliest to latest).
     func sortedRecipesByUnlockDate() -> [RecipeData] {
         recipes
-            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { $0.isWithinDateRange(startDate: _startDate, endDate: endDate) }
             .sorted {
                 switch ($0.unlockDate, $1.unlockDate) {
                 case (nil, _): return true
@@ -116,7 +115,7 @@ class CalendarModel: Identifiable, Codable {
     /// Get the next recipe unlock time within the date range.
     var nextUnlockTime: TimeInterval? {
         recipes
-            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { $0.isWithinDateRange(startDate: _startDate, endDate: endDate) }
             .compactMap { $0.timeUntilUnlock }
             .filter { $0 > 0 }
             .min()
@@ -125,7 +124,7 @@ class CalendarModel: Identifiable, Codable {
     /// Checks if there are any unlocked recipes within the date range that haven't been opened yet.
     var hasNewUnlockedRecipes: Int {
         recipes
-            .filter { $0.isWithinDateRange(startDate: startDate, endDate: endDate) }
+            .filter { $0.isWithinDateRange(startDate: _startDate, endDate: endDate) }
             .filter { $0.isUnlocked && !$0.hasBeenOpened }
             .count
     }
@@ -146,16 +145,17 @@ class CalendarModel: Identifiable, Codable {
     }
 
     // Convenience initializer to create a copy of an existing calendar
-    static func copy(from calendar: CalendarModel) -> CalendarModel {
+    static func copy(from calendar: CalendarModel, setName: String? = nil, setSource source: CalendarSource? = nil) -> CalendarModel {
         let copiedCalendar = CalendarModel(
-            name: calendar.name,
-            startDate: calendar.startDate,
+            name: setName ?? calendar.name,
+            startDate: calendar._startDate,
             endDate: calendar.endDate,
+            recipes: calendar.recipes,
             thumbnailData: calendar.thumbnailData,
-            source: calendar.source,
+            source: source ?? calendar.source,
             adjustDatesOnImport: calendar.adjustDatesOnImport
         )
-        copiedCalendar.recipes = calendar.recipes.map { $0 }
+        
         return copiedCalendar
     }
 
@@ -168,7 +168,7 @@ class CalendarModel: Identifiable, Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
-        startDate = try container.decode(Date.self, forKey: .startDate)
+        _startDate = try container.decode(Date.self, forKey: .startDate)
         endDate = try container.decode(Date.self, forKey: .endDate)
         recipes = try container.decode([RecipeData].self, forKey: .recipes)
         thumbnailData = try container.decodeIfPresent(Data.self, forKey: .thumbnailData)
@@ -180,7 +180,7 @@ class CalendarModel: Identifiable, Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(name, forKey: .name)
-        try container.encode(startDate, forKey: .startDate)
+        try container.encode(_startDate, forKey: .startDate)  // Keeping coding key consistent
         try container.encode(endDate, forKey: .endDate)
         try container.encode(recipes, forKey: .recipes)
         try container.encode(thumbnailData, forKey: .thumbnailData)

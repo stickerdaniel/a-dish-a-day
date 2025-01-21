@@ -9,7 +9,9 @@ import SwiftUI
 
 struct CalendarCard: View {
     var calendar: CalendarModel
+    @Binding var selectedTab: CalendarTab
     @State private var showDeleteConfirmation = false
+    @State private var showUnlockAlert = false  // State to control alert visibility
     @Environment(\.modelContext) private var context
 
     var body: some View {
@@ -41,7 +43,7 @@ struct CalendarCard: View {
 
             if calendar.source == .imported {
                 Button(action: copyToCreatedSection) {
-                    Label("Copy to Created", systemImage: "square.and.arrow.down.on.square")
+                    Label("Copy to \(CalendarTab.created.rawValue)", systemImage: "square.and.arrow.down.on.square")
                 }
             }
 
@@ -63,6 +65,9 @@ struct CalendarCard: View {
             }
             Button("Cancel", role: .cancel) {}
         }
+        .alert("All recipes must be unlocked to copy and edit this calendar.", isPresented: $showUnlockAlert) {
+            Button("OK", role: .cancel) { }
+        }
     }
 
     // MARK: - Context Menu Actions
@@ -74,25 +79,24 @@ struct CalendarCard: View {
     }
 
     private func duplicateCalendar() {
-        let duplicatedCalendar = CalendarModel(
-            name: "\(calendar.name) (Copy)",
-            startDate: calendar.startDate,
-            endDate: calendar.endDate,
-            thumbnailData: calendar.thumbnailData,
-            source: .created
-        )
+        let duplicatedCalendar = CalendarModel.copy(from: calendar, setName: calendar.name + " (copy)")
         context.insert(duplicatedCalendar)
     }
 
     private func copyToCreatedSection() {
-        let copiedCalendar = CalendarModel(
-            name: "\(calendar.name) (Copied)",
-            startDate: calendar.startDate,
-            endDate: calendar.endDate,
-            thumbnailData: calendar.thumbnailData,
-            source: .created
-        )
+        // check if all recipes are unlocked
+        guard calendar.allRecipesUnlocked else {
+            // show an alert "All recipes must be unlocked to copy and edit this calendar."
+            showUnlockAlert = true
+            return
+        }
+        
+        let copiedCalendar = CalendarModel.copy(from: calendar, setName: calendar.name + " (imported copy)",
+                                                setSource: CalendarSource.created)
         context.insert(copiedCalendar)
+        
+        // Navigate to "Created" tab after successful copy
+        selectedTab = .created
     }
 
     private func deleteCalendar() {
