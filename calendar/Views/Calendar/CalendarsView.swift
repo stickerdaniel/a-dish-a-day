@@ -99,6 +99,15 @@ struct CalendarsView: View {
 
             if let importedCalendar = CalendarSerialization.decodeCalendar(from: url) {
                 importedCalendar.source = .imported
+                // check if a calendar with the same id already exists, if so, remove it
+                if let existingCalendar = allCalendars.first(where: {
+                    $0.id == importedCalendar.id && $0.source == .imported
+                }) {
+                    context.delete(existingCalendar)
+                    // #DOTO show alert that existing calendar was replaced
+                    
+                }
+                
                 context.insert(importedCalendar)
                 notificationManager.scheduleNotifications(for: importedCalendar)
             } else {
