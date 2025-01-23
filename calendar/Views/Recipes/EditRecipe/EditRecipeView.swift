@@ -9,7 +9,13 @@ import SwiftUI
 
 struct EditRecipeView: View {
     var recipeToEdit: RecipeModel?
-
+    
+    enum InputMethod {
+        case markdown
+        case aiScan
+    }
+    
+    @State private var selectedInputMethod: InputMethod = .markdown
     @State private var name: String = ""
     @State private var ingredients: String = ""
     @State private var instructions: String = ""
@@ -21,6 +27,43 @@ struct EditRecipeView: View {
     var body: some View {
         NavigationStack {
             Form {
+                // Add input method picker
+                Section {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 16) {
+                            Button(action: { /* Add markdown action */ }) {
+                                VStack {
+                                    Image(systemName: "tray.and.arrow.down")
+                                        .font(.system(size: 24))
+                                    Text("Markdown")
+                                        .font(.caption)
+                                }
+                                .frame(width: 100)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                            
+                            Button(action: { /* Add AI scan action */ }) {
+                                VStack {
+                                    Image(systemName: "sparkles")
+                                        .font(.system(size: 24))
+                                    Text("AI Scan")
+                                        .font(.caption)
+                                }
+                                .frame(width: 100)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                        .padding(.horizontal, 4)
+                    }
+                } header: {
+                    Text("Import Options")
+                }
+                .padding(.horizontal)
+                
                 Section(header: Text("Name")) {
                     TextField("Enter recipe name", text: $name)
                 }
