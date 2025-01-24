@@ -28,41 +28,33 @@ struct EditRecipeView: View {
         NavigationStack {
             Form {
                 // Add input method picker
-                Section {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            Button(action: { /* Add markdown action */ }) {
-                                VStack {
-                                    Image(systemName: "tray.and.arrow.down")
-                                        .font(.system(size: 24))
-                                    Text("Markdown")
-                                        .font(.caption)
-                                }
-                                .frame(width: 100)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(10)
+                Section(header: Text("Import Options")) {
+                    HStack {
+                        Button(action: { /* Add markdown action */ }) {
+                            VStack(spacing: 8) {
+                                Image(systemName: "tray.and.arrow.down")
+                                    .font(.system(size: 24))
+                                Text("Markdown")
+                                    .font(.caption)
                             }
-                            
-                            Button(action: { /* Add AI scan action */ }) {
-                                VStack {
-                                    Image(systemName: "sparkles")
-                                        .font(.system(size: 24))
-                                    Text("AI Scan")
-                                        .font(.caption)
-                                }
-                                .frame(width: 100)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(10)
-                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
                         }
-                        .padding(.horizontal, 4)
+                        
+                        Button(action: { /* Add AI scan action */ }) {
+                            VStack(spacing: 8) {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 24))
+                                Text("AI Scan")
+                                    .font(.caption)
+                            }
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                        }
                     }
-                } header: {
-                    Text("Import Options")
                 }
-                .padding(.horizontal)
                 
                 Section(header: Text("Name")) {
                     TextField("Enter recipe name", text: $name)
