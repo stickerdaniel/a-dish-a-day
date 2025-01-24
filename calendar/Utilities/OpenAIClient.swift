@@ -41,7 +41,15 @@ class OpenAIIntegration {
                 "content": [
                     [
                         "type": "text",
-                        "text": "Extract recipe details from this image and return title, ingredients, and instructions as JSON."
+                        "text": """
+                        Extract recipe details from this image and return as JSON with the following format:
+                        - title: The recipe name
+                        - ingredients: List each ingredient on a new line starting with "•". Always add emojis that are cooking / recipe related to each ingredient.
+                        - instructions: Number each step and put each step on a new line with an additional newline as spacing.
+                        
+                        Make sure to preserve all line breaks in the output.
+                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste.
+                        """
                     ],
                     [
                         "type": "image_url",
