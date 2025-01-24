@@ -29,24 +29,17 @@ struct EditRecipeView: View {
             Form {
                 if recipeToEdit == nil {
                     Section(header: Text("Import Options")) {
-                        HStack(spacing: 16) {
+                        List {
                             MarkdownImportButton { name, ingredients, instructions in
                                 self.name = name
                                 self.ingredients = ingredients
                                 self.instructions = instructions
                             }
                             
-                            Button(action: { /* Add AI scan action */ }) {
-                                VStack(spacing: 8) {
-                                    Image(systemName: "sparkles")
-                                        .font(.system(size: 24))
-                                    Text("AI Scan")
-                                        .font(.caption)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(10)
+                            AIScanButton { name, ingredients, instructions in
+                                self.name = name
+                                self.ingredients = ingredients
+                                self.instructions = instructions
                             }
                         }
                     }

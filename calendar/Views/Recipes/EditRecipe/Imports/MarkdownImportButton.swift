@@ -15,16 +15,12 @@ struct MarkdownImportButton: View {
     
     var body: some View {
         Button(action: { isImportingMarkdown = true }) {
-            VStack(spacing: 8) {
-                Image(systemName: "tray.and.arrow.down")
-                    .font(.system(size: 24))
+            HStack {
+                Image(systemName: "text.line.first.and.arrowtriangle.forward")
+                    .frame(width: 24, height: 24)
                 Text("Markdown")
-                    .font(.caption)
+                    .foregroundColor(.primary)
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
         }
         .fileImporter(
             isPresented: $isImportingMarkdown,

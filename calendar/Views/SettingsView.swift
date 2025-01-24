@@ -29,6 +29,11 @@ struct SettingsView: View {
 
     // MARK: - Notifications Toggle
     @State private var notificationsEnabled: Bool = false
+    
+    // MARK: - OpenAI API Key
+    @AppStorage("openai_api_key") private var apiKey: String = ""
+    @State private var showAPIKeyValidationError = false
+    @State private var apiKeyValidationError: String?
 
     // MARK: - Clear Data Confirmation & Feedback
     @State private var showClearDataConfirmation = false
@@ -44,6 +49,28 @@ struct SettingsView: View {
                         .onChange(of: notificationsEnabled) {
                             toggleNotifications()
                         }
+                }
+                
+                // OpenAI API Key Section
+                Section {
+                    SecureField("API Key", text: $apiKey)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .onChange(of: apiKey) {
+                            validateAPIKey()
+                        }
+                } header: {
+                    Text("OpenAI Integration")
+                } footer: {
+                    Group {
+                        if let error = apiKeyValidationError {
+                            Text(error)
+                                .foregroundColor(.red)
+                        } else {
+                            Text("To obtain an API key, visit the [OpenAI website](https://platform.openai.com/api-keys).")
+                                .tint(.blue)
+                        }
+                    }
                 }
 
                 // Appearance Picker Section
@@ -91,6 +118,7 @@ struct SettingsView: View {
             .onChange(of: appearance) {
                 applyAppearance()
             }
+
         }
     }
 
@@ -131,5 +159,26 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+    
+    // MARK: - Validate API Key
+    private func validateAPIKey() {
+        // Basic validation
+        if apiKey.isEmpty {
+            apiKeyValidationError = "Please enter an OpenAI API key."
+            showAPIKeyValidationError = true
+            return
+        }
+        
+        // Check if the API key follows the expected format (starts with 'sk-')
+        if !apiKey.starts(with: "sk-") {
+            apiKeyValidationError = "Invalid API key format. The key should start with 'sk-'."
+            showAPIKeyValidationError = true
+            return
+        }
+        
+        // Clear any previous errors if validation passes
+        apiKeyValidationError = nil
+        showAPIKeyValidationError = false
     }
 }
