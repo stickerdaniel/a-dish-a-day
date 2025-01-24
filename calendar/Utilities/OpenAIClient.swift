@@ -48,7 +48,7 @@ class OpenAIIntegration {
                         - instructions: Number each step and put each step on a new line with an additional newline as spacing.
                         
                         Make sure to preserve all line breaks in the output.
-                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste.
+                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste. Use 🌻 instead.
                         """
                     ],
                     [
