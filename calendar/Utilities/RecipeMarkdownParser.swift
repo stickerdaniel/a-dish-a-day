@@ -8,53 +8,73 @@
 import Foundation
 
 struct RecipeMarkdownParser {
-    enum ParsingError: Error {
-        case noTitle
-        case noIngredients
-        case noInstructions
-        case invalidFormat
+    struct ParseResult {
+        var name: String
+        var ingredients: String
+        var instructions: String
+        var missingElements: [String]
+        
+        var errorMessage: String? {
+            guard !missingElements.isEmpty else { return nil }
+            return "Missing sections in markdown:\n" + missingElements.map { "\($0)" }.joined(separator: "\n")
+        }
     }
     
-    static func parse(markdown: String) throws -> (name: String, ingredients: String, instructions: String) {
+    static func parse(markdown: String) -> ParseResult {
         let lines = markdown.components(separatedBy: .newlines)
+        var missingElements: [String] = []
         
         // Parse title (starts with single #)
-        guard let titleLine = lines.first(where: { $0.hasPrefix("# ") }),
-              let name = titleLine.dropFirst(2).takeWhile({ $0 != "\n" }) else {
-            throw ParsingError.noTitle
+        let name: String
+        if let titleLine = lines.first(where: { $0.hasPrefix("# ") }),
+           let extractedName = titleLine.dropFirst(2).takeWhile({ $0 != "\n" }) {
+            name = String(extractedName).trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            name = ""
+            missingElements.append("Title (# Recipe Name)")
         }
         
-        // Find section markers
-        guard let ingredientsIndex = lines.firstIndex(where: { $0.hasPrefix("## Ingredients") }),
-              let instructionsIndex = lines.firstIndex(where: { $0.hasPrefix("## Instructions") }) else {
-            throw ParsingError.invalidFormat
+        // Find section markers and extract content
+        let ingredients: String
+        let instructions: String
+        
+        // Extract ingredients
+        if let ingredientsIndex = lines.firstIndex(where: { $0.hasPrefix("## Ingredients") }) {
+            let nextSectionIndex = lines[ingredientsIndex...].firstIndex(where: { $0.hasPrefix("## ") && !$0.hasPrefix("## Ingredients") })
+            let endIndex = nextSectionIndex ?? lines.endIndex
+            let content = lines[lines.index(after: ingredientsIndex)..<endIndex]
+                .filter { !$0.isEmpty }
+                .joined(separator: "\n")
+            
+            ingredients = content.trimmingCharacters(in: .whitespacesAndNewlines)
+            if ingredients.isEmpty {
+                missingElements.append("Ingredients content after ## Ingredients")
+            }
+        } else {
+            ingredients = ""
+            missingElements.append("Ingredients (## Ingredients)")
         }
         
-        // Extract ingredients (everything between ## Ingredients and ## Instructions)
-        let ingredientsStart = lines.index(after: ingredientsIndex)
-        let ingredientsEnd = instructionsIndex
-        let ingredients = lines[ingredientsStart..<ingredientsEnd]
-            .filter { !$0.isEmpty }
-            .joined(separator: "\n")
-        
-        guard !ingredients.isEmpty else {
-            throw ParsingError.noIngredients
+        // Extract instructions
+        if let instructionsIndex = lines.firstIndex(where: { $0.hasPrefix("## Instructions") }) {
+            let content = lines[lines.index(after: instructionsIndex)...]
+                .filter { !$0.isEmpty }
+                .joined(separator: "\n")
+            
+            instructions = content.trimmingCharacters(in: .whitespacesAndNewlines)
+            if instructions.isEmpty {
+                missingElements.append("Instructions content after ##Instructions")
+            }
+        } else {
+            instructions = ""
+            missingElements.append("Instructions (## Instructions)")
         }
         
-        // Extract instructions (everything after ## Instructions)
-        let instructionsStart = lines.index(after: instructionsIndex)
-        let instructions = lines[instructionsStart...]
-            .filter { !$0.isEmpty }
-            .joined(separator: "\n")
-        
-        guard !instructions.isEmpty else {
-            throw ParsingError.noInstructions
-        }
-        
-        return (
-            name: String(name).trimmingCharacters(in: .whitespacesAndNewlines),
-            ingredients: ingredients.trimmingCharacters(in: .whitespacesAndNewlines),
-            instructions: instructions.trimmingCharacters(in: .whitespacesAndNewlines)
+        return ParseResult(
+            name: name,
+            ingredients: ingredients,
+            instructions: instructions,
+            missingElements: missingElements
         )
     }
 }
