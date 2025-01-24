@@ -35,12 +35,11 @@ struct AIScanButton: View {
                 }
                 else {
                     ProgressView()
-                        .tint(.accentColor)
                     Text(processingStep)
-                        .foregroundColor(.secondary)
                 }
             }
         }
+        .disabled(showProcessingProgress)
         .alert("OpenAI API Key Required", isPresented: $showSettingsAlert) {
             Button("Open Settings") {
                 showSettingsSheet = true
