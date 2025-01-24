@@ -29,7 +29,7 @@ struct EditRecipeView: View {
             Form {
                 // Add input method picker
                 Section(header: Text("Import Options")) {
-                    HStack {
+                    HStack(spacing: 16) {
                         Button(action: { /* Add markdown action */ }) {
                             VStack(spacing: 8) {
                                 Image(systemName: "tray.and.arrow.down")
@@ -37,6 +37,7 @@ struct EditRecipeView: View {
                                 Text("Markdown")
                                     .font(.caption)
                             }
+                            .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color(.systemGray6))
                             .cornerRadius(10)
@@ -49,6 +50,7 @@ struct EditRecipeView: View {
                                 Text("AI Scan")
                                     .font(.caption)
                             }
+                            .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color(.systemGray6))
                             .cornerRadius(10)
