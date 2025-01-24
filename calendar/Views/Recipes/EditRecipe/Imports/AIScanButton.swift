@@ -35,6 +35,7 @@ struct AIScanButton: View {
                 }
                 else {
                     ProgressView()
+                        .frame(width: 24, height: 24)
                     Text(processingStep)
                 }
             }

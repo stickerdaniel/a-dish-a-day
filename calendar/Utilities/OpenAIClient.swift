@@ -19,8 +19,6 @@ enum OpenAIError: Error {
     case invalidData
 }
 
-
-
 class OpenAIIntegration {
     private var apiKey: String {
         UserDefaults.standard.string(forKey: "openai_api_key") ?? ""
@@ -45,10 +43,10 @@ class OpenAIIntegration {
                         Extract recipe details from this image and return as JSON with the following format:
                         - title: The recipe name
                         - ingredients: List each ingredient on a new line starting with "•". Always add emojis that are cooking / recipe related to each ingredient.
-                        - instructions: Number each step and put each step on a new line with an additional newline as spacing.
+                        - instructions: Number each step (1. 2. ...) and put each step on a new line with an additional newline as spacing.
                         
                         Make sure to preserve all line breaks in the output.
-                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste.
+                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste. Use 🌻 for oil instead. Do not replace words with emojis. Add the emojis at the lineend.
                         """
                     ],
                     [
