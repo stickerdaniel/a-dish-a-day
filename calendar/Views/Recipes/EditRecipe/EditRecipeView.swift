@@ -30,17 +30,10 @@ struct EditRecipeView: View {
                 if recipeToEdit == nil {
                     Section(header: Text("Import Options")) {
                         HStack(spacing: 16) {
-                            Button(action: { /* Add markdown action */ }) {
-                                VStack(spacing: 8) {
-                                    Image(systemName: "tray.and.arrow.down")
-                                        .font(.system(size: 24))
-                                    Text("Markdown")
-                                        .font(.caption)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color(.systemGray6))
-                                .cornerRadius(10)
+                            MarkdownImportButton { name, ingredients, instructions in
+                                self.name = name
+                                self.ingredients = ingredients
+                                self.instructions = instructions
                             }
                             
                             Button(action: { /* Add AI scan action */ }) {
