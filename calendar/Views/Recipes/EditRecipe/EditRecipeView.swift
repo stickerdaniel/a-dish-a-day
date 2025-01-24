@@ -29,7 +29,7 @@ struct EditRecipeView: View {
             Form {
                 if recipeToEdit == nil {
                     Section(header: Text("Import Options")) {
-                        HStack(spacing: 16) {
+                        List {
                             MarkdownImportButton { name, ingredients, instructions in
                                 self.name = name
                                 self.ingredients = ingredients

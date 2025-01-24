@@ -25,23 +25,31 @@ struct AIScanButton: View {
     let onImageScanned: (String, String, String) -> Void
     
     var body: some View {
-        Button(action: {
-            validateAndProceed()
-        }) {
-            VStack(spacing: 8) {
-                if(!showProcessingProgress){
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 24))
+        Button(action: validateAndProceed) {
+            HStack {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 20))
+                    .foregroundColor(.blue)
+                    .frame(width: 24)
+                VStack(alignment: .leading) {
                     Text("AI Scan")
-                        .font(.caption)
-                }else{
-                    ProgressView(processingStep)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                    if showProcessingProgress {
+                        HStack {
+                            ProgressView()
+                                .tint(.blue)
+                            Text(processingStep)
+                                .font(.body)
+                                .foregroundColor(.primary)
+                        }
+                    }
                 }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(10)
         }
         .alert("OpenAI API Key Required", isPresented: $showSettingsAlert) {
             Button("Open Settings") {
