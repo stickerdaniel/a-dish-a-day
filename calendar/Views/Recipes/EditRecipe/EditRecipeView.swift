@@ -9,7 +9,13 @@ import SwiftUI
 
 struct EditRecipeView: View {
     var recipeToEdit: RecipeModel?
-
+    
+    enum InputMethod {
+        case markdown
+        case aiScan
+    }
+    
+    @State private var selectedInputMethod: InputMethod = .markdown
     @State private var name: String = ""
     @State private var ingredients: String = ""
     @State private var instructions: String = ""
@@ -21,6 +27,31 @@ struct EditRecipeView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if recipeToEdit == nil {
+                    Section(header: Text("Import Options")) {
+                        HStack(spacing: 16) {
+                            MarkdownImportButton { name, ingredients, instructions in
+                                self.name = name
+                                self.ingredients = ingredients
+                                self.instructions = instructions
+                            }
+                            
+                            Button(action: { /* Add AI scan action */ }) {
+                                VStack(spacing: 8) {
+                                    Image(systemName: "sparkles")
+                                        .font(.system(size: 24))
+                                    Text("AI Scan")
+                                        .font(.caption)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                    }
+                }
+                
                 Section(header: Text("Name")) {
                     TextField("Enter recipe name", text: $name)
                 }

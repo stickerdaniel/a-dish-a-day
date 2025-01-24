@@ -19,6 +19,7 @@ struct CalendarsView: View {
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .imported
     @State private var isImportingJSON = false
+    @State private var showReplaceAlert = false
     @Query private var allCalendars: [CalendarModel]
     @Environment(\.modelContext) private var context
 
@@ -76,6 +77,9 @@ struct CalendarsView: View {
                 allowedContentTypes: [.customcalendar],
                 onCompletion: handleFileImport
             )
+            .alert("Existing calendar was replaced.", isPresented: $showReplaceAlert) {
+                Button("OK", role: .cancel) { }
+            }
         }
     }
 
@@ -89,23 +93,29 @@ struct CalendarsView: View {
     }
 
     private func handleFileImport(_ result: Result<URL, Error>) {
-        switch result {
-        case .success(let url):
-            guard url.startAccessingSecurityScopedResource() else {
-                print("Failed to access security-scoped resource.")
-                return
+        let handler = FileImportHandler<CalendarModel>(
+            handleImport: { url in
+                guard let calendar = CalendarSerialization.decodeCalendar(from: url) else {
+                    throw URLError(.cannotDecodeContentData)
+                }
+                calendar.source = .imported
+                return calendar
+            },
+            onSuccess: { calendar in
+                if let existing = allCalendars.first(where: {
+                    $0.id == calendar.id && $0.source == .imported
+                }) {
+                    context.delete(existing)
+                    showReplaceAlert = true
+                }
+                context.insert(calendar)
+                notificationManager.scheduleNotifications(for: calendar)
+            },
+            onError: { error in
+                print("Import failed: \(error.localizedDescription)")
             }
-            defer { url.stopAccessingSecurityScopedResource() }
-
-            if let importedCalendar = CalendarSerialization.decodeCalendar(from: url) {
-                importedCalendar.source = .imported
-                context.insert(importedCalendar)
-                notificationManager.scheduleNotifications(for: importedCalendar)
-            } else {
-                print("Failed to decode calendar.")
-            }
-        case .failure(let error):
-            print("File import failed: \(error.localizedDescription)")
-        }
+        )
+        
+        handler.process(result)
     }
 }
