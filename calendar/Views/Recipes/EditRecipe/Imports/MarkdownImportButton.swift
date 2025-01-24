@@ -10,6 +10,7 @@ import SwiftUI
 struct MarkdownImportButton: View {
     @State private var isImportingMarkdown = false
     @State private var showImportError = false
+    @State private var importErrorMessage = ""
     let onMarkdownImported: (String, String, String) -> Void
     
     var body: some View {
@@ -30,10 +31,10 @@ struct MarkdownImportButton: View {
             allowedContentTypes: [.plainText],
             onCompletion: handleMarkdownImport
         )
-        .alert("Import Error", isPresented: $showImportError) {
-            Button("OK", role: .cancel) { }
+        .alert("Import Warning", isPresented: $showImportError) {
+            Button("Ok", role: .cancel) { }
         } message: {
-            Text("Failed to import markdown file.")
+            Text(importErrorMessage)
         }
     }
     
@@ -45,12 +46,20 @@ struct MarkdownImportButton: View {
             
             do {
                 let markdown = try String(contentsOf: url)
-                let parsed = try RecipeMarkdownParser.parse(markdown: markdown)
+                let parsed = RecipeMarkdownParser.parse(markdown: markdown)
+                
+                if let errorMessage = parsed.errorMessage {
+                    importErrorMessage = errorMessage
+                    showImportError = true
+                }
+                
                 onMarkdownImported(parsed.name, parsed.ingredients, parsed.instructions)
             } catch {
+                importErrorMessage = "Failed to read markdown file"
                 showImportError = true
             }
         case .failure:
+            importErrorMessage = "Failed to access selected file"
             showImportError = true
         }
     }
