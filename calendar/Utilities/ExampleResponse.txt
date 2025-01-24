@@ -1,0 +1,36 @@
+Sending request to https://api.openai.com/v1/chat/completions
+Response: {
+  "id": "chatcmpl-AtIZOjPjASwixeIFXSH6vNGZMrNP3",
+  "object": "chat.completion",
+  "created": 1737742786,
+  "model": "gpt-4o-mini-2024-07-18",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "```json\n{\n  \"title\": \"Bananen-Schoko-Muffins\",\n  \"ingredients\": [\n    \"200 g Mehl (Type 405)\",\n    \"1/2 Teel. Natron\",\n    \"2 Teel. Backpulver\",\n    \"1/4 Teel. Zimt pulver\",\n    \"3 El. Kakaopulver\",\n    \"1 Ei\",\n    \"175 g brauner Zucker\",\n    \"100 ml neutrales Öl\",\n    \"125 g Buttermilch\",\n    \"3 mittelgroße, reife Bananen\",\n    \"200 g Vollmilch-Kuvertüre\",\n    \"etwa 90 Smarties\"\n  ],\n  \"instructions\": [\n    \"Den Backofen auf 180° vorheizen. Die Vertiefungen des Muffinsblechs einfetten oder Papier-Backförmchen hineinsetzen.\",\n    \"Das Mehl in eine Schüssel sieben und mit Backpulver, Natron, Zimt und Kakaopulver sorgfältig vermischen.\",\n    \"In einer weiteren, großen Schüssel das Ei aufschlagen und leicht verquirlen. Dann den Zucker, das Öl und die Buttermilch hinzufügen und gut vermischen.\",\n    \"Die Bananen schälen, mit einer Gabel zerdücken, zur Masse geben und kurz unterrühren. Zuletzt die Mehlmischung hinzufügen und vorsichtig unterheben.\",\n    \"Den Teig in die Blech-Vertiefungen einfüllen und im Backofen (Mitte, Umluft 160°) 20–25 Minuten backen.\",\n    \"Die Muffins aus dem Blech nehmen und auf einem Kuchengitter abkühlen lassen. Die Kuvertüre in Stückchen hacken und in einem hohen Töpfchen im heißen Wasserbad unter Rühren schmelzen. Die Muffins in die Kuvertüre tunken, etwas trocknen lassen und dann mit Smarties dekorieren.\"\n  ]\n}\n```",
+        "refusal": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 881,
+    "completion_tokens": 410,
+    "total_tokens": 1291,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "service_tier": "default",
+  "system_fingerprint": "fp_bd83329f63"
+}
