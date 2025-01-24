@@ -56,7 +56,7 @@ struct SettingsView: View {
                     SecureField("API Key", text: $apiKey)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                        .onChange(of: apiKey) { _ in
+                        .onChange(of: apiKey) {
                             validateAPIKey()
                         }
                 } header: {
