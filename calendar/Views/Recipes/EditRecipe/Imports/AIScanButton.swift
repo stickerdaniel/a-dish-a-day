@@ -59,6 +59,61 @@ struct AIScanButton: View {
         .sheet(isPresented: $showSettingsSheet) {
             SettingsView()
         }
+        .actionSheet(isPresented: $showSourceActionSheet) {
+            ActionSheet(
+                title: Text("Select Image Source"),
+                buttons: [
+                    .default(Text("Camera")) {
+                        let status = AVCaptureDevice.authorizationStatus(for: .video)
+                        switch status {
+                        case .authorized:
+                            showCamera = true
+                        case .notDetermined:
+                            AVCaptureDevice.requestAccess(for: .video) { granted in
+                                if granted {
+                                    DispatchQueue.main.async {
+                                        showCamera = true
+                                    }
+                                }
+                            }
+                        case .denied, .restricted:
+                            errorMessage = "Camera access is required. Please enable it in Settings."
+                            showError = true
+                        @unknown default:
+                            break
+                        }
+                    },
+                    .default(Text("Photo Library")) {
+                        showImagePicker = true
+                    },
+                    .cancel()
+                ]
+            )
+        }
+        .sheet(isPresented: $showCamera) {
+            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+                .onDisappear {
+                    if let image = selectedImage {
+                        Task {
+                            await processImage(image)
+                        }
+                    }
+                }
+        }
+        .photosPicker(
+            isPresented: $showImagePicker,
+            selection: .init(get: { nil }, set: { item in
+                guard let item = item else { return }
+                Task {
+                    if let data = try? await item.loadTransferable(type: Data.self),
+                       let image = UIImage(data: data) {
+                        selectedImage = image
+                        await processImage(image)
+                    }
+                }
+            }),
+            matching: .images
+        )
     }
     
     private func validateAndProceed() {
@@ -73,14 +128,7 @@ struct AIScanButton: View {
             return
         }
         
-        if let testImage = UIImage(named: "recipe-image") {
-            Task {
-                await processImage(testImage)
-            }
-        } else {
-            errorMessage = "Test image not found in assets"
-            showError = true
-        }
+        showSourceActionSheet = true
     }
     
     private func processImage(_ image: UIImage) async {        
