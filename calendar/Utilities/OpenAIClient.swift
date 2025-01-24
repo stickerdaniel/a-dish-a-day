@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Network
 
 struct AIRecipeData: Codable {
     let title: String
@@ -18,35 +17,15 @@ enum OpenAIError: Error {
     case missingAPIKey
     case requestFailed(Int)
     case invalidData
-    case noInternetConnection
 }
 
 class OpenAIIntegration {
-    private let monitor = NWPathMonitor()
-    private var isConnected = false
-    
-    init() {
-        monitor.pathUpdateHandler = { [weak self] path in
-            self?.isConnected = path.status == .satisfied
-        }
-        monitor.start(queue: DispatchQueue.global())
-    }
-    
-    deinit {
-        monitor.cancel()
-    }
-    
     private var apiKey: String {
         UserDefaults.standard.string(forKey: "openai_api_key") ?? ""
     }
     private let apiURL = URL(string: "https://api.openai.com/v1/chat/completions")!
     
     func analyzeRecipeImage(imageData: Data, completion: @escaping (Result<AIRecipeData, Error>) -> Void) {
-        guard isConnected else {
-            completion(.failure(OpenAIError.noInternetConnection))
-            return
-        }
-        
         guard let base64Image = imageData.base64EncodedString() as String? else {
             completion(.failure(NSError(domain: "Base64EncodingError", code: 0, userInfo: nil)))
             return
