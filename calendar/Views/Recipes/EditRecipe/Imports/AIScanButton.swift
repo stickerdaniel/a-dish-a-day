@@ -27,28 +27,18 @@ struct AIScanButton: View {
     var body: some View {
         Button(action: validateAndProceed) {
             HStack {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 20))
-                    .foregroundColor(.blue)
-                    .frame(width: 24)
-                VStack(alignment: .leading) {
+                if !showProcessingProgress {
+                    Image(systemName: "sparkles")
+                        .frame(width: 24, height: 24)
                     Text("AI Scan")
-                        .font(.body)
                         .foregroundColor(.primary)
-                    if showProcessingProgress {
-                        HStack {
-                            ProgressView()
-                                .tint(.blue)
-                            Text(processingStep)
-                                .font(.body)
-                                .foregroundColor(.primary)
-                        }
-                    }
                 }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14))
-                    .foregroundColor(.gray)
+                else {
+                    ProgressView()
+                        .tint(.accentColor)
+                    Text(processingStep)
+                        .foregroundColor(.secondary)
+                }
             }
         }
         .alert("OpenAI API Key Required", isPresented: $showSettingsAlert) {
