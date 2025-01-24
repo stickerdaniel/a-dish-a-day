@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CalendarCard: View {
+    var notificationManager = NotificationManager()
     var calendar: CalendarModel
     @Binding var selectedTab: CalendarTab
     @State private var showDeleteConfirmation = false
@@ -62,6 +63,7 @@ struct CalendarCard: View {
         ) {
             Button("Delete", role: .destructive) {
                 deleteCalendar()
+                
             }
             Button("Cancel", role: .cancel) {}
         }
@@ -101,5 +103,6 @@ struct CalendarCard: View {
 
     private func deleteCalendar() {
         context.delete(calendar)
+        notificationManager.deleteNotification(for: calendar)
     }
 }

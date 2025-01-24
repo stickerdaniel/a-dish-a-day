@@ -21,6 +21,7 @@ enum Appearance: String, CaseIterable {
 }
 
 struct SettingsView: View {
+    var notificationManager = NotificationManager()
     // MARK: - SwiftData model context
     @Environment(\.modelContext) private var modelContext
 
@@ -70,6 +71,7 @@ struct SettingsView: View {
             ) {
                 Button("Confirm", role: .destructive) {
                     clearAllData()
+                    notificationManager.deleteAllNotifications()
                 }
                 Button("Cancel", role: .cancel) {}
             }
