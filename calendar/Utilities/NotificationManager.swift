@@ -26,25 +26,19 @@ class NotificationManager: ObservableObject{
     }
 
     // Schedule notifications for all recipes in the calendar
-    func scheduleNotifications(for calendarModel: CalendarModel) {
-        let recipes = calendarModel.recipes
-        let daysBetween = calendarModel.daysBetween
-
-        guard daysBetween > 0 else {
-            print("Invalid date range. StartDate must be earlier than EndDate.")
-            return
-        }
-
-        for recipe in recipes {
-            guard let unlockDate = recipe.unlockDate else {
-                print("Recipe \(recipe.name) has no unlock date. Skipping.")
-                continue
+    func scheduleNotifications(for calendar: CalendarModel) {
+        // Set default notification preference to true for this calendar
+        UserDefaults.standard.set(true, forKey: "calendar_notifications_\(calendar.id)")
+        
+        // Schedule notifications for each recipe
+        for recipe in calendar.recipes {
+            if let unlockDate = recipe.unlockDate {
+                scheduleNotification(for: recipe, in: calendar, at: unlockDate)
             }
-            scheduleNotification(for: unlockDate, calendar: calendarModel)
         }
     }
 
-    func scheduleNotification(for date: Date, calendar: CalendarModel) {
+    private func scheduleNotification(for date: Date, calendar: CalendarModel) {
         // Validate the date
         guard date >= Date() else {
             print("Notification date \(date) is in the past. Skipping.")
@@ -80,7 +74,10 @@ class NotificationManager: ObservableObject{
     }
 
 
-    func deleteNotification(for calendar : CalendarModel){
+    func deleteNotifications(for calendar : CalendarModel){
+        // set User Defaults to false
+        UserDefaults.standard.set(false, forKey: "calendar_notifications_\(calendar.id)")
+
         //should delete all notifications for one calendar if a calendar is deleted
         print("Deleting notifications for calendar: \(calendar.name)")
         let calendarID = calendar.id.uuidString
@@ -113,6 +110,7 @@ class NotificationManager: ObservableObject{
                 UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: identifiersToRemove)
             }
     }
+    
     func deleteAllNotifications(){
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()

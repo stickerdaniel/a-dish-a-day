@@ -86,11 +86,10 @@ struct SettingsView: View {
                                 UserDefaults.standard.bool(forKey: "calendar_notifications_\(calendar.id)")
                             },
                             set: { enabled in
-                                UserDefaults.standard.set(enabled, forKey: "calendar_notifications_\(calendar.id)")
                                 if enabled {
                                     notificationManager.scheduleNotifications(for: calendar)
                                 } else {
-                                    notificationManager.deleteNotification(for: calendar)
+                                    notificationManager.deleteNotifications(for: calendar)
                                 }
                             }
                         ))
