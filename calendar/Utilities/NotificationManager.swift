@@ -39,11 +39,11 @@ class NotificationManager: ObservableObject{
                 print("Recipe \(recipe.name) has no unlock date. Skipping.")
                 continue
             }
-            scheduleNotification(for: unlockDate, calendarName: calendarModel.name)
+            scheduleNotification(for: unlockDate, calendar: calendarModel)
         }
     }
 
-    func scheduleNotification(for date: Date, calendarName: String) {
+    func scheduleNotification(for date: Date, calendar: CalendarModel) {
         // Validate the date
         guard date >= Date() else {
             print("Notification date \(date) is in the past. Skipping.")
@@ -52,7 +52,7 @@ class NotificationManager: ObservableObject{
 
         // Content for the notification
         let content = UNMutableNotificationContent()
-        content.title = "New door in Calendar: \(calendarName)"
+        content.title = "New door in Calendar: \(calendar.name)"
         content.body = "You can open your new door."
         content.sound = .default
 
@@ -66,7 +66,7 @@ class NotificationManager: ObservableObject{
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
         
         // Unique request identifier
-        let request = UNNotificationRequest(identifier: calendarName + ", \(date)", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: calendar.name + ", \(date)", content: content, trigger: trigger)
 
         // Add the notification
         UNUserNotificationCenter.current().add(request) { error in
