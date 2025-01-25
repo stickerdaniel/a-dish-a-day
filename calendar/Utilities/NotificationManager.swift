@@ -33,7 +33,7 @@ class NotificationManager: ObservableObject{
         // Schedule notifications for each recipe
         for recipe in calendar.recipes {
             if let unlockDate = recipe.unlockDate {
-                scheduleNotification(for: recipe, in: calendar, at: unlockDate)
+                scheduleNotification(for: unlockDate, calendar: calendar)
             }
         }
     }
