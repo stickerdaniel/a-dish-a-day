@@ -82,11 +82,14 @@ class NotificationManager: ObservableObject{
 
     func deleteNotification(for calendar : CalendarModel){
         //should delete all notifications for one calendar if a calendar is deleted
-        
+        print("Deleting notifications for calendar: \(calendar.name)")
         let calendarID = calendar.id.uuidString
 
             // Fetch pending notifications
             UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+                // Print 
+                print("Pending notifications: \(requests.count)")
+
                 // Filter identifiers matching the calendar ID
                 let identifiersToRemove = requests
                     .filter { $0.identifier.starts(with: "\(calendarID),") }
@@ -96,8 +99,11 @@ class NotificationManager: ObservableObject{
                 UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
             }
         
-        // Fetch delivered notifications
+            // Fetch delivered notifications
             UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
+                // Print
+                print("Delivered notifications: \(notifications.count)")
+
                 // Filter identifiers matching the calendar ID
                 let identifiersToRemove = notifications
                     .filter { $0.request.identifier.starts(with: "\(calendarID),") }

@@ -29,7 +29,11 @@ struct SettingsView: View {
     @AppStorage("appearance") private var appearance: Appearance = .system
 
     // MARK: - Notifications Toggle
-    @State private var notificationsEnabled: Bool = false
+    @Query private var importedCalendars: [CalendarModel]
+    
+    var filteredImportedCalendars: [CalendarModel] {
+        importedCalendars.filter { $0.source == .imported || $0.source == nil }
+    }
     
     // MARK: - OpenAI API Key
     @AppStorage("openai_api_key") private var apiKey: String = ""
@@ -76,10 +80,21 @@ struct SettingsView: View {
 
                 // Notifications Toggle
                 Section("Notifications") {
-                    Toggle("New Recipe Unlocked", isOn: $notificationsEnabled)
-                        .onChange(of: notificationsEnabled) {
-                            toggleNotifications()
-                        }
+                    ForEach(filteredImportedCalendars) { calendar in
+                        Toggle(calendar.name, isOn: Binding(
+                            get: {
+                                UserDefaults.standard.bool(forKey: "calendar_notifications_\(calendar.id)")
+                            },
+                            set: { enabled in
+                                UserDefaults.standard.set(enabled, forKey: "calendar_notifications_\(calendar.id)")
+                                if enabled {
+                                    notificationManager.scheduleNotifications(for: calendar)
+                                } else {
+                                    notificationManager.deleteNotification(for: calendar)
+                                }
+                            }
+                        ))
+                    }
                 }
 
                 // Data Management Section
@@ -124,11 +139,6 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Toggle Notifications
-    private func toggleNotifications() {
-        // Placeholder for the notifications toggle logic
-        print("Notifications toggled: \(notificationsEnabled)")
-    }
 
     // MARK: - Clear All Data
     private func clearAllData() {
