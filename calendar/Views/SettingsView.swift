@@ -144,6 +144,11 @@ struct SettingsView: View {
     // MARK: - Clear All Data
     private func clearAllData() {
         do {
+            // Clear all UserDefaults data by removing the entire persistent domain
+            let domain = Bundle.main.bundleIdentifier!
+            UserDefaults.standard.removePersistentDomain(forName: domain)
+            UserDefaults.standard.synchronize()
+            
             // Delete all objects for each of your SwiftData model types
             try modelContext.delete(model: RecipeModel.self)
             try modelContext.delete(model: CalendarModel.self)
@@ -152,6 +157,13 @@ struct SettingsView: View {
             try modelContext.save()
             print("All data cleared successfully.")
             showClearDataSuccess = true
+            
+            // Reset appearance to system default after clearing all data
+            appearance = .system
+            applyAppearance()
+
+            // delete all notifications
+            NotificationManager.shared.deleteAllNotifications()
         } catch {
             print("Failed to clear data: \(error.localizedDescription)")
             clearDataError = error.localizedDescription
