@@ -43,15 +43,7 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                // Notifications Toggle
-                Section("Notifications") {
-                    Toggle("New Recipe Unlocked", isOn: $notificationsEnabled)
-                        .onChange(of: notificationsEnabled) {
-                            toggleNotifications()
-                        }
-                }
-                
+            Form {                
                 // OpenAI API Key Section
                 Section {
                     SecureField("API Key", text: $apiKey)
@@ -81,6 +73,14 @@ struct SettingsView: View {
                     }
                 }
                 .pickerStyle(.inline)
+
+                // Notifications Toggle
+                Section("Notifications") {
+                    Toggle("New Recipe Unlocked", isOn: $notificationsEnabled)
+                        .onChange(of: notificationsEnabled) {
+                            toggleNotifications()
+                        }
+                }
 
                 // Data Management Section
                 Section("Data Management") {
