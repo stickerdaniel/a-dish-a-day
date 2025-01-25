@@ -10,11 +10,13 @@ import SwiftUI
 import SwiftData
 
 struct CalendarImporter {
+    
+    // Imports calendars from provided file URLs
     static func importCalendars(
         from urls: [URL],
-        existingCalendars: [CalendarModel],
         context: ModelContext,
-        onReplace: @escaping () -> Void
+        existingCalendars: [CalendarModel] = [],
+        onReplace: (() -> Void)? = nil
     ) {
         let handler = FileImportHandler<CalendarModel>(
             handleImport: { url in
@@ -25,11 +27,13 @@ struct CalendarImporter {
                 return calendar
             },
             onSuccess: { calendar in
+                print("Imported calendar: \(calendar.name)")
                 if let existing = existingCalendars.first(where: {
                     $0.id == calendar.id && $0.source == .imported
                 }) {
+                    NotificationManager.shared.deleteNotifications(for: existing)
                     context.delete(existing)
-                    onReplace()
+                    onReplace?()  // Call only if provided
                 }
                 context.insert(calendar)
                 NotificationManager.shared.scheduleNotifications(for: calendar)
@@ -41,6 +45,39 @@ struct CalendarImporter {
 
         for url in urls {
             handler.process(.success(url))
+        }
+    }
+
+    // Imports default calendars from the app bundle
+    static func importDefaultCalendars(context: ModelContext) {
+        print("Importing default calendars...")
+
+        guard let bundlePath = Bundle.main.resourcePath else {
+            print("Failed to locate bundle path")
+            return
+        }
+
+        let bundleURL = URL(fileURLWithPath: bundlePath)
+        let fileManager = FileManager.default
+
+        do {
+            // Get all `.ddcal` files in the bundle
+            let fileURLs = try fileManager.contentsOfDirectory(at: bundleURL, includingPropertiesForKeys: nil)
+                .filter { $0.pathExtension == "ddcal" }
+
+            if fileURLs.isEmpty {
+                print("No .ddcal files found in bundle")
+                return
+            }
+
+            print("Found default calendars: \(fileURLs.map { $0.lastPathComponent })")
+
+            importCalendars(
+                from: fileURLs,
+                context: context
+            )
+        } catch {
+            print("Error while accessing bundle contents: \(error)")
         }
     }
 }

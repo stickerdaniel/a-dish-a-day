@@ -10,9 +10,24 @@
 		BF9695A82D106F6F00025A94 /* calendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = calendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "calendar" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				DefaultCalendars/README.md,
+				README.md,
+				Utilities/ExampleResponse.txt,
+			);
+			target = BF9695A72D106F6F00025A94 /* calendar */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BF9695AA2D106F6F00025A94 /* calendar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "calendar" target */,
+			);
 			path = calendar;
 			sourceTree = "<group>";
 		};

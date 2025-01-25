@@ -21,6 +21,7 @@ struct CalendarsView: View {
     @State private var showReplaceAlert = false
     @Query private var allCalendars: [CalendarModel]
     @Environment(\.modelContext) private var context
+    @AppStorage("hasImportedDefaultsOnce") private var hasImportedDefaultsOnce: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -80,6 +81,15 @@ struct CalendarsView: View {
                 Button("OK", role: .cancel) { }
             }
         }
+        .onAppear {
+            // Import default calendars only on the first launch
+            if !hasImportedDefaultsOnce {
+                CalendarImporter.importDefaultCalendars(
+                    context: context
+                )
+                hasImportedDefaultsOnce = true
+            }
+        }
     }
 
     private var filteredCalendars: [CalendarModel] {
@@ -96,8 +106,8 @@ struct CalendarsView: View {
         case .success(let url):
             CalendarImporter.importCalendars(
                 from: [url],
-                existingCalendars: allCalendars,
                 context: context,
+                existingCalendars: allCalendars,
                 onReplace: {
                     showReplaceAlert = true
                 }
