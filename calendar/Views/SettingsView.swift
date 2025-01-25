@@ -78,21 +78,23 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.inline)
 
-                // Notifications Toggle
-                Section("Notifications") {
-                    ForEach(filteredImportedCalendars) { calendar in
-                        Toggle(calendar.name, isOn: Binding(
-                            get: {
-                                UserDefaults.standard.bool(forKey: "calendar_notifications_\(calendar.id)")
-                            },
-                            set: { enabled in
-                                if enabled {
-                                    notificationManager.scheduleNotifications(for: calendar)
-                                } else {
-                                    notificationManager.deleteNotifications(for: calendar)
+                // Notifications Toggle if filteredImportedCalendars is not empty
+                if !filteredImportedCalendars.isEmpty {
+                    Section("Notifications") {
+                        ForEach(filteredImportedCalendars) { calendar in
+                            Toggle(calendar.name, isOn: Binding(
+                                get: {
+                                    UserDefaults.standard.bool(forKey: "calendar_notifications_\(calendar.id)")
+                                },
+                                set: { enabled in
+                                    if enabled {
+                                        notificationManager.scheduleNotifications(for: calendar)
+                                    } else {
+                                        notificationManager.deleteNotifications(for: calendar)
+                                    }
                                 }
-                            }
-                        ))
+                            ))
+                        }
                     }
                 }
 
