@@ -52,8 +52,8 @@ class NotificationManager: ObservableObject{
 
         // Content for the notification
         let content = UNMutableNotificationContent()
-        content.title = "New door in Calendar: \(calendar.name)"
-        content.body = "You can open your new door."
+        content.title = "Open \(calendar.name)"
+        content.body = "A new recipe is unlocked!"
         content.sound = .default
 
         // Set dynamic badge count
@@ -66,7 +66,7 @@ class NotificationManager: ObservableObject{
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
         
         // Unique request identifier
-        let request = UNNotificationRequest(identifier: calendar.name + ", \(date)", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: calendar.id.uuidString + ", " + date.description, content: content, trigger: trigger)
 
         // Add the notification
         UNUserNotificationCenter.current().add(request) { error in
@@ -82,13 +82,13 @@ class NotificationManager: ObservableObject{
     func deleteNotification(for calendar : CalendarModel){
         //should delete all notifications for one calendar if a calendar is deleted
         
-        let calendarName = calendar.name
+        let calendarID = calendar.id.uuidString
 
             // Fetch pending notifications
             UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-                // Filter identifiers matching the calendar name
+                // Filter identifiers matching the calendar ID
                 let identifiersToRemove = requests
-                    .filter { $0.identifier.starts(with: "\(calendarName),") }
+                    .filter { $0.identifier.starts(with: "\(calendarID),") }
                     .map { $0.identifier }
                 
                 // Remove matching pending notifications
@@ -97,9 +97,9 @@ class NotificationManager: ObservableObject{
         
         // Fetch delivered notifications
             UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
-                // Filter identifiers matching the calendar name
+                // Filter identifiers matching the calendar ID
                 let identifiersToRemove = notifications
-                    .filter { $0.request.identifier.starts(with: "\(calendarName),") }
+                    .filter { $0.request.identifier.starts(with: "\(calendarID),") }
                     .map { $0.request.identifier }
                 
                 // Remove matching delivered notifications
