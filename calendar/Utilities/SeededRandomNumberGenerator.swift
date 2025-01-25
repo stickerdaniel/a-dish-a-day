@@ -21,7 +21,6 @@ struct SeededRandomNumberGenerator {
         
         // Normalize the value to the range [0, 1] using the full state (64-bit)
         let fraction = Double(state & 0xFFFFFFFFFFFF) / Double(0xFFFFFFFFFFFF)
-        print("Generated random number: \(fraction)")
         return fraction
     }
 }
