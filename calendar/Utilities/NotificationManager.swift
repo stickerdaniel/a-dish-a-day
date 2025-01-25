@@ -9,11 +9,11 @@ import SwiftUI
 import UserNotifications
 
 class NotificationManager: ObservableObject{
-    //Singelton
+    // Singelton
     static let shared = NotificationManager()
     
     
-    //request to send Notifications
+    // request to send Notifications
     static func requestAuthorization() {
         let options: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(options: options) { granted, error in
@@ -25,6 +25,7 @@ class NotificationManager: ObservableObject{
         }
     }
 
+    // Schedule notifications for all recipes in the calendar
     func scheduleNotifications(for calendarModel: CalendarModel) {
         let recipes = calendarModel.recipes
         let daysBetween = calendarModel.daysBetween
