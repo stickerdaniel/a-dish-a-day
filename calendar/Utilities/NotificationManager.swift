@@ -66,7 +66,7 @@ class NotificationManager: ObservableObject{
         let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDate, repeats: false)
         
         // Unique request identifier
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: calendarName + ", \(date)", content: content, trigger: trigger)
 
         // Add the notification
         UNUserNotificationCenter.current().add(request) { error in
@@ -79,6 +79,36 @@ class NotificationManager: ObservableObject{
     }
 
 
-    
+    func deleteNotification(for calendar : CalendarModel){
+        //should delete all notifications for one calendar if a calendar is deleted
+        
+        let calendarName = calendar.name
+
+            // Fetch pending notifications
+            UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+                // Filter identifiers matching the calendar name
+                let identifiersToRemove = requests
+                    .filter { $0.identifier.starts(with: "\(calendarName),") }
+                    .map { $0.identifier }
+                
+                // Remove matching pending notifications
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToRemove)
+            }
+        
+        // Fetch delivered notifications
+            UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
+                // Filter identifiers matching the calendar name
+                let identifiersToRemove = notifications
+                    .filter { $0.request.identifier.starts(with: "\(calendarName),") }
+                    .map { $0.request.identifier }
+                
+                // Remove matching delivered notifications
+                UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: identifiersToRemove)
+            }
+    }
+    func deleteAllNotifications(){
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+    }
 }
 
