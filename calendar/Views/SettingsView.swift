@@ -29,7 +29,11 @@ struct SettingsView: View {
     @AppStorage("appearance") private var appearance: Appearance = .system
 
     // MARK: - Notifications Toggle
-    @State private var notificationsEnabled: Bool = false
+    @Query private var importedCalendars: [CalendarModel]
+    
+    var filteredImportedCalendars: [CalendarModel] {
+        importedCalendars.filter { $0.source == .imported || $0.source == nil }
+    }
     
     // MARK: - OpenAI API Key
     @AppStorage("openai_api_key") private var apiKey: String = ""
@@ -43,15 +47,7 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                // Notifications Toggle
-                Section("Notifications") {
-                    Toggle("New Recipe Unlocked", isOn: $notificationsEnabled)
-                        .onChange(of: notificationsEnabled) {
-                            toggleNotifications()
-                        }
-                }
-                
+            Form {                
                 // OpenAI API Key Section
                 Section {
                     SecureField("API Key", text: $apiKey)
@@ -81,6 +77,26 @@ struct SettingsView: View {
                     }
                 }
                 .pickerStyle(.inline)
+
+                // Notifications Toggle if filteredImportedCalendars is not empty
+                if !filteredImportedCalendars.isEmpty {
+                    Section("Notifications") {
+                        ForEach(filteredImportedCalendars) { calendar in
+                            Toggle(calendar.name, isOn: Binding(
+                                get: {
+                                    UserDefaults.standard.bool(forKey: "calendar_notifications_\(calendar.id)")
+                                },
+                                set: { enabled in
+                                    if enabled {
+                                        notificationManager.scheduleNotifications(for: calendar)
+                                    } else {
+                                        notificationManager.deleteNotifications(for: calendar)
+                                    }
+                                }
+                            ))
+                        }
+                    }
+                }
 
                 // Data Management Section
                 Section("Data Management") {
@@ -124,11 +140,6 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Toggle Notifications
-    private func toggleNotifications() {
-        // Placeholder for the notifications toggle logic
-        print("Notifications toggled: \(notificationsEnabled)")
-    }
 
     // MARK: - Clear All Data
     private func clearAllData() {

@@ -103,6 +103,6 @@ struct CalendarCard: View {
 
     private func deleteCalendar() {
         context.delete(calendar)
-        notificationManager.deleteNotification(for: calendar)
+        notificationManager.deleteNotifications(for: calendar)
     }
 }
