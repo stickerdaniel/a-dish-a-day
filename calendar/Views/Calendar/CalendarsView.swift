@@ -15,7 +15,6 @@ enum CalendarTab: String, CaseIterable {
 }
 
 struct CalendarsView: View {
-    var notificationManager = NotificationManager.shared
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .imported
     @State private var isImportingJSON = false
@@ -93,29 +92,18 @@ struct CalendarsView: View {
     }
 
     private func handleFileImport(_ result: Result<URL, Error>) {
-        let handler = FileImportHandler<CalendarModel>(
-            handleImport: { url in
-                guard let calendar = CalendarSerialization.decodeCalendar(from: url) else {
-                    throw URLError(.cannotDecodeContentData)
-                }
-                calendar.source = .imported
-                return calendar
-            },
-            onSuccess: { calendar in
-                if let existing = allCalendars.first(where: {
-                    $0.id == calendar.id && $0.source == .imported
-                }) {
-                    context.delete(existing)
+        switch result {
+        case .success(let url):
+            CalendarImporter.importCalendars(
+                from: [url],
+                existingCalendars: allCalendars,
+                context: context,
+                onReplace: {
                     showReplaceAlert = true
                 }
-                context.insert(calendar)
-                notificationManager.scheduleNotifications(for: calendar)
-            },
-            onError: { error in
-                print("Import failed: \(error.localizedDescription)")
-            }
-        )
-        
-        handler.process(result)
+            )
+        case .failure(let error):
+            print("Import failed: \(error.localizedDescription)")
+        }
     }
 }
