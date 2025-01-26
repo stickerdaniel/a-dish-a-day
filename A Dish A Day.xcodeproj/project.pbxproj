@@ -7,18 +7,18 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		BF9695A82D106F6F00025A94 /* calendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = calendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF9695A82D106F6F00025A94 /* ADishADay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ADishADay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "calendar" target */ = {
+		65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "ADishADay" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				DefaultCalendars/README.md,
 				README.md,
 				Utilities/ExampleResponse.txt,
 			);
-			target = BF9695A72D106F6F00025A94 /* calendar */;
+			target = BF9695A72D106F6F00025A94 /* ADishADay */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -26,7 +26,7 @@
 		BF9695AA2D106F6F00025A94 /* calendar */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "calendar" target */,
+				65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "ADishADay" target */,
 			);
 			path = calendar;
 			sourceTree = "<group>";
@@ -55,7 +55,7 @@
 		BF9695A92D106F6F00025A94 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BF9695A82D106F6F00025A94 /* calendar.app */,
+				BF9695A82D106F6F00025A94 /* ADishADay.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -63,9 +63,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BF9695A72D106F6F00025A94 /* calendar */ = {
+		BF9695A72D106F6F00025A94 /* ADishADay */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BF9695B62D106F7100025A94 /* Build configuration list for PBXNativeTarget "calendar" */;
+			buildConfigurationList = BF9695B62D106F7100025A94 /* Build configuration list for PBXNativeTarget "ADishADay" */;
 			buildPhases = (
 				BF9695A42D106F6F00025A94 /* Sources */,
 				BF9695A52D106F6F00025A94 /* Frameworks */,
@@ -78,11 +78,11 @@
 			fileSystemSynchronizedGroups = (
 				BF9695AA2D106F6F00025A94 /* calendar */,
 			);
-			name = calendar;
+			name = ADishADay;
 			packageProductDependencies = (
 			);
 			productName = calendar;
-			productReference = BF9695A82D106F6F00025A94 /* calendar.app */;
+			productReference = BF9695A82D106F6F00025A94 /* ADishADay.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -100,7 +100,7 @@
 					};
 				};
 			};
-			buildConfigurationList = BF9695A32D106F6F00025A94 /* Build configuration list for PBXProject "calendar" */;
+			buildConfigurationList = BF9695A32D106F6F00025A94 /* Build configuration list for PBXProject "ADishADay" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -114,7 +114,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BF9695A72D106F6F00025A94 /* calendar */,
+				BF9695A72D106F6F00025A94 /* ADishADay */,
 			);
 		};
 /* End PBXProject section */
@@ -324,7 +324,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BF9695A32D106F6F00025A94 /* Build configuration list for PBXProject "calendar" */ = {
+		BF9695A32D106F6F00025A94 /* Build configuration list for PBXProject "ADishADay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BF9695B42D106F7100025A94 /* Debug */,
@@ -333,7 +333,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BF9695B62D106F7100025A94 /* Build configuration list for PBXNativeTarget "calendar" */ = {
+		BF9695B62D106F7100025A94 /* Build configuration list for PBXNativeTarget "ADishADay" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BF9695B72D106F7100025A94 /* Debug */,
