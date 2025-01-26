@@ -102,16 +102,11 @@ struct EditCalendarView: View {
         .onAppear(perform: loadCalendarData)
         .sheet(isPresented: $isPickingRecipe) {
             if let date = currentSelectedDate {
-                if allRecipes.isEmpty {
-                    Text("No recipes available")
-                        .padding()
-                } else {
-                    RecipeSelectionSheet(
-                        isPresented: $isPickingRecipe,
-                        recipes: allRecipes
-                    ) { chosenRecipe in
-                        assignRecipe(chosenRecipe, to: date)
-                    }
+                RecipeSelectionSheet(
+                    isPresented: $isPickingRecipe,
+                    recipes: allRecipes
+                ) { chosenRecipe in
+                    assignRecipe(chosenRecipe, to: date)
                 }
             }
         }
@@ -132,6 +127,9 @@ struct EditCalendarView: View {
             )
             thumbnailImage = nil
         }
+
+        // log loaded recipes
+        print("Loaded recipes: \(allRecipes.map { $0.name })")
     }
 
     /// Save changes to the calendar, whether adding a new one or updating an existing one.
