@@ -3,7 +3,10 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 24.01.25.
-//
+//  Another cool feature that allows users import recipes from markdown files 
+// # Title
+// ## Ingredients
+// ## Instructions
 
 import SwiftUI
 

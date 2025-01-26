@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 25.01.25.
-//
+//  This file handles the import of calendars (also default calendars)
 
 import Foundation
 import SwiftUI

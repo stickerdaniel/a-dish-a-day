@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 15.01.25.
-//
+//  A view for editing a recipe.
 
 import SwiftUI
 
@@ -88,7 +88,7 @@ struct EditRecipeView: View {
     }
 
     // MARK: - Actions
-
+    // helper function to populate fields if editing an existing recipe
     private func populateFields() {
         if let recipe = recipeToEdit {
             name = recipe.name
@@ -100,6 +100,7 @@ struct EditRecipeView: View {
         }
     }
 
+    // save the recipe if finished editing
     private func saveRecipe() {
         if let recipe = recipeToEdit {
             recipe.name = name

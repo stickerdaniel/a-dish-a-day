@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 17.01.25.
-//
+//  custom extension for date utilities that we needed multiple times
 
 import Foundation
 

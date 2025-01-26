@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Lucy May Plassmann on 12.01.25.
-//
+//  A reusable component for displaying recipe data used by the OpenCalendarRecipeView and OpenRecipeView.
 
 import SwiftUI
 

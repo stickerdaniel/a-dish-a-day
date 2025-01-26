@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 17.01.25.
-//
+//  A component to select a recipe from a grid of recipes
 
 import SwiftUI
 

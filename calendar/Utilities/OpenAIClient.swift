@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 19.01.25.
-//
+//  Here we handle the API calls to OpenAI. The custom promt ensures correct parsing and a consistent output format. We get a JSON back with the title, ingredients and instructions (feature is called structured output)
 
 import Foundation
 

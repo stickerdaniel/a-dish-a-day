@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 15.01.25.
-//
+//  Settings view to set API Key, Appearance, and calendar-specific notifications.
 
 import SwiftUI
 import SwiftData

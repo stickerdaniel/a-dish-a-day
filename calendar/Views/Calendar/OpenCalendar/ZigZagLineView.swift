@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 18.01.25.
-//
+//  Wow, another awesome component that creates a dynamic zigzag line using a bezier path.
 
 import SwiftUI
 

@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 14.01.25.
-//
+//  Here we use the Card component and define some context menu actions for the calendar cards.
 
 import SwiftUI
 

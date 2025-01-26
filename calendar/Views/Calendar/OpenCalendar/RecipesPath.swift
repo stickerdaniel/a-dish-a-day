@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 18.01.25.
-//
+//  Here we generate a calendar-unique path and pass the recipe doors 
 
 import SwiftUI
 

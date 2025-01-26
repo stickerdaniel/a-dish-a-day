@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 14.01.25.
-//
+//  This is a custom recipe card view for displaying a recipe in a list. We use the card component and specify some context menu actions.
 
 import SwiftUI
 

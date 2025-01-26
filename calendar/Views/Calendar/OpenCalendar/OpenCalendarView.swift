@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 18.01.25.
-//
+//  This view opens if we click on a calendar
 
 import SwiftUI
 

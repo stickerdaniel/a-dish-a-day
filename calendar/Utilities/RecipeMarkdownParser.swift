@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 24.01.25.
-//
+//  Here we parse the markdown file and extract the name, ingredients and instructions. We return the result and missing elements for good user feedback.
 
 import Foundation
 

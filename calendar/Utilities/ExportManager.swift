@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 16.01.25.
-//
+//  Helper to export / share calendar
 
 import SwiftUI
 import UIKit

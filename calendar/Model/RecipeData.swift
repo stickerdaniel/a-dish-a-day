@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 18.01.25.
-//
+//  Why not use RecipeModel? RecipeModel is used to store the saved Recipes in the Recipes tab. Here we store the recipes that are saved (and auto-serialized) in the Calendars. We also have an unlock date set, that is not needed in RecipeModel
 
 import SwiftUI
 

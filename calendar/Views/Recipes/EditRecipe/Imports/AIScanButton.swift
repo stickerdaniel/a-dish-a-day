@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 24.01.25.
-//
+//  This is a really cool feature, we can select / take a photo and send it to openAI to get the recipe from an image
 
 import SwiftUI
 import PhotosUI
@@ -25,6 +25,7 @@ struct AIScanButton: View {
     let onImageScanned: (String, String, String) -> Void
     
     var body: some View {
+        // basic bth styling
         Button(action: validateAndProceed) {
             HStack {
                 if !showProcessingProgress {
@@ -33,7 +34,7 @@ struct AIScanButton: View {
                     Text("AI Scan")
                         .foregroundColor(.primary)
                 }
-                else {
+                else { // show a progress view if user selected a photo
                     ProgressView()
                         .frame(width: 24, height: 24)
                     Text(processingStep)
@@ -61,13 +62,13 @@ struct AIScanButton: View {
             ActionSheet(
                 title: Text("Select Image Source"),
                 buttons: [
-                    .default(Text("Camera")) {
-                        let status = AVCaptureDevice.authorizationStatus(for: .video)
+                    .default(Text("Camera")) { // camera button to take a photo
+                        let status = AVCaptureDevice.authorizationStatus(for: .video) // check camera access 
                         switch status {
                         case .authorized:
                             showCamera = true
                         case .notDetermined:
-                            AVCaptureDevice.requestAccess(for: .video) { granted in
+                            AVCaptureDevice.requestAccess(for: .video) { granted in // get permission to use the camera
                                 if granted {
                                     DispatchQueue.main.async {
                                         showCamera = true
@@ -81,14 +82,14 @@ struct AIScanButton: View {
                             break
                         }
                     },
-                    .default(Text("Photo Library")) {
+                    .default(Text("Photo Library")) { // photo library button to select a photo
                         showImagePicker = true
                     },
                     .cancel()
                 ]
             )
         }
-        .sheet(isPresented: $showCamera) {
+        .sheet(isPresented: $showCamera) { // camera sheet to take a photo
             ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
                 .onDisappear {
                     if let image = selectedImage {
@@ -98,7 +99,7 @@ struct AIScanButton: View {
                     }
                 }
         }
-        .photosPicker(
+        .photosPicker( // photo library picker to select a photo
             isPresented: $showImagePicker,
             selection: .init(get: { nil }, set: { item in
                 guard let item = item else { return }
@@ -114,6 +115,7 @@ struct AIScanButton: View {
         )
     }
     
+    // with this we can validate the api key and show an alert if it is not set
     private func validateAndProceed() {
         guard let apiKey = UserDefaults.standard.string(forKey: "openai_api_key") else {
             showSettingsAlert = true
@@ -126,16 +128,19 @@ struct AIScanButton: View {
             return
         }
         
+        // show the action sheet to select the source of the image if api key is valid
         showSourceActionSheet = true
     }
     
-    private func processImage(_ image: UIImage) async {        
+    // here the ai magic happens
+    private func processImage(_ image: UIImage) async {      
+        // show loading anim in button  
         await MainActor.run {
             print("Starting to process image")
             processingStep = "Analyzing recipe..."
             showProcessingProgress = true
         }
-        
+        // now lety try to process the image and send it to the OpenAI API
         do {
             if let imageData = image.jpegData(compressionQuality: 0.8) {
                 let openAI = OpenAIIntegration()
@@ -154,7 +159,7 @@ struct AIScanButton: View {
                     }
                 }
             }
-        } catch OpenAIError.missingAPIKey {
+        } catch OpenAIError.missingAPIKey { // some error handling
             await showErrorMessage("OpenAI API key is missing. Please add it in settings.")
             showSettingsAlert = true
         } catch OpenAIError.requestFailed(let statusCode) {
@@ -183,6 +188,7 @@ struct AIScanButton: View {
         }
     }
     
+    // user feedback if something goes wrong
     private func showErrorMessage(_ message: String) async {
         await MainActor.run {
             showProcessingProgress = false

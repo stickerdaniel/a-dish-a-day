@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 18.01.25.
-//
+//  This helper utility is used to generate random numbers for the RecipePath. we want to get the same "random" values based on a seed to ensure that the same path is generated for each calendar.
 
 import Foundation
 

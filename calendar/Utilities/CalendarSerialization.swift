@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 14.01.25.
-//
+//  This is needed to import a calendar and export it as a JSON file.
 
 import UniformTypeIdentifiers
 

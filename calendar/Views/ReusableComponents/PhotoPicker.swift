@@ -23,14 +23,14 @@ struct PhotoPicker: View {
                     .frame(maxHeight: 200)
                     .cornerRadius(12)
             } else {
-                Text("No image selected")
+                Text("No image selected") // placeholder text if no image is selected
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
                     .background(Color(UIColor.systemGray6))
                     .cornerRadius(12)
             }
-
+            // PhotosPicker for selecting an image from the photo library
             PhotosPicker(
                 title,
                 selection: $pickerItem,

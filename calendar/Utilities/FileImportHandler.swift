@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 24.01.25.
-//
+//  helper for importing files (used for default calendars and import)
 
 import SwiftUI
 import UniformTypeIdentifiers
