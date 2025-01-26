@@ -27,7 +27,7 @@ struct EditCalendarView: View {
     @State private var showingImportAlert: Bool = false
 
     /// Real recipes fetched via SwiftData
-    @Query private var allRecipes: [RecipeModel]
+    @Query(sort: \RecipeModel.name) private var allRecipes: [RecipeModel]
 
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
@@ -102,11 +102,16 @@ struct EditCalendarView: View {
         .onAppear(perform: loadCalendarData)
         .sheet(isPresented: $isPickingRecipe) {
             if let date = currentSelectedDate {
-                RecipeSelectionSheet(
-                    isPresented: $isPickingRecipe,
-                    recipes: allRecipes
-                ) { chosenRecipe in
-                    assignRecipe(chosenRecipe, to: date)
+                if allRecipes.isEmpty {
+                    Text("No recipes available")
+                        .padding()
+                } else {
+                    RecipeSelectionSheet(
+                        isPresented: $isPickingRecipe,
+                        recipes: allRecipes
+                    ) { chosenRecipe in
+                        assignRecipe(chosenRecipe, to: date)
+                    }
                 }
             }
         }
