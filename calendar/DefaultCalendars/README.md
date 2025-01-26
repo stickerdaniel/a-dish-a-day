@@ -7,4 +7,4 @@ To add a default calendar:
 2. Export it as a .ddcal file
 3. Place the .ddcal file in this folder
 
-All .ddcal files in this folder will be automatically imported for new users.
+All .ddcal files in this folder will be automatically imported for new users. (check that they are listed in copy bundle resources and dont have duplicate names)
