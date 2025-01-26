@@ -21,7 +21,7 @@ struct EditCalendarView: View {
 
     // For showing the recipe picker sheet
     @State private var isPickingRecipe = false
-    @State private var currentSelectedDate: Date? = nil
+    @State private var selectedDateForRecipePicker: Date? = nil
     
     // For import settings
     @State private var showingImportAlert: Bool = false
@@ -68,8 +68,7 @@ struct EditCalendarView: View {
                         let assignedRecipe = editingCalendar.getRecipe(for: date)
                         
                         DayCard(date: date, recipeAssigned: assignedRecipe) {
-                            currentSelectedDate = date
-                            isPickingRecipe = true
+                            selectedDateForRecipePicker = date
                         }
                     }
                 }
@@ -100,13 +99,20 @@ struct EditCalendarView: View {
             }
         }
         .onAppear(perform: loadCalendarData)
-        .sheet(isPresented: $isPickingRecipe) {
-            if let date = currentSelectedDate {
+        .sheet(isPresented: .init(
+            get: { selectedDateForRecipePicker != nil },
+            set: { if !$0 { selectedDateForRecipePicker = nil } }
+        )) {
+            if let date = selectedDateForRecipePicker {
                 RecipeSelectionSheet(
-                    isPresented: $isPickingRecipe,
+                    isPresented: .init(
+                        get: { selectedDateForRecipePicker != nil },
+                        set: { if !$0 { selectedDateForRecipePicker = nil } }
+                    ),
                     recipes: allRecipes
                 ) { chosenRecipe in
                     assignRecipe(chosenRecipe, to: date)
+                    selectedDateForRecipePicker = nil
                 }
             }
         }
