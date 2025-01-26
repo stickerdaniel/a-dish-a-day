@@ -80,6 +80,7 @@ class CalendarModel: Identifiable, Codable {
 
     /// Assigns a recipe to the calendar.
     func assignRecipe(_ recipe: RecipeModel, unlockDate: Date? = nil) {
+        print("cal assignRecipe \(recipe), \(unlockDate)")
         let recipeData = RecipeData(recipe: recipe, unlockDate: unlockDate)
         recipes.append(recipeData)
     }

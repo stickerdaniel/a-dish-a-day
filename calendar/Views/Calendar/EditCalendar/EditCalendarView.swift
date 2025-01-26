@@ -12,7 +12,11 @@ struct EditCalendarView: View {
     /// The calendar being edited. If `nil`, a new calendar is created.
     var calendarToEdit: CalendarModel?
 
-    @State private var editingCalendar: CalendarModel
+    @State private var editingCalendar = CalendarModel(
+        name: "",
+        startDate: Date().midnight,
+        endDate: Date().addingTimeInterval(60 * 60 * 24 * 6).midnight
+    )
     @State private var thumbnailImage: UIImage?
 
     // For showing the recipe picker sheet
@@ -27,22 +31,6 @@ struct EditCalendarView: View {
 
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
-
-    // MARK: - Init
-    init(calendarToEdit: CalendarModel? = nil) {
-        self.calendarToEdit = calendarToEdit
-
-        let initialCalendar: CalendarModel
-        if let existingCalendar = calendarToEdit {
-            initialCalendar = CalendarModel.copy(from: existingCalendar)
-        } else {
-            initialCalendar = CalendarModel(name: "",
-                                            startDate: Date().midnight,
-                                            endDate: Date().addingTimeInterval(60 * 60 * 24 * 6).midnight)
-        }
-
-        _editingCalendar = State(initialValue: initialCalendar)
-    }
 
     // MARK: - Body
     var body: some View {
@@ -125,20 +113,19 @@ struct EditCalendarView: View {
     }
 
     // MARK: - Actions
-
-    /// Load data from the existing calendar if editing, and initialize the thumbnail.
     private func loadCalendarData() {
-        guard let existing = calendarToEdit else { return }
-
-        editingCalendar.name = existing.name
-        editingCalendar.startDate = existing.startDate
-        editingCalendar.endDate = existing.endDate
-        editingCalendar.recipes = existing.recipes // Assign recipes directly
-        editingCalendar.thumbnailData = existing.thumbnailData
-        editingCalendar.adjustDatesOnImport = existing.adjustDatesOnImport
-
-        if let data = existing.thumbnailData, let image = UIImage(data: data) {
-            thumbnailImage = image
+        if let calendarToEdit = calendarToEdit {
+            editingCalendar = CalendarModel.copy(from: calendarToEdit)
+            if let data = calendarToEdit.thumbnailData {
+                thumbnailImage = UIImage(data: data)
+            }
+        } else {
+            editingCalendar = CalendarModel(
+                name: "",
+                startDate: Date().midnight,
+                endDate: Date().addingTimeInterval(60 * 60 * 24 * 6).midnight
+            )
+            thumbnailImage = nil
         }
     }
 
@@ -151,7 +138,6 @@ struct EditCalendarView: View {
             existing.recipes = editingCalendar.recipes
             existing.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
             existing.adjustDatesOnImport = editingCalendar.adjustDatesOnImport
-            
         } else {
             editingCalendar.thumbnailData = thumbnailImage?.jpegData(compressionQuality: 0.8)
             context.insert(editingCalendar)
