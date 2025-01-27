@@ -76,8 +76,8 @@ class OpenAIIntegration {
                         - include helpful timing and efficiency tips in parentheses if they make sense, not everywhere. For example: "(While the pasta is boiling, prepare the sauce)" or "(To prevent apple browning, add a splash of lemon juice)"
                             ...
 
-                        - add 1 motivational element into the instructions header. Dont overdo it. 
-                        just a small side note like "This is going to be a delicious meal ^^"
+                        - add 1 motivational element into the instruction section. Dont overdo it. 
+                        just a small side note like "This is going to be a delicious meal ^^" (do not use this example, be creative)
                         """
                     ],
                     [
