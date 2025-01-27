@@ -45,8 +45,39 @@ class OpenAIIntegration {
                         - ingredients: List each ingredient on a new line starting with "•". Always add emojis that are cooking / recipe related to each ingredient.
                         - instructions: Number each step (1. 2. ...) and put each step on a new line with an additional newline as spacing.
                         
+                        e.g • 1 Teaspoon of salt 🥄 🧂
+                        and 1. Add salt to the egg...
                         Make sure to preserve all line breaks in the output.
-                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste. Use 🌻 for oil instead. Do not replace words with emojis. Add the emojis at the lineend.
+                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste. 
+                        Use 🌻 for oil instead. 
+                        Use butter 🧈 for butter. 
+                        Do not replace words with emojis. Add the emojis at the lineend. 
+                        If the user provides an image of a meal instead of an image of an actual recipe, 
+                        - still add amounts that a good and well known recipe uses but 
+                        - add an 
+                            - disclaimer at the sart of the ingredients header: "🎲 AI suggested 🎲"
+                            - an indicator that it might not be actual and that those are ai amonunts like "✨⚠ 3 Teaspoons of salt 🧂 🥄🥄🥄" with ✨⚠ instead of •
+                        
+                        In general:
+
+                        in ingredients
+                        - use amounts e.g. if its 3 eggs use 3 egg emojis: "🥚🥚🥚". Do this only up to 4. More than 4 display the number.
+                        - use just the emoji for bigger amounts like • 500g of flour 🍞.
+
+                        in instructions
+                        - no emojis in instructions
+                        - numbering 
+                            1. Step 1 description
+
+                            2. Step 2 description
+
+                            3. Step 3 description
+
+                        - include helpful timing and efficiency tips in parentheses if they make sense, not everywhere. For example: "(While the pasta is boiling, prepare the sauce)" or "(To prevent apple browning, add a splash of lemon juice)"
+                            ...
+
+                        - add 1 motivational element into the instructions header. Dont overdo it. 
+                        just a small side note like "This is going to be a delicious meal ^^"
                         """
                     ],
                     [
