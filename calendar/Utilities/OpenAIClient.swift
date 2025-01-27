@@ -40,44 +40,39 @@ class OpenAIIntegration {
                     [
                         "type": "text",
                         "text": """
-                        Extract recipe details from this image and return as JSON with the following format:
-                        - title: The recipe name
-                        - ingredients: List each ingredient on a new line starting with "•". Always add emojis that are cooking / recipe related to each ingredient.
-                        - instructions: Number each step (1. 2. ...) and put each step on a new line with an additional newline as spacing.
+                        Task: Analyze the image.
+                        - If it shows an actual recipe, use its exact title, ingredients (with amounts), and instructions.
+                        - If it’s just a meal photo (no real recipe text), invent plausible amounts/steps but:
+                            1. Preface ingredients with "🎲 AI suggested 🎲"
+                            2. Use "✨⚠" instead of "•" before each item e.g., "✨⚠ 3 Teaspoons of salt 🧂 3tsp."
+                            ONLY DO THIS IF THE IMAGE IS NOT A REAL RECIPE.
+
+                        Output: Return JSON with three fields:
+                            {
+                            "title": "...",
+                            "ingredients": "...",
+                            "instructions": "..."
+                            }
+
+                        Ingredients Formatting:
+                        - Each ingredient on a new line, always starting with "• " (or "✨⚠ " if it's AI-suggested).
+                        - Add cooking/recipe emojis at ech line end (never replace words just append).
+                        - Never use the oil-drum emoji (🛢️). Use 🌻 for oil, 🧈 for butter.
+                        - If there are fewer than 4 units of something (e.g., 3 eggs), show that many emojis: "🥚🥚🥚".
+                        - For 4 or more, show the number instead (e.g., "4 eggs 🥚").
+                        - For cups/teaspoons or amounts like 2 1/3, always use just one emoji (e.g., "• 2 cups of flour 🌾").
                         
-                        e.g • 1 Teaspoon of salt 🥄 🧂
-                        and 1. Add salt to the egg...
-                        Make sure to preserve all line breaks in the output.
-                        NEVER use Oil Drum 🛢️ emoji. It doesn't show an edible ingredient, its commonly used for various content concerning petroleum or hazardous waste. 
-                        Use 🌻 for oil instead. 
-                        Use butter 🧈 for butter. 
-                        Do not replace words with emojis. Add the emojis at the lineend. 
-                        If the user provides an image of a meal instead of an image of an actual recipe, 
-                        - still add amounts that a good and well known recipe uses but 
-                        - add an 
-                            - disclaimer at the sart of the ingredients header: "🎲 AI suggested 🎲"
-                            - an indicator that it might not be actual and that those are ai amonunts like "✨⚠ 3 Teaspoons of salt 🧂 🥄🥄🥄" with ✨⚠ instead of •
+                        Instructions Formatting:
+                        - Number steps (1., 2., 3....), each on its own line with an extra blank line between steps.
+                        - No emojis in the instructions themselves.
+                        - You may add brief helpful parentheses (e.g., “(While the pasta boils, prepare the sauce)”).
+                        - Include exactly one short motivational note somewhere (e.g., "You’re going to love the result!"). Do not use this exact note in the recipe, be creative.
+                                
+                        Language:
+                        - Use the same language found in the recipe text.
                         
-                        In general:
-
-                        in ingredients
-                        - use amounts e.g. if its 3 eggs use 3 egg emojis: "🥚🥚🥚". Do this only up to 4. More than 4 display the number.
-                        - use just the emoji for bigger amounts like • 500g of flour 🍞.
-
-                        in instructions
-                        - no emojis in instructions
-                        - numbering 
-                            1. Step 1 description
-
-                            2. Step 2 description
-
-                            3. Step 3 description
-
-                        - include helpful timing and efficiency tips in parentheses if they make sense, not everywhere. For example: "(While the pasta is boiling, prepare the sauce)" or "(To prevent apple browning, add a splash of lemon juice)"
-                            ...
-
-                        - add 1 motivational element into the instruction section. Dont overdo it. 
-                        just a small side note like "This is going to be a delicious meal ^^" (do not use this example, be creative)
+                        Line Breaks:
+                        - Preserve all line breaks in your final JSON output.
                         """
                     ],
                     [
