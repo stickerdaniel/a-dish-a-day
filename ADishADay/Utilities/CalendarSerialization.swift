@@ -37,14 +37,8 @@ class CalendarSerialization {
             let fileName = "\(calendar.name).\(customCalendarFileExtension)"
             let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
             try data.write(to: fileURL)
-            
-            // Debug: Print JSON and file URL
-            print("Exported JSON:\n", String(data: data, encoding: .utf8) ?? "Invalid JSON")
-            print("File URL:", fileURL.path)
-            
             return fileURL
         } catch {
-            print("Error encoding calendar: \(error)")
             return nil
         }
     }
@@ -63,8 +57,6 @@ class CalendarSerialization {
             }
             return calendar
         } catch {
-            print("Error decoding calendar: \(error)")
-            print("File path: \(fileURL.path)")
             return nil
         }
     }

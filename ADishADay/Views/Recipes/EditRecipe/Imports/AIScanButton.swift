@@ -136,7 +136,6 @@ struct AIScanButton: View {
     private func processImage(_ image: UIImage) async {      
         // show loading anim in button  
         await MainActor.run {
-            print("Starting to process image")
             processingStep = "Analyzing recipe..."
             showProcessingProgress = true
         }
@@ -149,8 +148,6 @@ struct AIScanButton: View {
                         showProcessingProgress = false
                         switch result {
                         case .success(let recipe):
-                            // debug print
-                            print("Title: \(recipe.title)")
                             onImageScanned(recipe.title, recipe.ingredients, recipe.instructions)
                         case .failure(let error):
                             errorMessage = error.localizedDescription
@@ -184,7 +181,6 @@ struct AIScanButton: View {
             await showErrorMessage("Failed to parse the recipe data. Please try a different image.")
         } catch {
             await showErrorMessage("An unexpected error occurred. Please try again.")
-            print("Error processing image: \(error)")
         }
     }
     

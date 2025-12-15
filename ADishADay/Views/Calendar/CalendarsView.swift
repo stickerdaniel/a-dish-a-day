@@ -112,8 +112,8 @@ struct CalendarsView: View {
                     showReplaceAlert = true
                 }
             )
-        case .failure(let error):
-            print("Import failed: \(error.localizedDescription)")
+        case .failure:
+            break
         }
     }
 }

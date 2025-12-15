@@ -112,13 +112,7 @@ class OpenAIIntegration {
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request.httpBody = requestBody
 
-            // debug print
-            print("Sending request to \(apiURL)")
-            
             URLSession.shared.dataTask(with: request) { data, response, error in
-
-                // print
-                print("Response: \(String(data: data!, encoding: .utf8)!)")
 
                 if let error = error {
                     completion(.failure(error))

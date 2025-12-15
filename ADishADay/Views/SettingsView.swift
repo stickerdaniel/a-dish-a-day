@@ -155,7 +155,6 @@ struct SettingsView: View {
 
             // Explicitly save to ensure deletions are committed
             try modelContext.save()
-            print("All data cleared successfully.")
             showClearDataSuccess = true
             
             // Reset appearance to system default after clearing all data
@@ -165,7 +164,6 @@ struct SettingsView: View {
             // delete all notifications
             NotificationManager.shared.deleteAllNotifications()
         } catch {
-            print("Failed to clear data: \(error.localizedDescription)")
             clearDataError = error.localizedDescription
         }
     }

@@ -133,9 +133,6 @@ struct EditCalendarView: View {
             )
             thumbnailImage = nil
         }
-
-        // log loaded recipes
-        print("Loaded recipes: \(allRecipes.map { $0.name })")
     }
 
     /// Save changes to the calendar, whether adding a new one or updating an existing one.
@@ -156,7 +153,6 @@ struct EditCalendarView: View {
             try context.save()
             dismiss()
         } catch {
-            print("Saving error: \(error)")
         }
     }
 

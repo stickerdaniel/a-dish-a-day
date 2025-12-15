@@ -1,6 +1,6 @@
 # Recipe Calendar
 
-Author: Vincent Nahn (435524)
+Author: Vincent Nahn
 
 ## Todo:
 - [ ] Fix bug within `AddCalendarView` where the number of days doesn't update

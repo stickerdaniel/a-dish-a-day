@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "A Dish A Day" target */ = {
+		65A435BA2D459A32005D131C /* Exceptions for "ADishADay" folder in "A Dish A Day" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				DefaultCalendars/README.md,
@@ -23,12 +23,12 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		BF9695AA2D106F6F00025A94 /* calendar */ = {
+		BF9695AA2D106F6F00025A94 /* ADishADay */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				65A435BA2D459A32005D131C /* Exceptions for "calendar" folder in "A Dish A Day" target */,
+				65A435BA2D459A32005D131C /* Exceptions for "ADishADay" folder in "A Dish A Day" target */,
 			);
-			path = calendar;
+			path = ADishADay;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -47,7 +47,7 @@
 		BF96959F2D106F6F00025A94 = {
 			isa = PBXGroup;
 			children = (
-				BF9695AA2D106F6F00025A94 /* calendar */,
+				BF9695AA2D106F6F00025A94 /* ADishADay */,
 				BF9695A92D106F6F00025A94 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -76,7 +76,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				BF9695AA2D106F6F00025A94 /* calendar */,
+				BF9695AA2D106F6F00025A94 /* ADishADay */,
 			);
 			name = "A Dish A Day";
 			packageProductDependencies = (
@@ -266,11 +266,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"calendar/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ADishADay/Preview Content\"";
 				DEVELOPMENT_TEAM = GJ7437P4UH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "calendar needs camera access to scan a recipe for import";
+				INFOPLIST_KEY_NSCameraUsageDescription = "A Dish A Day needs camera access to scan a recipe for import";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -297,11 +297,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"calendar/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"ADishADay/Preview Content\"";
 				DEVELOPMENT_TEAM = GJ7437P4UH;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSCameraUsageDescription = "calendar needs camera access to scan a recipe for import";
+				INFOPLIST_KEY_NSCameraUsageDescription = "A Dish A Day needs camera access to scan a recipe for import";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

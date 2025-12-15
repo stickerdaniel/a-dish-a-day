@@ -18,18 +18,12 @@ struct FileImportHandler<T> {
         switch result {
         case .success(let url):
             let isBundleResource = url.path.hasPrefix(Bundle.main.bundlePath)
-            print("Importing file from \(url)")
-            print("Detected bundle resource: \(isBundleResource)")
 
             if !isBundleResource {
-                print("Starting file access")
                 guard url.startAccessingSecurityScopedResource() else {
-                    print("Failed to access security scoped resource.")
                     onError(URLError(.cannotOpenFile))
                     return
                 }
-            } else {
-                print("Skipping security-scoped access for bundle resource.")
             }
 
             defer {
@@ -47,13 +41,11 @@ struct FileImportHandler<T> {
                     do {
                         imported = try handleImport(securedURL)
                     } catch {
-                        print("Error decoding calendar: \(error.localizedDescription)")
                         onError(error)
                     }
                 }
 
                 if let error = error {
-                    print("File coordination error: \(error.localizedDescription)")
                     onError(error)
                     return
                 }
@@ -65,7 +57,6 @@ struct FileImportHandler<T> {
                 }
                 
             } catch {
-                print("Unhandled error during file import: \(error.localizedDescription)")
                 onError(error)
             }
 

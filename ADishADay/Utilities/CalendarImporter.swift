@@ -27,7 +27,6 @@ struct CalendarImporter {
                 return calendar
             },
             onSuccess: { calendar in
-                print("Imported calendar: \(calendar.name)")
                 if let existing = existingCalendars.first(where: {
                     $0.id == calendar.id && $0.source == .imported
                 }) {
@@ -38,8 +37,7 @@ struct CalendarImporter {
                 context.insert(calendar)
                 NotificationManager.shared.scheduleNotifications(for: calendar)
             },
-            onError: { error in
-                print("Import failed: \(error.localizedDescription)")
+            onError: { _ in
             }
         )
 
@@ -50,10 +48,7 @@ struct CalendarImporter {
 
     // Imports default calendars from the app bundle
     static func importDefaultCalendars(context: ModelContext) {
-        print("Importing default calendars...")
-
         guard let bundlePath = Bundle.main.resourcePath else {
-            print("Failed to locate bundle path")
             return
         }
 
@@ -66,18 +61,14 @@ struct CalendarImporter {
                 .filter { $0.pathExtension == "ddcal" }
 
             if fileURLs.isEmpty {
-                print("No .ddcal files found in bundle")
                 return
             }
-
-            print("Found default calendars: \(fileURLs.map { $0.lastPathComponent })")
 
             importCalendars(
                 from: fileURLs,
                 context: context
             )
         } catch {
-            print("Error while accessing bundle contents: \(error)")
         }
     }
 }

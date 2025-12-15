@@ -16,12 +16,7 @@ class NotificationManager: ObservableObject{
     // request to send Notifications
     static func requestAuthorization() {
         let options: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(options: options) { granted, error in
-            if let error = error {
-                print("error \(error)")
-            }else{
-                print("Success")
-            }
+        UNUserNotificationCenter.current().requestAuthorization(options: options) { _, _ in
         }
     }
 
@@ -41,7 +36,6 @@ class NotificationManager: ObservableObject{
     private func scheduleNotification(for date: Date, calendar: CalendarModel) {
         // Validate the date
         guard date >= Date() else {
-            print("Notification date \(date) is in the past. Skipping.")
             return
         }
 
@@ -64,12 +58,7 @@ class NotificationManager: ObservableObject{
         let request = UNNotificationRequest(identifier: calendar.id.uuidString + ", " + date.description, content: content, trigger: trigger)
 
         // Add the notification
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Failed to schedule notification: \(error.localizedDescription)")
-            } else {
-                print("Notification scheduled for \(date).")
-            }
+        UNUserNotificationCenter.current().add(request) { _ in
         }
     }
 
@@ -78,14 +67,10 @@ class NotificationManager: ObservableObject{
         // set User Defaults to false
         UserDefaults.standard.set(false, forKey: "calendar_notifications_\(calendar.id)")
 
-        //should delete all notifications for one calendar if a calendar is deleted
-        print("Deleting notifications for calendar: \(calendar.name)")
         let calendarID = calendar.id.uuidString
 
             // Fetch pending notifications
             UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-                // Print 
-                print("Pending notifications: \(requests.count)")
 
                 // Filter identifiers matching the calendar ID
                 let identifiersToRemove = requests
@@ -98,8 +83,6 @@ class NotificationManager: ObservableObject{
         
             // Fetch delivered notifications
             UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
-                // Print
-                print("Delivered notifications: \(notifications.count)")
 
                 // Filter identifiers matching the calendar ID
                 let identifiersToRemove = notifications

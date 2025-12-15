@@ -41,8 +41,6 @@ struct PhotoPicker: View {
                     if let data = try? await pickerItem?.loadTransferable(type: Data.self),
                        let uiImage = UIImage(data: data) {
                         selectedImage = uiImage
-                    } else {
-                        print("Failed to load image.")
                     }
                 }
             }
