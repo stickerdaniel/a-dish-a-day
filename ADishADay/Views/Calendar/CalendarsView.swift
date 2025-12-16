@@ -15,6 +15,7 @@ enum CalendarTab: String, CaseIterable {
 }
 
 struct CalendarsView: View {
+    @ObserveInjection var inject
     @State private var isShowingSettings = false
     @State private var selection: CalendarTab = .imported
     @State private var isImportingJSON = false
@@ -90,6 +91,7 @@ struct CalendarsView: View {
                 hasImportedDefaultsOnce = true
             }
         }
+        .enableInjection()
     }
 
     private var filteredCalendars: [CalendarModel] {

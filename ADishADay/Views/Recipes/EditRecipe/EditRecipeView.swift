@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct EditRecipeView: View {
+    @ObserveInjection var inject
     var recipeToEdit: RecipeModel?
     
     enum InputMethod {
@@ -84,6 +85,7 @@ struct EditRecipeView: View {
                 }
             }
             .onAppear(perform: populateFields)
+            .enableInjection()
         }
     }
 

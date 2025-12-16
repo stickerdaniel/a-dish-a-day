@@ -12,6 +12,7 @@ import SwiftUI
 import SwiftData
 
 struct RecipesView: View {
+    @ObserveInjection var inject
     @Query private var recipes: [RecipeModel]
     @State private var isShowingSettings = false
 
@@ -44,5 +45,6 @@ struct RecipesView: View {
                 }
             }
         }
+        .enableInjection()
     }
 }

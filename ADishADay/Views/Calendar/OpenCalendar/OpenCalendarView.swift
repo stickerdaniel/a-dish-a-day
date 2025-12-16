@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct OpenCalendarView: View {
+    @ObserveInjection var inject
     var calendar: CalendarModel
     
     var body: some View {
@@ -70,5 +71,6 @@ struct OpenCalendarView: View {
                 }
             }
         }
+        .enableInjection()
     }
 }

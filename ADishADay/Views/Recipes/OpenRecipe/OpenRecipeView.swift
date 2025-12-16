@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct OpenRecipeView: View {
+    @ObserveInjection var inject
     var recipe: RecipeModel
     
     @Environment(\.modelContext) private var context
@@ -26,5 +27,6 @@ struct OpenRecipeView: View {
                 }
             }
         }
+        .enableInjection()
     }
 }

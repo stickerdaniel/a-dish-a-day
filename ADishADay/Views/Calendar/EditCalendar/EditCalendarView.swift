@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct EditCalendarView: View {
+    @ObserveInjection var inject
     /// The calendar being edited. If `nil`, a new calendar is created.
     var calendarToEdit: CalendarModel?
 
@@ -116,6 +117,7 @@ struct EditCalendarView: View {
                 }
             }
         }
+        .enableInjection()
     }
 
     // MARK: - Actions

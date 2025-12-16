@@ -6,6 +6,10 @@
 	objectVersion = 90;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6500D11C2EF0C8E800DD073C /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 6500D11B2EF0C8E800DD073C /* Inject */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		BF9695A82D106F6F00025A94 /* A Dish A Day.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "A Dish A Day.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -37,6 +41,7 @@
 		BF9695A52D106F6F00025A94 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				6500D11C2EF0C8E800DD073C /* Inject in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -75,6 +80,9 @@
 				BF9695AA2D106F6F00025A94 /* ADishADay */,
 			);
 			name = "A Dish A Day";
+			packageProductDependencies = (
+				6500D11B2EF0C8E800DD073C /* Inject */,
+			);
 			productName = calendar;
 			productReference = BF9695A82D106F6F00025A94 /* A Dish A Day.app */;
 			productType = "com.apple.product-type.application";
@@ -103,6 +111,9 @@
 			);
 			mainGroup = BF96959F2D106F6F00025A94;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */,
+			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = BF9695A92D106F6F00025A94 /* Products */;
 			projectDirPath = "";
@@ -261,6 +272,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ADishADay/Preview Content\"";
+				EMIT_FRONTEND_COMMAND_LINES = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "A Dish A Day needs camera access to scan a recipe for import";
@@ -275,6 +287,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = danielsticker.recipeCalendar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -291,6 +307,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ADishADay/Preview Content\"";
+				EMIT_FRONTEND_COMMAND_LINES = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "A Dish A Day needs camera access to scan a recipe for import";
@@ -305,6 +322,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = danielsticker.recipeCalendar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -333,6 +354,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6500D11B2EF0C8E800DD073C /* Inject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */;
+			productName = Inject;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BF9695A02D106F6F00025A94 /* Project object */;
 }

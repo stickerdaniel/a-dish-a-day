@@ -21,6 +21,7 @@ enum Appearance: String, CaseIterable {
 }
 
 struct SettingsView: View {
+    @ObserveInjection var inject
     var notificationManager = NotificationManager()
     // MARK: - SwiftData model context
     @Environment(\.modelContext) private var modelContext
@@ -136,7 +137,7 @@ struct SettingsView: View {
             .onChange(of: appearance) {
                 applyAppearance()
             }
-
+            .enableInjection()
         }
     }
 

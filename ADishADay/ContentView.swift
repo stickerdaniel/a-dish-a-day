@@ -13,7 +13,8 @@ enum Tab: String, CaseIterable {
 }
 
 struct ContentView: View {
-    
+    @ObserveInjection var inject
+
     @State private var selection: Tab = .calendar
     
     // Padding 16 bottom only on MacOS not on iOS and iPadOS
@@ -47,6 +48,7 @@ struct ContentView: View {
         .environment(\.horizontalSizeClass, .compact) // 👈 Use this modifier to change to old navbar style
         // Padding 16 bottom only on MacOS not on iOS and iPadOS
         .padding(.bottom, bottomPadding)
+        .enableInjection()
     }
 }
 
