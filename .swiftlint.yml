@@ -1,0 +1,51 @@
+# SwiftLint Configuration
+
+# Treat all warnings as errors (good harness for LLMs, feeel free to turn off if it annoys you)
+strict: true
+
+# Disable rules that conflict with swift-format or are too strict
+disabled_rules:
+  - trailing_whitespace  # swift-format handles this
+  - line_length          # swift-format handles this
+  - opening_brace        # swift-format handles this
+
+# Enable useful opt-in rules
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - first_where              # .first(where:) instead of .filter().first
+  - sorted_first_last        # .min()/.max() instead of .sorted().first
+  - contains_over_filter_count  # .contains instead of .filter().count
+  - reduce_into              # reduce(into:) for better performance
+  - redundant_nil_coalescing # catches ?? nil which does nothing
+  - identical_operands       # catches x == x bugs
+  - direct_return            # removes unnecessary temp variables
+  - unhandled_throwing_task  # catches uncaught errors in Task {}
+  - modifier_order           # consistent ordering of public, static, etc.
+  - file_types_order         # consistent struct/class ordering in files
+  - implicit_return          # single-expression functions don't need return
+
+# Paths to ignore
+excluded:
+  - .build
+  - DerivedData
+  - Pods
+
+# Rule configurations
+identifier_name:
+  min_length: 2
+  excluded:
+    - id
+    - x
+    - y
+    - i
+
+type_body_length:
+  warning: 300
+  error: 500
+
+file_length:
+  warning: 500
+  error: 1000

@@ -34,7 +34,7 @@ struct RecipesPath<Content: View>: View {
 
         // reduce rando variation for first
         if index == 0 {
-          randomVariation = randomVariation / 2
+          randomVariation /= 2
         }
 
         return baseOffsetY + (randomVariation * maxLineHeightVariation)

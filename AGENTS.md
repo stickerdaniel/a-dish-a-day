@@ -86,9 +86,16 @@ enum CalendarSource { case created, imported }
 - OpenAI API (external, requires API key)
 - When creating a SwiftUI view, add @ObserveInjection var inject as a property and .enableInjection() at the end of the body to enable hot reload - leave it in, it's a no-op in release builds.
 
-## Code Formatting
+## Code Quality
 
-This project uses `swift-format` for consistent code style.
+This project uses two tools for code quality:
+
+| Tool | Purpose | When it runs |
+|------|---------|--------------|
+| **swift-format** | Code style (formatting) | On commit (pre-commit hook) |
+| **SwiftLint** | Code quality (linting) | On build (Xcode plugin) |
+
+### swift-format (Formatting)
 
 **VS Code:** Format-on-save via [Sweetpad](https://marketplace.visualstudio.com/items?itemName=sweetpad.sweetpad) extension (`.vscode/settings.json`)
 - Install: [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=sweetpad.sweetpad)
@@ -97,6 +104,12 @@ This project uses `swift-format` for consistent code style.
 **Git Hooks:** Pre-commit hook auto-formats staged Swift files.
 
 **Xcode:** Build phase "Check Git Hooks" fails build if hooks aren't configured.
+
+### SwiftLint (Linting)
+
+Runs automatically on build via Swift Package Plugin. Warnings appear inline in Xcode.
+Docs for Configuration: https://realm.github.io/SwiftLint/rule-directory.html
+Configuration: `.swiftlint.yml`
 
 ### Setup (one-time per machine)
 

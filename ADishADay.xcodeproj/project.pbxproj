@@ -77,6 +77,9 @@
 			);
 			buildRules = (
 			);
+			dependencies = (
+				658AE6892EF1D2B700C0D40C /* PBXTargetDependency */,
+			);
 			fileSystemSynchronizedGroups = (
 				BF9695AA2D106F6F00025A94 /* ADishADay */,
 			);
@@ -114,6 +117,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */,
+				658AE6872EF1CE4800C0D40C /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = BF9695A92D106F6F00025A94 /* Products */;
@@ -136,21 +140,17 @@
 /* Begin PBXShellScriptBuildPhase section */
 		650000012D459A32005D131C /* Check Git Hooks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
 			name = "Check Git Hooks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ -n \"$CI\" ]; then exit 0; fi\nHOOKS_PATH=$(git config core.hooksPath)\nif [ \"$HOOKS_PATH\" != \"scripts/hooks\" ]; then\n    echo \"error: Git hooks not configured. Run: git config core.hooksPath scripts/hooks\"\n    exit 1\nfi\n";
+			shellScript = (
+				"if [ -n \"$CI\" ]; then exit 0; fi",
+				"HOOKS_PATH=$(git config core.hooksPath)",
+				"if [ \"$HOOKS_PATH\" != \"scripts/hooks\" ]; then",
+				"    echo \"error: Git hooks not configured. Run: git config core.hooksPath scripts/hooks\"",
+				"    exit 1",
+				"fi",
+				"",
+			);
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -161,6 +161,13 @@
 			);
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		658AE6892EF1D2B700C0D40C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 658AE6882EF1D2B700C0D40C /* SwiftLintBuildToolPlugin */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		BF9695B42D106F7100025A94 /* Debug configuration for PBXProject "ADishADay" */ = {
@@ -386,6 +393,14 @@
 				minimumVersion = 1.5.2;
 			};
 		};
+		658AE6872EF1CE4800C0D40C /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.62.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -393,6 +408,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
+		};
+		658AE6882EF1D2B700C0D40C /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 658AE6872EF1CE4800C0D40C /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

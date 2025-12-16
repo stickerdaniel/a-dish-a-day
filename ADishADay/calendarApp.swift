@@ -9,7 +9,7 @@
 import SwiftUI
 
 @main
-struct calendarApp: App {
+struct CalendarApp: App {
   @AppStorage("appearance") private var appearance: Appearance = .system
 
   var body: some Scene {

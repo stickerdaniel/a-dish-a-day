@@ -22,8 +22,9 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 ## Development Setup
 
 1. Clone the repository
-2. Open `ADishADay.xcodeproj` in Xcode (or use [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
-3. Build and run on simulator or device
+2. Enable git hooks: `git config core.hooksPath scripts/hooks`
+3. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
+4. Build and run on simulator or device
 
 ### Hot Reloading with Inject
 
