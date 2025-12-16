@@ -8,34 +8,33 @@
 import SwiftUI
 
 struct RecipeSelectionGridView: View {
-    let recipes: [RecipeModel]
-    
-    /// The currently selected recipe, if any
-    @Binding var selectedRecipe: RecipeModel?
-    
-    /// A callback to notify parent when a recipe is tapped
-    let onRecipeTapped: (RecipeModel) -> Void
-    
-    var body: some View {
-        let columns = [GridItem(.adaptive(minimum: Card.minimumWidth), spacing: Card.spacing)]
-        
-        ScrollView { // Enable scrolling
-            LazyVGrid(columns: columns, spacing: Card.spacing) {
-                // Render the recipe items
-                ForEach(recipes, id: \.id) { recipe in
-                    Card(
-                        image: recipe.thumbnailImage,
-                        description: recipe.name,
-                        fallbackSymbols: RecipeModel.fallbackSymbols
-                    ).onTapGesture {
-                        // Update selection and trigger callback
-                        selectedRecipe = recipe
-                        onRecipeTapped(recipe)
-                    }
-                }
-            }
-            .padding()
-        }
-    }
-}
+  let recipes: [RecipeModel]
 
+  /// The currently selected recipe, if any
+  @Binding var selectedRecipe: RecipeModel?
+
+  /// A callback to notify parent when a recipe is tapped
+  let onRecipeTapped: (RecipeModel) -> Void
+
+  var body: some View {
+    let columns = [GridItem(.adaptive(minimum: Card.minimumWidth), spacing: Card.spacing)]
+
+    ScrollView {  // Enable scrolling
+      LazyVGrid(columns: columns, spacing: Card.spacing) {
+        // Render the recipe items
+        ForEach(recipes, id: \.id) { recipe in
+          Card(
+            image: recipe.thumbnailImage,
+            description: recipe.name,
+            fallbackSymbols: RecipeModel.fallbackSymbols
+          ).onTapGesture {
+            // Update selection and trigger callback
+            selectedRecipe = recipe
+            onRecipeTapped(recipe)
+          }
+        }
+      }
+      .padding()
+    }
+  }
+}

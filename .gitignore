@@ -4,7 +4,7 @@
 .LSOverride
 
 # IDE
-.vscode/
+.vscode/*
 .idea/
 *.swp
 *~
@@ -73,3 +73,6 @@ fastlane/test_output
 .env.*
 *.local
 *.local.*
+
+# VSCode autofomatting on save
+!.vscode/settings.json

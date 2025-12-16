@@ -8,66 +8,70 @@
 import Foundation
 
 extension Date {
-    /// Returns the date at midnight, discarding time components.
-    var midnight: Date {
-        Calendar.current.startOfDay(for: self)
-    }
+  /// Returns the date at midnight, discarding time components.
+  var midnight: Date {
+    Calendar.current.startOfDay(for: self)
+  }
 
-    /// Enumerates every day from `self` up to (and including) `endDate`.
-    func allDates(upTo endDate: Date) -> [Date] {
-        var dates: [Date] = []
-        let cal = Calendar.current
-        
-        guard self <= endDate else { return dates }
-        
-        cal.enumerateDates(
-            startingAfter: self.midnight.addingTimeInterval(-1),
-            matching: DateComponents(hour: 0, minute: 0, second: 0),
-            matchingPolicy: .nextTime
-        ) { date, _, stop in
-            guard let d = date else { return }
-            if d > endDate.midnight {
-                stop = true
-            } else {
-                dates.append(d)
-            }
-        }
-        return dates
-    }
+  /// Enumerates every day from `self` up to (and including) `endDate`.
+  func allDates(upTo endDate: Date) -> [Date] {
+    var dates: [Date] = []
+    let cal = Calendar.current
 
-    /// Converts the date to an ISO8601 formatted string.
-    var iso8601String: String {
-        let formatter = ISO8601DateFormatter()
-        return formatter.string(from: self)
-    }
+    guard self <= endDate else { return dates }
 
-    /// Convenience for grabbing the "day of month" integer, e.g., 1–31.
-    var dayOfMonth: Int {
-        Calendar.current.component(.day, from: self)
+    cal.enumerateDates(
+      startingAfter: self.midnight.addingTimeInterval(-1),
+      matching: DateComponents(hour: 0, minute: 0, second: 0),
+      matchingPolicy: .nextTime
+    ) { date, _, stop in
+      guard let d = date else { return }
+      if d > endDate.midnight {
+        stop = true
+      } else {
+        dates.append(d)
+      }
     }
-    
-    /// Convenience for the month of this date (1 through 12).
-    var month: Int {
-        Calendar.current.component(.month, from: self)
-    }
+    return dates
+  }
 
-    /// Start of the current month.
-    var startOfMonth: Date {
-        guard let date = Calendar.current.date(from:
-            Calendar.current.dateComponents([.year, .month], from: self))
-        else {
-            return self
-        }
-        return date
+  /// Converts the date to an ISO8601 formatted string.
+  var iso8601String: String {
+    let formatter = ISO8601DateFormatter()
+    return formatter.string(from: self)
+  }
+
+  /// Convenience for grabbing the "day of month" integer, e.g., 1–31.
+  var dayOfMonth: Int {
+    Calendar.current.component(.day, from: self)
+  }
+
+  /// Convenience for the month of this date (1 through 12).
+  var month: Int {
+    Calendar.current.component(.month, from: self)
+  }
+
+  /// Start of the current month.
+  var startOfMonth: Date {
+    guard
+      let date = Calendar.current.date(
+        from:
+          Calendar.current.dateComponents([.year, .month], from: self))
+    else {
+      return self
     }
-    
-    /// End of the current month.
-    var endOfMonth: Date {
-        guard let date = Calendar.current.date(byAdding: DateComponents(month: 1, day: -1),
-                                               to: self.startOfMonth)
-        else {
-            return self
-        }
-        return date
+    return date
+  }
+
+  /// End of the current month.
+  var endOfMonth: Date {
+    guard
+      let date = Calendar.current.date(
+        byAdding: DateComponents(month: 1, day: -1),
+        to: self.startOfMonth)
+    else {
+      return self
     }
+    return date
+  }
 }

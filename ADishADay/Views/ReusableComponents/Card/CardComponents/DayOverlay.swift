@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct DayOverlay: View {
-    let day: Int
+  let day: Int
 
-    var body: some View {
-        ZStack {
-            Circle()
-                .fill(.ultraThinMaterial)
-                .frame(width: 72, height: 72)
+  var body: some View {
+    ZStack {
+      Circle()
+        .fill(.ultraThinMaterial)
+        .frame(width: 72, height: 72)
 
-            Text("\(day)")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.secondary)
-        }
+      Text("\(day)")
+        .font(.largeTitle)
+        .fontWeight(.bold)
+        .foregroundColor(.secondary)
     }
+  }
 }

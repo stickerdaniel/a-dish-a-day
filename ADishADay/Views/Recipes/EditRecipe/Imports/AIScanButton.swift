@@ -5,230 +5,235 @@
 //  Created by Daniel Sticker on 24.01.25.
 //  This is a really cool feature, we can select / take a photo and send it to openAI to get the recipe from an image
 
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 struct AIScanButton: View {
-    @State private var showImagePicker = false
-    @State private var showCamera = false
-    @State private var showSourceActionSheet = false
-    @State private var selectedImage: UIImage?
-    @State private var showSettingsAlert = false
-    @State private var showSettingsSheet = false 
-    @State private var showProcessingProgress = false
-    @State private var processingStep = ""
-    @State private var showError = false
-    @State private var errorMessage = ""
-    @State private var retryCount = 0
-    private let maxRetries = 3
-    
-    let onImageScanned: (String, String, String) -> Void
-    
-    var body: some View {
-        // basic bth styling
-        Button(action: validateAndProceed) {
-            HStack {
-                if !showProcessingProgress {
-                    Image(systemName: "sparkles")
-                        .frame(width: 24, height: 24)
-                    Text("AI Scan")
-                        .foregroundColor(.primary)
-                }
-                else { // show a progress view if user selected a photo
-                    ProgressView()
-                        .frame(width: 24, height: 24)
-                    Text(processingStep)
-                }
-            }
+  @State private var showImagePicker = false
+  @State private var showCamera = false
+  @State private var showSourceActionSheet = false
+  @State private var selectedImage: UIImage?
+  @State private var showSettingsAlert = false
+  @State private var showSettingsSheet = false
+  @State private var showProcessingProgress = false
+  @State private var processingStep = ""
+  @State private var showError = false
+  @State private var errorMessage = ""
+  @State private var retryCount = 0
+  private let maxRetries = 3
+
+  let onImageScanned: (String, String, String) -> Void
+
+  var body: some View {
+    // basic bth styling
+    Button(action: validateAndProceed) {
+      HStack {
+        if !showProcessingProgress {
+          Image(systemName: "sparkles")
+            .frame(width: 24, height: 24)
+          Text("AI Scan")
+            .foregroundColor(.primary)
+        } else {  // show a progress view if user selected a photo
+          ProgressView()
+            .frame(width: 24, height: 24)
+          Text(processingStep)
         }
-        .disabled(showProcessingProgress)
-        .alert("OpenAI API Key Required", isPresented: $showSettingsAlert) {
-            Button("Open Settings") {
-                showSettingsSheet = true
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Please set your OpenAI API key in the settings to use the AI Scan feature.")
-        }
-        .alert("Error", isPresented: $showError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(errorMessage)
-        }
-        .sheet(isPresented: $showSettingsSheet) {
-            SettingsView()
-        }
-        .actionSheet(isPresented: $showSourceActionSheet) {
-            ActionSheet(
-                title: Text("Select Image Source"),
-                buttons: [
-                    .default(Text("Camera")) { // camera button to take a photo
-                        let status = AVCaptureDevice.authorizationStatus(for: .video) // check camera access 
-                        switch status {
-                        case .authorized:
-                            showCamera = true
-                        case .notDetermined:
-                            AVCaptureDevice.requestAccess(for: .video) { granted in // get permission to use the camera
-                                if granted {
-                                    DispatchQueue.main.async {
-                                        showCamera = true
-                                    }
-                                }
-                            }
-                        case .denied, .restricted:
-                            errorMessage = "Camera access is required. Please enable it in Settings."
-                            showError = true
-                        @unknown default:
-                            break
-                        }
-                    },
-                    .default(Text("Photo Library")) { // photo library button to select a photo
-                        showImagePicker = true
-                    },
-                    .cancel()
-                ]
-            )
-        }
-        .sheet(isPresented: $showCamera) { // camera sheet to take a photo
-            ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
-                .onDisappear {
-                    if let image = selectedImage {
-                        Task {
-                            await processImage(image)
-                        }
-                    }
-                }
-        }
-        .photosPicker( // photo library picker to select a photo
-            isPresented: $showImagePicker,
-            selection: .init(get: { nil }, set: { item in
-                guard let item = item else { return }
-                Task {
-                    if let data = try? await item.loadTransferable(type: Data.self),
-                       let image = UIImage(data: data) {
-                        selectedImage = image
-                        await processImage(image)
-                    }
-                }
-            }),
-            matching: .images
-        )
+      }
     }
-    
-    // with this we can validate the api key and show an alert if it is not set
-    private func validateAndProceed() {
-        guard let apiKey = UserDefaults.standard.string(forKey: "openai_api_key") else {
-            showSettingsAlert = true
-            return
-        }
-        
-        if apiKey.count < 20 {
-            errorMessage = "The OpenAI API key appears to be invalid. Please check your settings."
-            showError = true
-            return
-        }
-        
-        // show the action sheet to select the source of the image if api key is valid
-        showSourceActionSheet = true
+    .disabled(showProcessingProgress)
+    .alert("OpenAI API Key Required", isPresented: $showSettingsAlert) {
+      Button("Open Settings") {
+        showSettingsSheet = true
+      }
+      Button("Cancel", role: .cancel) {}
+    } message: {
+      Text("Please set your OpenAI API key in the settings to use the AI Scan feature.")
     }
-    
-    // here the ai magic happens
-    private func processImage(_ image: UIImage) async {      
-        // show loading anim in button  
-        await MainActor.run {
-            processingStep = "Analyzing recipe..."
-            showProcessingProgress = true
-        }
-        // now lety try to process the image and send it to the OpenAI API
-        do {
-            if let imageData = image.jpegData(compressionQuality: 0.8) {
-                let openAI = OpenAIIntegration()
-                openAI.analyzeRecipeImage(imageData: imageData) { result in
-                    Task { @MainActor in
-                        showProcessingProgress = false
-                        switch result {
-                        case .success(let recipe):
-                            onImageScanned(recipe.title, recipe.ingredients, recipe.instructions)
-                        case .failure(let error):
-                            errorMessage = error.localizedDescription
-                            showError = true
-                        }
-                    }
+    .alert("Error", isPresented: $showError) {
+      Button("OK", role: .cancel) {}
+    } message: {
+      Text(errorMessage)
+    }
+    .sheet(isPresented: $showSettingsSheet) {
+      SettingsView()
+    }
+    .actionSheet(isPresented: $showSourceActionSheet) {
+      ActionSheet(
+        title: Text("Select Image Source"),
+        buttons: [
+          .default(Text("Camera")) {  // camera button to take a photo
+            let status = AVCaptureDevice.authorizationStatus(for: .video)  // check camera access
+            switch status {
+            case .authorized:
+              showCamera = true
+            case .notDetermined:
+              AVCaptureDevice.requestAccess(for: .video) { granted in  // get permission to use the camera
+                if granted {
+                  DispatchQueue.main.async {
+                    showCamera = true
+                  }
                 }
+              }
+            case .denied, .restricted:
+              errorMessage = "Camera access is required. Please enable it in Settings."
+              showError = true
+            @unknown default:
+              break
             }
-        } catch OpenAIError.missingAPIKey { // some error handling
-            await showErrorMessage("OpenAI API key is missing. Please add it in settings.")
-            showSettingsAlert = true
-        } catch OpenAIError.requestFailed(let statusCode) {
-            switch statusCode {
-            case 401:
-                await showErrorMessage("Invalid API key. Please check your settings.")
-                showSettingsAlert = true
-            case 429:
-                await showErrorMessage("Too many requests. Please try again later.")
-            case 500, 502, 503, 504:
-                if retryCount < maxRetries {
-                    retryCount += 1
-                    try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * Double(retryCount)))
-                    await processImage(image)
-                } else {
-                    await showErrorMessage("Server error. Please try again later.")
-                }
-            default:
-                await showErrorMessage("Failed to process the image (Error \(statusCode)). Please try again.")
+          },
+          .default(Text("Photo Library")) {  // photo library button to select a photo
+            showImagePicker = true
+          },
+          .cancel(),
+        ]
+      )
+    }
+    .sheet(isPresented: $showCamera) {  // camera sheet to take a photo
+      ImagePicker(selectedImage: $selectedImage, sourceType: .camera)
+        .onDisappear {
+          if let image = selectedImage {
+            Task {
+              await processImage(image)
             }
-        } catch OpenAIError.invalidData {
-            await showErrorMessage("Failed to parse the recipe data. Please try a different image.")
-        } catch {
-            await showErrorMessage("An unexpected error occurred. Please try again.")
+          }
         }
     }
-    
-    // user feedback if something goes wrong
-    private func showErrorMessage(_ message: String) async {
-        await MainActor.run {
+    .photosPicker(  // photo library picker to select a photo
+      isPresented: $showImagePicker,
+      selection: .init(
+        get: { nil },
+        set: { item in
+          guard let item = item else { return }
+          Task {
+            if let data = try? await item.loadTransferable(type: Data.self),
+              let image = UIImage(data: data)
+            {
+              selectedImage = image
+              await processImage(image)
+            }
+          }
+        }),
+      matching: .images
+    )
+  }
+
+  // with this we can validate the api key and show an alert if it is not set
+  private func validateAndProceed() {
+    guard let apiKey = UserDefaults.standard.string(forKey: "openai_api_key") else {
+      showSettingsAlert = true
+      return
+    }
+
+    if apiKey.count < 20 {
+      errorMessage = "The OpenAI API key appears to be invalid. Please check your settings."
+      showError = true
+      return
+    }
+
+    // show the action sheet to select the source of the image if api key is valid
+    showSourceActionSheet = true
+  }
+
+  // here the ai magic happens
+  private func processImage(_ image: UIImage) async {
+    // show loading anim in button
+    await MainActor.run {
+      processingStep = "Analyzing recipe..."
+      showProcessingProgress = true
+    }
+    // now lety try to process the image and send it to the OpenAI API
+    do {
+      if let imageData = image.jpegData(compressionQuality: 0.8) {
+        let openAI = OpenAIIntegration()
+        openAI.analyzeRecipeImage(imageData: imageData) { result in
+          Task { @MainActor in
             showProcessingProgress = false
-            errorMessage = message
-            showError = true
+            switch result {
+            case .success(let recipe):
+              onImageScanned(recipe.title, recipe.ingredients, recipe.instructions)
+            case .failure(let error):
+              errorMessage = error.localizedDescription
+              showError = true
+            }
+          }
         }
+      }
+    } catch OpenAIError.missingAPIKey {  // some error handling
+      await showErrorMessage("OpenAI API key is missing. Please add it in settings.")
+      showSettingsAlert = true
+    } catch OpenAIError.requestFailed(let statusCode) {
+      switch statusCode {
+      case 401:
+        await showErrorMessage("Invalid API key. Please check your settings.")
+        showSettingsAlert = true
+      case 429:
+        await showErrorMessage("Too many requests. Please try again later.")
+      case 500, 502, 503, 504:
+        if retryCount < maxRetries {
+          retryCount += 1
+          try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * Double(retryCount)))
+          await processImage(image)
+        } else {
+          await showErrorMessage("Server error. Please try again later.")
+        }
+      default:
+        await showErrorMessage(
+          "Failed to process the image (Error \(statusCode)). Please try again.")
+      }
+    } catch OpenAIError.invalidData {
+      await showErrorMessage("Failed to parse the recipe data. Please try a different image.")
+    } catch {
+      await showErrorMessage("An unexpected error occurred. Please try again.")
     }
+  }
+
+  // user feedback if something goes wrong
+  private func showErrorMessage(_ message: String) async {
+    await MainActor.run {
+      showProcessingProgress = false
+      errorMessage = message
+      showError = true
+    }
+  }
 }
 
 // Image Picker for Camera
 struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var selectedImage: UIImage?
-    let sourceType: UIImagePickerController.SourceType
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = sourceType
-        picker.delegate = context.coordinator
-        return picker
+  @Binding var selectedImage: UIImage?
+  let sourceType: UIImagePickerController.SourceType
+
+  func makeUIViewController(context: Context) -> UIImagePickerController {
+    let picker = UIImagePickerController()
+    picker.sourceType = sourceType
+    picker.delegate = context.coordinator
+    return picker
+  }
+
+  func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+  }
+
+  class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    let parent: ImagePicker
+
+    init(_ parent: ImagePicker) {
+      self.parent = parent
     }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+
+    func imagePickerController(
+      _ picker: UIImagePickerController,
+      didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+    ) {
+      if let image = info[.originalImage] as? UIImage {
+        parent.selectedImage = image
+      }
+      picker.dismiss(animated: true)
     }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: ImagePicker
-        
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController,
-                                 didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                parent.selectedImage = image
-            }
-            picker.dismiss(animated: true)
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
-        }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+      picker.dismiss(animated: true)
     }
+  }
 }
