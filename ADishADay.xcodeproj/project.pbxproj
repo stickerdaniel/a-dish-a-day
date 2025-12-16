@@ -70,6 +70,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BF9695B62D106F7100025A94 /* Build configuration list for PBXNativeTarget "A Dish A Day" */;
 			buildPhases = (
+				650000012D459A32005D131C /* Check Git Hooks */,
 				BF9695A42D106F6F00025A94 /* Sources */,
 				BF9695A52D106F6F00025A94 /* Frameworks */,
 				BF9695A62D106F6F00025A94 /* Resources */,
@@ -132,6 +133,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		650000012D459A32005D131C /* Check Git Hooks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Check Git Hooks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -n \"$CI\" ]; then exit 0; fi\nHOOKS_PATH=$(git config core.hooksPath)\nif [ \"$HOOKS_PATH\" != \"scripts/hooks\" ]; then\n    echo \"error: Git hooks not configured. Run: git config core.hooksPath scripts/hooks\"\n    exit 1\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BF9695A42D106F6F00025A94 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -179,7 +201,7 @@
 				DEVELOPMENT_TEAM = GJ7437P4UH;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -244,7 +266,7 @@
 				DEVELOPMENT_TEAM = GJ7437P4UH;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

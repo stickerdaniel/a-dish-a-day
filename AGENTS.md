@@ -84,4 +84,25 @@ enum CalendarSource { case created, imported }
 - SwiftUI, SwiftData, UserNotifications (native)
 - Inject (development hot reload)
 - OpenAI API (external, requires API key)
-- Wen creating a SwiftUI view, add @ObserveInjection var inject as a property and .enableInjection() at the end of the body to enable hot reload - leave it in, it's a no-op in release builds.
+- When creating a SwiftUI view, add @ObserveInjection var inject as a property and .enableInjection() at the end of the body to enable hot reload - leave it in, it's a no-op in release builds.
+
+## Code Formatting
+
+This project uses `swift-format` for consistent code style.
+
+**VS Code:** Format-on-save via [Sweetpad](https://marketplace.visualstudio.com/items?itemName=sweetpad.sweetpad) extension (`.vscode/settings.json`)
+- Install: [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=sweetpad.sweetpad)
+- Docs: https://sweetpad.hyzyla.dev/docs/intro/
+
+**Git Hooks:** Pre-commit hook auto-formats staged Swift files.
+
+**Xcode:** Build phase "Check Git Hooks" fails build if hooks aren't configured.
+
+### Setup (one-time per machine)
+
+Run this command to enable git hooks:
+```bash
+git config core.hooksPath scripts/hooks
+```
+
+The Xcode build will fail with instructions if this isn't configured.
