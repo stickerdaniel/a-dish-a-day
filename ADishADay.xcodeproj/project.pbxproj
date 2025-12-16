@@ -19,7 +19,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				DefaultCalendars/README.md,
-				README.md,
 				Utilities/ExampleResponse.txt,
 			);
 			target = BF9695A72D106F6F00025A94 /* A Dish A Day */;
