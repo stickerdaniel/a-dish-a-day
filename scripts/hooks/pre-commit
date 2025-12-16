@@ -6,30 +6,88 @@ if [ -n "$CI" ]; then
     exit 0
 fi
 
-# Find swift-format (Xcode toolchain)
-SWIFT_FORMAT="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format"
-
-if [ ! -x "$SWIFT_FORMAT" ]; then
-    echo "❌ swift-format not found at $SWIFT_FORMAT"
-    echo "   Make sure Xcode is installed."
-    exit 1
-fi
-
 # Get staged Swift files (Added, Copied, Modified - not deleted)
 STAGED_SWIFT_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.swift$')
 
-if [ -z "$STAGED_SWIFT_FILES" ]; then
-    exit 0
+# Track if any check fails
+FAILED=0
+
+# =============================================================================
+# 1. swift-format (formatting)
+# =============================================================================
+SWIFT_FORMAT="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format"
+
+if [ -n "$STAGED_SWIFT_FILES" ]; then
+    if [ ! -x "$SWIFT_FORMAT" ]; then
+        echo "⚠️  swift-format not found, skipping formatting"
+    else
+        echo "🔍 Formatting staged Swift files..."
+        echo "$STAGED_SWIFT_FILES" | while read -r file; do
+            if [ -f "$file" ]; then
+                "$SWIFT_FORMAT" format --in-place "$file"
+                git add "$file"
+            fi
+        done
+        echo "✅ Formatted"
+    fi
 fi
 
-echo "🔍 Formatting staged Swift files..."
-
-# Format and re-stage each file
-echo "$STAGED_SWIFT_FILES" | while read -r file; do
-    if [ -f "$file" ]; then
-        "$SWIFT_FORMAT" format --in-place "$file"
-        git add "$file"
+# =============================================================================
+# 2. SwiftLint (linting)
+# =============================================================================
+if [ -n "$STAGED_SWIFT_FILES" ]; then
+    # Try to find swiftlint
+    if command -v swiftlint &> /dev/null; then
+        SWIFTLINT="swiftlint"
+    else
+        SWIFTLINT=""
     fi
-done
 
-echo "✅ Swift files formatted."
+    if [ -z "$SWIFTLINT" ]; then
+        echo "⚠️  swiftlint not found, skipping lint (install: brew install swiftlint)"
+    else
+        echo "🔍 Linting staged Swift files..."
+        # Lint only staged files
+        echo "$STAGED_SWIFT_FILES" | xargs "$SWIFTLINT" lint --quiet --strict
+        if [ $? -ne 0 ]; then
+            echo "❌ SwiftLint found errors"
+            FAILED=1
+        else
+            echo "✅ Lint passed"
+        fi
+    fi
+fi
+
+# =============================================================================
+# 3. typos (spellcheck)
+# =============================================================================
+if command -v typos &> /dev/null; then
+    echo "🔍 Checking spelling..."
+    # Check staged files, excluding generated files
+    STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -v '\.xcodeproj/' | grep -v '\.pbxproj' | grep -v 'Package.resolved' | grep -v '\.xcassets/')
+    if [ -n "$STAGED_FILES" ]; then
+        echo "$STAGED_FILES" | xargs typos
+        if [ $? -ne 0 ]; then
+            echo "❌ Typos found (run 'typos -w' to fix)"
+            FAILED=1
+        else
+            echo "✅ No typos"
+        fi
+    else
+        echo "✅ No files to spellcheck"
+    fi
+else
+    echo "⚠️  typos not found, skipping spellcheck (install: brew install typos-cli)"
+fi
+
+# =============================================================================
+# Exit
+# =============================================================================
+if [ $FAILED -ne 0 ]; then
+    echo ""
+    echo "❌ Pre-commit checks failed. Fix errors and try again."
+    exit 1
+fi
+
+echo ""
+echo "✅ All pre-commit checks passed"

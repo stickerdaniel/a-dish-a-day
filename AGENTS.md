@@ -88,34 +88,44 @@ enum CalendarSource { case created, imported }
 
 ## Code Quality
 
-This project uses two tools for code quality:
+This project uses three tools for code quality:
 
 | Tool | Purpose | When it runs |
 |------|---------|--------------|
-| **swift-format** | Code style (formatting) | On commit (pre-commit hook) |
-| **SwiftLint** | Code quality (linting) | On build (Xcode plugin) |
+| **swift-format** | Code formatting | Pre-commit hook, format-on-save |
+| **SwiftLint** | Code linting | Pre-commit hook, Xcode build |
+| **typos** | Spell checking | Pre-commit hook |
+
+### Pre-commit Hook
+
+The pre-commit hook (`scripts/hooks/pre-commit`) runs:
+1. **swift-format** - Auto-formats staged Swift files
+2. **SwiftLint** - Lints staged Swift files (blocks commit on errors)
+3. **typos** - Checks spelling in all staged files
 
 ### swift-format (Formatting)
 
-**VS Code:** Format-on-save via [Sweetpad](https://marketplace.visualstudio.com/items?itemName=sweetpad.sweetpad) extension (`.vscode/settings.json`)
-- Install: [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=sweetpad.sweetpad)
-- Docs: https://sweetpad.hyzyla.dev/docs/intro/
-
-**Git Hooks:** Pre-commit hook auto-formats staged Swift files.
-
-**Xcode:** Build phase "Check Git Hooks" fails build if hooks aren't configured.
+- **Config:** `.swift-format`
+- **VS Code:** Format-on-save via [SweetPad](https://sweetpad.hyzyla.dev/docs/intro/)
+- **Xcode:** Built into toolchain at `/Applications/Xcode.app/.../usr/bin/swift-format`
 
 ### SwiftLint (Linting)
 
-Runs automatically on build via Swift Package Plugin. Warnings appear inline in Xcode.
-Docs for Configuration: https://realm.github.io/SwiftLint/rule-directory.html
-Configuration: `.swiftlint.yml`
+- **Config:** `.swiftlint.yml` (strict mode - all warnings are errors)
+- **Install:** `brew install swiftlint`
+- **Rules:** https://realm.github.io/SwiftLint/rule-directory.html
+
+### typos (Spell Checking)
+
+- **Config:** `_typos.toml` (for custom words/exclusions)
+- **Install:** `brew install typos-cli`
+- **Fix typos:** `typos -w` to auto-fix
 
 ### Setup (one-time per machine)
 
-Run this command to enable git hooks:
 ```bash
+brew install swiftlint typos-cli
 git config core.hooksPath scripts/hooks
 ```
 
-The Xcode build will fail with instructions if this isn't configured.
+The Xcode build will fail with instructions if git hooks aren't configured.

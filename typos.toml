@@ -1,0 +1,14 @@
+# typos configuration
+# https://github.com/crate-ci/typos
+
+[files]
+# Exclude generated/binary files
+extend-exclude = [
+    "**/*.xcodeproj/**",
+    "**/*.pbxproj",
+    "**/Package.resolved",
+    "**/*.xcassets/**",
+]
+
+[default.extend-words]
+# Project-specific words that aren't typos

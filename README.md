@@ -22,9 +22,10 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 ## Development Setup
 
 1. Clone the repository
-2. Enable git hooks: `git config core.hooksPath scripts/hooks`
-3. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
-4. Build and run on simulator or device
+2. Install tools: `brew install swiftlint typos-cli`
+3. Enable git hooks: `git config core.hooksPath scripts/hooks`
+4. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
+5. Build and run on simulator or device
 
 ### Hot Reloading with Inject
 
