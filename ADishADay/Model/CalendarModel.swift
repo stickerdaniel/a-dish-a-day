@@ -26,7 +26,7 @@ class CalendarModel: Identifiable, Codable {
 
   // Computed property to expose startDate while adjusting dates if changed
   var startDate: Date {
-    get { return _startDate }
+    get { _startDate }
     set { adjustDatesToNewStartDate(newStartDate: newValue) }
   }
 
@@ -97,27 +97,6 @@ class CalendarModel: Identifiable, Codable {
       .allSatisfy { $0.isUnlocked }
   }
 
-  /// Get the number of locked recipes within the date range.
-  var lockedRecipesCount: Int {
-    recipes
-      .filter { $0.isWithinDateRange(startDate: _startDate, endDate: endDate) }
-      .filter { !$0.isUnlocked }
-      .count
-  }
-
-  /// Returns recipes within the date range sorted by unlock date (earliest to latest).
-  func sortedRecipesByUnlockDate() -> [RecipeData] {
-    recipes
-      .filter { $0.isWithinDateRange(startDate: _startDate, endDate: endDate) }
-      .sorted {
-        switch ($0.unlockDate, $1.unlockDate) {
-        case (nil, _): return true
-        case (_, nil): return false
-        case (let date1?, let date2?): return date1 < date2
-        }
-      }
-  }
-
   /// Get the next recipe unlock time within the date range.
   var nextUnlockTime: TimeInterval? {
     recipes
@@ -137,7 +116,7 @@ class CalendarModel: Identifiable, Codable {
 
   /// Returns the recipe assigned for a specific date, if available.
   func getRecipe(for date: Date) -> RecipeData? {
-    return recipes.first { recipe in
+    recipes.first { recipe in
       guard let unlockDate = recipe.unlockDate else { return false }
       return Calendar.current.isDate(unlockDate, inSameDayAs: date)
     }
@@ -154,7 +133,7 @@ class CalendarModel: Identifiable, Codable {
   static func copy(
     from calendar: CalendarModel, setName: String? = nil, setSource source: CalendarSource? = nil
   ) -> CalendarModel {
-    let copiedCalendar = CalendarModel(
+    CalendarModel(
       name: setName ?? calendar.name,
       startDate: calendar._startDate,
       endDate: calendar.endDate,
@@ -163,8 +142,6 @@ class CalendarModel: Identifiable, Codable {
       source: source ?? calendar.source,
       adjustDatesOnImport: calendar.adjustDatesOnImport
     )
-
-    return copiedCalendar
   }
 
   // Codable Conformance

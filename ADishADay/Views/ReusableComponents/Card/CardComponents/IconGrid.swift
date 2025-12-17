@@ -7,24 +7,7 @@
 
 import SwiftUI
 
-struct IconGrid: View {
-  var symbols: [String]  // List of SF Symbols
-
-  var body: some View {
-    GeometryReader { geometry in
-      ZStack {
-        // Overlay Honeycomb
-        HoneycombOverlay(symbols: symbols, cols: symbols.count * 3 / 2)
-          .frame(
-            width: geometry.size.width * 1.5,
-            height: geometry.size.height * 1.5
-          )
-          .rotationEffect(.degrees(30))
-          .offset(x: -geometry.size.width * 0.25, y: -geometry.size.height * 0.25)
-      }
-    }
-  }
-}
+// MARK: - Supporting Types
 
 struct HoneycombOverlay: View {
   var symbols: [String]  // List of SF Symbols
@@ -63,25 +46,23 @@ struct HoneycombOverlay: View {
   func isBigIcon(_ idx: Int) -> Bool { idx % (symbols.count / 2) == 0 }
 }
 
-struct PolygonShape: Shape {
-  let sides: Int
+// MARK: - Main Type
 
-  func path(in rect: CGRect) -> Path {
-    guard sides > 2 else { return Path() }
-    let center = CGPoint(x: rect.midX, y: rect.midY)
-    let radius = min(rect.width, rect.height) / 2
-    let angle = (2 * .pi) / CGFloat(sides)
+struct IconGrid: View {
+  var symbols: [String]  // List of SF Symbols
 
-    var path = Path()
-    path.move(to: CGPoint(x: center.x + radius * cos(0), y: center.y + radius * sin(0)))
-
-    for i in 1..<sides {
-      let x = center.x + radius * cos(angle * CGFloat(i))
-      let y = center.y + radius * sin(angle * CGFloat(i))
-      path.addLine(to: CGPoint(x: x, y: y))
+  var body: some View {
+    GeometryReader { geometry in
+      ZStack {
+        // Overlay Honeycomb
+        HoneycombOverlay(symbols: symbols, cols: symbols.count * 3 / 2)
+          .frame(
+            width: geometry.size.width * 1.5,
+            height: geometry.size.height * 1.5
+          )
+          .rotationEffect(.degrees(30))
+          .offset(x: -geometry.size.width * 0.25, y: -geometry.size.height * 0.25)
+      }
     }
-
-    path.closeSubpath()
-    return path
   }
 }

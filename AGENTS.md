@@ -6,14 +6,24 @@ This file provides guidance to Claude Code (claude.ai/code) and other AI code as
 
 "A Dish A Day" is a SwiftUI iOS app combining recipe management with calendar scheduling. Users create calendars with recipes assigned to specific unlock dates, with notification support for recipe unlocks.
 
+
+### Setup (one-time per machine)
+
+```bash
+brew install swiftlint typos-cli periphery
+git config core.hooksPath scripts/hooks
+```
+
+The Xcode build will fail with instructions if git hooks aren't configured.
+
+
 ## Build & Development
 
 **Build Tool:** Xcode (native iOS)
 - Open `ADishADay.xcodeproj` in Xcode
 - Build target: ADishADay
-- No command-line build scripts; use Xcode or `xcodebuild`
+- No command-line build scripts; use Xcode or `xcodebuild` (or user)
 
-**No test targets configured** - ENABLE_TESTABILITY is set but no tests exist yet.
 
 ## Architecture
 
@@ -88,13 +98,12 @@ enum CalendarSource { case created, imported }
 
 ## Code Quality
 
-This project uses three tools for code quality:
-
-| Tool | Purpose | When it runs |
-|------|---------|--------------|
+| Tool | Purpose | When to run |
+|------|---------|-------------|
 | **swift-format** | Code formatting | Pre-commit hook, format-on-save |
-| **SwiftLint** | Code linting | Pre-commit hook, Xcode build |
+| **SwiftLint** | Code linting | Pre-commit hook |
 | **typos** | Spell checking | Pre-commit hook |
+| **Periphery** | Find unused code | Manually, periodically |
 
 ### Pre-commit Hook
 
@@ -112,20 +121,29 @@ The pre-commit hook (`scripts/hooks/pre-commit`) runs:
 ### SwiftLint (Linting)
 
 - **Config:** `.swiftlint.yml` (strict mode - all warnings are errors)
-- **Install:** `brew install swiftlint`
 - **Rules:** https://realm.github.io/SwiftLint/rule-directory.html
 
 ### typos (Spell Checking)
 
 - **Config:** `_typos.toml` (for custom words/exclusions)
-- **Install:** `brew install typos-cli`
 - **Fix typos:** `typos -w` to auto-fix
 
-### Setup (one-time per machine)
+### Periphery (Dead Code Detection)
 
-```bash
-brew install swiftlint typos-cli
-git config core.hooksPath scripts/hooks
-```
+- **Run:** `periphery scan --project ADishADay.xcodeproj --schemes "A Dish A Day"`
+- **Use:** Run periodically to find unused declarations, parameters, and protocols
+- **Docs:** https://github.com/peripheryapp/periphery
 
-The Xcode build will fail with instructions if git hooks aren't configured.
+Suggest to run Periphery after every successful test of a feature implementation.
+
+After running Periphery, evaluate each finding. Remove truly dead code, but document intentionally kept code below.
+
+#### Intentionally Kept (Do Not Remove)
+
+Document any unused code that should be kept here. When Periphery reports these items, they can be safely ignored.
+
+| Item | File | Reason |
+|------|------|--------|
+| `nextUnlockTime` | CalendarModel.swift | Infrastructure for future notification scheduling (e.g., remind user before next recipe unlocks) |
+| `startOfMonth` | BetterDateUtilities.swift | Non-trivial date utility for month boundary operations |
+| `endOfMonth` | BetterDateUtilities.swift | Pairs with `startOfMonth` for complete month boundary API |

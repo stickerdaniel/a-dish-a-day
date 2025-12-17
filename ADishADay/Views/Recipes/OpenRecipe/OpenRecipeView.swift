@@ -11,8 +11,6 @@ struct OpenRecipeView: View {
   @ObserveInjection var inject
   var recipe: RecipeModel
 
-  @Environment(\.modelContext) private var context
-
   var body: some View {
     ScrollView {
       DisplayRecipeDataView(

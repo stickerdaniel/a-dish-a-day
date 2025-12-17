@@ -8,19 +8,13 @@
 import Foundation
 import UniformTypeIdentifiers
 
-extension UTType {
-  static let customcalendar =
-    UTType(filenameExtension: CalendarSerialization.customCalendarFileExtension) ?? UTType.text
-  static let markdown = UTType(filenameExtension: "md") ?? UTType.text
-}
-
 class CalendarSerialization {
   static let customCalendarFileExtension = "ddcal"
 
   /// Encodes a `CalendarModel` into a JSON file
   /// - Parameter calendar: `CalendarModel` to encode
   /// - Returns: `URL` pointing to JSON file
-  static func encodeCalendar(_ calendar: CalendarModel, resetStartDate: Bool = true) -> URL? {
+  static func encodeCalendar(_ calendar: CalendarModel) -> URL? {
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted
 
@@ -60,4 +54,9 @@ class CalendarSerialization {
       return nil
     }
   }
+}
+
+extension UTType {
+  static let customcalendar =
+    UTType(filenameExtension: CalendarSerialization.customCalendarFileExtension) ?? UTType.text
 }

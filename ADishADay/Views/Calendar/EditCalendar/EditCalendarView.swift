@@ -21,8 +21,7 @@ struct EditCalendarView: View {
   @State private var thumbnailImage: UIImage?
 
   // For showing the recipe picker sheet
-  @State private var isPickingRecipe = false
-  @State private var selectedDateForRecipePicker: Date? = nil
+  @State private var selectedDateForRecipePicker: Date?
 
   // For import settings
   @State private var showingImportAlert: Bool = false

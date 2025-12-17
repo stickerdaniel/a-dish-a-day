@@ -25,30 +25,19 @@ extension Date {
       matching: DateComponents(hour: 0, minute: 0, second: 0),
       matchingPolicy: .nextTime
     ) { date, _, stop in
-      guard let d = date else { return }
-      if d > endDate.midnight {
+      guard let currentDate = date else { return }
+      if currentDate > endDate.midnight {
         stop = true
       } else {
-        dates.append(d)
+        dates.append(currentDate)
       }
     }
     return dates
   }
 
-  /// Converts the date to an ISO8601 formatted string.
-  var iso8601String: String {
-    let formatter = ISO8601DateFormatter()
-    return formatter.string(from: self)
-  }
-
   /// Convenience for grabbing the "day of month" integer, e.g., 1–31.
   var dayOfMonth: Int {
     Calendar.current.component(.day, from: self)
-  }
-
-  /// Convenience for the month of this date (1 through 12).
-  var month: Int {
-    Calendar.current.component(.month, from: self)
   }
 
   /// Start of the current month.

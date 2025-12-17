@@ -22,7 +22,7 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 ## Development Setup
 
 1. Clone the repository
-2. Install tools: `brew install swiftlint typos-cli`
+2. Install tools: `brew install swiftlint typos-cli periphery`
 3. Enable git hooks: `git config core.hooksPath scripts/hooks`
 4. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
 5. Build and run on simulator or device
@@ -43,6 +43,14 @@ If configured correctly, you'll see in the console:
 ```
 
 Save any Swift file and changes appear instantly without rebuilding!
+
+### Finding Unused Code
+
+Run [Periphery](https://github.com/peripheryapp/periphery) periodically to find dead code:
+
+```bash
+periphery scan --project ADishADay.xcodeproj --schemes "A Dish A Day"
+```
 
 ## License
 

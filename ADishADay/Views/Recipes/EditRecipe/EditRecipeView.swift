@@ -11,12 +11,6 @@ struct EditRecipeView: View {
   @ObserveInjection var inject
   var recipeToEdit: RecipeModel?
 
-  enum InputMethod {
-    case markdown
-    case aiScan
-  }
-
-  @State private var selectedInputMethod: InputMethod = .markdown
   @State private var name: String = ""
   @State private var ingredients: String = ""
   @State private var instructions: String = ""

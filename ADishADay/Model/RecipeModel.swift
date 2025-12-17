@@ -34,16 +34,6 @@ class RecipeModel: Identifiable, Codable {
     self.thumbnailData = thumbnailData
   }
 
-  // MARK: - Copy Function
-  func copy() -> RecipeModel {
-    RecipeModel(
-      name: self.name,
-      ingredients: self.ingredients,
-      steps: self.steps,
-      thumbnailData: self.thumbnailData
-    )
-  }
-
   // MARK: - Codable Conformance
   private enum CodingKeys: String, CodingKey {
     case id, name, ingredients, steps, thumbnailData
