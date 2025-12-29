@@ -1,17 +1,22 @@
 #!/bin/bash
 
 # Quality Checks Script
-# Usage: ./scripts/quality-checks.sh [--staged]
-#   --staged    Run on staged files only (for pre-commit hooks)
-#   (default)   Run on all files (for CI)
+# Usage: ./scripts/quality-checks.sh [--staged] [--no-build]
+#   --staged     Run on staged files only (for pre-commit hooks)
+#   --no-build   Skip the build step
+#   (default)    Run all checks on all files (for CI)
 
 set -e
 
 # Parse arguments
 STAGED_MODE=false
-if [[ "$1" == "--staged" ]]; then
-    STAGED_MODE=true
-fi
+SKIP_BUILD=false
+for arg in "$@"; do
+    case $arg in
+        --staged) STAGED_MODE=true ;;
+        --no-build) SKIP_BUILD=true ;;
+    esac
+done
 
 # Get Swift files based on mode
 if $STAGED_MODE; then
@@ -98,6 +103,19 @@ if command -v typos &> /dev/null; then
     fi
 else
     echo "Warning: typos not found, skipping spellcheck (install: brew install typos-cli)"
+fi
+
+# =============================================================================
+# 4. Build (skip for pre-commit or --no-build)
+# =============================================================================
+if ! $STAGED_MODE && ! $SKIP_BUILD; then
+    echo "Building project..."
+    if xcodebuild -project ADishADay.xcodeproj -scheme "A Dish A Day" -destination "platform=iOS Simulator,name=iPhone 17 Pro" build -quiet; then
+        echo "Build succeeded"
+    else
+        echo "Build failed"
+        FAILED=1
+    fi
 fi
 
 # =============================================================================

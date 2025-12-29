@@ -135,6 +135,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		650000012D459A32005D131C /* Check Git Hooks */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			name = "Check Git Hooks";
 			shellPath = /bin/sh;
 			shellScript = "if [ -n \"$CI\" ]; then exit 0; fi\nHOOKS_PATH=$(git config core.hooksPath)\nif [ \"$HOOKS_PATH\" != \"scripts/hooks\" ]; then\n    echo \"error: Git hooks not configured. Run: git config core.hooksPath scripts/hooks\"\n    exit 1\nfi\n";

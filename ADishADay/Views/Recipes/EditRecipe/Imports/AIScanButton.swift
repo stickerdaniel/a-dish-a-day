@@ -187,31 +187,20 @@ struct AIScanButton: View {
       showProcessingProgress = true
     }
     // now let's try to process the image and send it to the OpenAI API
-    do {
-      if let imageData = image.jpegData(compressionQuality: 0.8) {
-        let openAI = OpenAIIntegration()
-        openAI.analyzeRecipeImage(imageData: imageData) { result in
-          Task { @MainActor in
-            showProcessingProgress = false
-            switch result {
-            case .success(let recipe):
-              onImageScanned(recipe.title, recipe.ingredients, recipe.instructions)
-            case .failure(let error):
-              errorMessage = error.localizedDescription
-              showError = true
-            }
+    if let imageData = image.jpegData(compressionQuality: 0.8) {
+      let openAI = OpenAIIntegration()
+      openAI.analyzeRecipeImage(imageData: imageData) { result in
+        Task { @MainActor in
+          showProcessingProgress = false
+          switch result {
+          case .success(let recipe):
+            onImageScanned(recipe.title, recipe.ingredients, recipe.instructions)
+          case .failure(let error):
+            errorMessage = error.localizedDescription
+            showError = true
           }
         }
       }
-    } catch OpenAIError.missingAPIKey {
-      await showErrorMessage("OpenAI API key is missing. Please add it in settings.")
-      showSettingsAlert = true
-    } catch OpenAIError.requestFailed(let statusCode) {
-      await handleRequestFailedError(statusCode: statusCode, image: image)
-    } catch OpenAIError.invalidData {
-      await showErrorMessage("Failed to parse the recipe data. Please try a different image.")
-    } catch {
-      await showErrorMessage("An unexpected error occurred. Please try again.")
     }
   }
 

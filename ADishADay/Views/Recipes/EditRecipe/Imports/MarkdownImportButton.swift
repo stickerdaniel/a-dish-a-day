@@ -52,7 +52,7 @@ struct MarkdownImportButton: View {
       defer { url.stopAccessingSecurityScopedResource() }
 
       do {
-        let markdown = try String(contentsOf: url)
+        let markdown = try String(contentsOf: url, encoding: .utf8)
         let parsed = RecipeMarkdownParser.parse(markdown: markdown)
 
         if let errorMessage = parsed.errorMessage {
