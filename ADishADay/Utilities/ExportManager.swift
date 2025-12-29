@@ -11,7 +11,7 @@ import UIKit
 struct ExportManager {
   /// Encode calendar and return URL for the JSON file
   static func exportCalendar(_ calendar: CalendarModel) -> URL? {
-    return CalendarSerialization.encodeCalendar(calendar)
+    CalendarSerialization.encodeCalendar(calendar)
   }
 
   /// Present share sheet for the provided file URL

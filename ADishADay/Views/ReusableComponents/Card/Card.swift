@@ -15,14 +15,14 @@ enum BadgeType {
 }
 
 struct Card: View {
-  var image: Image? = nil  // Optional image
-  var icon: Image? = nil  // Optional icon
-  var blurred: Bool = false  // Optional blurr
+  var image: Image?  // Optional image
+  var icon: Image?  // Optional icon
+  var blurred: Bool = false  // Optional blur
   var badgeType: BadgeType = .none  // Badge type
-  var badgeNumber: Int? = nil  // Badge number
+  var badgeNumber: Int?  // Badge number
   var description: String
   var fallbackSymbols: [String] = []  // Pass SF Symbols for the grid
-  var day: Int? = nil  // Optional day to display as overlay
+  var day: Int?  // Optional day to display as overlay
   var pinned: Bool = false  // Optional pinned icon
 
   static let minimumWidth: CGFloat = 96

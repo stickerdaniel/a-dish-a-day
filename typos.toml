@@ -8,6 +8,13 @@ extend-exclude = [
     "**/*.pbxproj",
     "**/Package.resolved",
     "**/*.xcassets/**",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.gif",
+    "*.ico",
+    "*.pdf",
+    "*.ddcal",
 ]
 
 [default.extend-words]

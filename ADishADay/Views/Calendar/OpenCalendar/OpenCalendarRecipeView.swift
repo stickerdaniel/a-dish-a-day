@@ -27,22 +27,25 @@ struct OpenCalendarRecipeView: View {
     .navigationBarTitleDisplayMode(.inline)
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
-        Button(action: {
-          // Create a model for the recipe
-          let newRecipe = RecipeModel(
-            name: recipe.name,
-            ingredients: recipe.ingredients,
-            steps: recipe.steps,
-            thumbnailData: recipe.thumbnailData
-          )
-          context.insert(newRecipe)
+        Button(
+          action: {
+            // Create a model for the recipe
+            let newRecipe = RecipeModel(
+              name: recipe.name,
+              ingredients: recipe.ingredients,
+              steps: recipe.steps,
+              thumbnailData: recipe.thumbnailData
+            )
+            context.insert(newRecipe)
 
-          // Show success alert
-          showSaveAlert = true
-        }) {
-          Image(systemName: "square.and.arrow.down.on.square")
-            .foregroundColor(.blue)  // Blue color
-        }
+            // Show success alert
+            showSaveAlert = true
+          },
+          label: {
+            Image(systemName: "square.and.arrow.down.on.square")
+              .foregroundColor(.blue)  // Blue color
+          }
+        )
       }
     }
     // Success alert dialog

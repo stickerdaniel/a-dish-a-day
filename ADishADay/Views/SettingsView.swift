@@ -152,7 +152,10 @@ struct SettingsView: View {
   private func clearAllData() {
     do {
       // Clear all UserDefaults data by removing the entire persistent domain
-      let domain = Bundle.main.bundleIdentifier!
+      guard let domain = Bundle.main.bundleIdentifier else {
+        clearDataError = "Unable to determine app bundle identifier"
+        return
+      }
       UserDefaults.standard.removePersistentDomain(forName: domain)
       UserDefaults.standard.synchronize()
 

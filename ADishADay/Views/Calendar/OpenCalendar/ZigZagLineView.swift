@@ -45,9 +45,9 @@ struct ZigZagLineView<Content: View>: View {
             let offsetX = spacing * (index % 2 == 0 ? 1 : -1)
             let offsetY = offsetYValues[index]  // pre-calculated offsetY value
 
-            //let nextIndex = min(index + 1, views.count - 1)
-            //let nextOffsetY = offsetYValues[nextIndex] // next value or fallback to current
-            //let nextOffsetX = spacing * (nextIndex % 2 == 0 ? 1 : -1)
+            // let nextIndex = min(index + 1, views.count - 1)
+            // let nextOffsetY = offsetYValues[nextIndex] // next value or fallback to current
+            // let nextOffsetX = spacing * (nextIndex % 2 == 0 ? 1 : -1)
 
             let previousIndex = index - 1
             let previousOffsetY =
@@ -104,7 +104,7 @@ struct ZigZagLineView<Content: View>: View {
             lineWidth: lineWidth,
             lineCap: .round,
             lineJoin: .round
-              //dash: [40, 25] // More dash spacing
+              // dash: [40, 25] // More dash spacing
           )
         )
 

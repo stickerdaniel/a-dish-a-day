@@ -17,24 +17,32 @@ struct MarkdownImportButton: View {
   let onMarkdownImported: (String, String, String) -> Void
 
   var body: some View {
-    Button(action: { isImportingMarkdown = true }) {
-      HStack {
-        Image(systemName: "text.line.first.and.arrowtriangle.forward")
-          .frame(width: 24, height: 24)
-        Text("Markdown")
-          .foregroundColor(.primary)
+    Button(
+      action: { isImportingMarkdown = true },
+      label: {
+        HStack {
+          Image(systemName: "text.line.first.and.arrowtriangle.forward")
+            .frame(width: 24, height: 24)
+          Text("Markdown")
+            .foregroundColor(.primary)
+        }
       }
-    }
+    )
     .fileImporter(
       isPresented: $isImportingMarkdown,
       allowedContentTypes: [.plainText],
       onCompletion: handleMarkdownImport
     )
-    .alert("Import Warning", isPresented: $showImportError) {
-      Button("Ok", role: .cancel) {}
-    } message: {
-      Text(importErrorMessage)
-    }
+    .alert(
+      "Import Warning",
+      isPresented: $showImportError,
+      actions: {
+        Button("Ok", role: .cancel) {}
+      },
+      message: {
+        Text(importErrorMessage)
+      }
+    )
   }
 
   private func handleMarkdownImport(_ result: Result<URL, Error>) {

@@ -56,10 +56,11 @@ struct CalendarsView: View {
           }
           .pickerStyle(SegmentedPickerStyle())
           .padding()
+        },
+        content: { calendar in
+          CalendarCard(calendar: calendar, selectedTab: $selection)
         }
-      ) { calendar in
-        CalendarCard(calendar: calendar, selectedTab: $selection)
-      }
+      )
       .navigationTitle("Calendars")
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {

@@ -1,5 +1,5 @@
 //
-//  DiplayRecipeDataView.swift
+//  DisplayRecipeDataView.swift
 //  calendar
 //
 //  Created by Lucy May Plassmann on 12.01.25.
@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct DisplayRecipeDataView: View {
-  var thumbnailImage: Image? = nil  // Optional thumbnail image
+  var thumbnailImage: Image?  // Optional thumbnail image
   var name: String = "Recipe Name"  // Recipe name
   var ingredients: String = "Ingredients"  // Ingredients list
   var steps: String = "Instructions"  // Recipe steps
-  var day: Int? = nil  // Optional day to display
+  var day: Int?  // Optional day to display
 
   var body: some View {
     ScrollView {

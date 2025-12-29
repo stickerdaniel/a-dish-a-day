@@ -20,7 +20,6 @@ struct SeededRandomNumberGenerator {
     state = state &* 6_364_136_223_846_793_005 &+ 1
 
     // Normalize the value to the range [0, 1] using the full state (64-bit)
-    let fraction = Double(state & 0xFFFF_FFFF_FFFF) / Double(0xFFFF_FFFF_FFFF)
-    return fraction
+    return Double(state & 0xFFFF_FFFF_FFFF) / Double(0xFFFF_FFFF_FFFF)
   }
 }

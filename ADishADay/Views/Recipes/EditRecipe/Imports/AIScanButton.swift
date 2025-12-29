@@ -8,6 +8,51 @@
 import PhotosUI
 import SwiftUI
 
+// MARK: - ImagePicker
+
+// Image Picker for Camera
+struct ImagePicker: UIViewControllerRepresentable {
+  @Binding var selectedImage: UIImage?
+  let sourceType: UIImagePickerController.SourceType
+
+  func makeUIViewController(context: Context) -> UIImagePickerController {
+    let picker = UIImagePickerController()
+    picker.sourceType = sourceType
+    picker.delegate = context.coordinator
+    return picker
+  }
+
+  func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+  }
+
+  class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    let parent: ImagePicker
+
+    init(_ parent: ImagePicker) {
+      self.parent = parent
+    }
+
+    func imagePickerController(
+      _ picker: UIImagePickerController,
+      didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+    ) {
+      if let image = info[.originalImage] as? UIImage {
+        parent.selectedImage = image
+      }
+      picker.dismiss(animated: true)
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+      picker.dismiss(animated: true)
+    }
+  }
+}
+
+// MARK: - AIScanButton
+
 struct AIScanButton: View {
   @State private var showImagePicker = false
   @State private var showCamera = false
@@ -84,7 +129,7 @@ struct AIScanButton: View {
           .default(Text("Photo Library")) {  // photo library button to select a photo
             showImagePicker = true
           },
-          .cancel(),
+          .cancel()
         ]
       )
     }
@@ -141,7 +186,7 @@ struct AIScanButton: View {
       processingStep = "Analyzing recipe..."
       showProcessingProgress = true
     }
-    // now lety try to process the image and send it to the OpenAI API
+    // now let's try to process the image and send it to the OpenAI API
     do {
       if let imageData = image.jpegData(compressionQuality: 0.8) {
         let openAI = OpenAIIntegration()
@@ -158,32 +203,42 @@ struct AIScanButton: View {
           }
         }
       }
-    } catch OpenAIError.missingAPIKey {  // some error handling
+    } catch OpenAIError.missingAPIKey {
       await showErrorMessage("OpenAI API key is missing. Please add it in settings.")
       showSettingsAlert = true
     } catch OpenAIError.requestFailed(let statusCode) {
-      switch statusCode {
-      case 401:
-        await showErrorMessage("Invalid API key. Please check your settings.")
-        showSettingsAlert = true
-      case 429:
-        await showErrorMessage("Too many requests. Please try again later.")
-      case 500, 502, 503, 504:
-        if retryCount < maxRetries {
-          retryCount += 1
-          try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * Double(retryCount)))
-          await processImage(image)
-        } else {
-          await showErrorMessage("Server error. Please try again later.")
-        }
-      default:
-        await showErrorMessage(
-          "Failed to process the image (Error \(statusCode)). Please try again.")
-      }
+      await handleRequestFailedError(statusCode: statusCode, image: image)
     } catch OpenAIError.invalidData {
       await showErrorMessage("Failed to parse the recipe data. Please try a different image.")
     } catch {
       await showErrorMessage("An unexpected error occurred. Please try again.")
+    }
+  }
+
+  // handle HTTP status code errors from the OpenAI API
+  private func handleRequestFailedError(statusCode: Int, image: UIImage) async {
+    switch statusCode {
+    case 401:
+      await showErrorMessage("Invalid API key. Please check your settings.")
+      showSettingsAlert = true
+    case 429:
+      await showErrorMessage("Too many requests. Please try again later.")
+    case 500, 502, 503, 504:
+      await handleServerError(image: image)
+    default:
+      await showErrorMessage(
+        "Failed to process the image (Error \(statusCode)). Please try again.")
+    }
+  }
+
+  // handle server errors with retry logic
+  private func handleServerError(image: UIImage) async {
+    if retryCount < maxRetries {
+      retryCount += 1
+      try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * Double(retryCount)))
+      await processImage(image)
+    } else {
+      await showErrorMessage("Server error. Please try again later.")
     }
   }
 
@@ -193,47 +248,6 @@ struct AIScanButton: View {
       showProcessingProgress = false
       errorMessage = message
       showError = true
-    }
-  }
-}
-
-// Image Picker for Camera
-struct ImagePicker: UIViewControllerRepresentable {
-  @Binding var selectedImage: UIImage?
-  let sourceType: UIImagePickerController.SourceType
-
-  func makeUIViewController(context: Context) -> UIImagePickerController {
-    let picker = UIImagePickerController()
-    picker.sourceType = sourceType
-    picker.delegate = context.coordinator
-    return picker
-  }
-
-  func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
-  func makeCoordinator() -> Coordinator {
-    Coordinator(self)
-  }
-
-  class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    let parent: ImagePicker
-
-    init(_ parent: ImagePicker) {
-      self.parent = parent
-    }
-
-    func imagePickerController(
-      _ picker: UIImagePickerController,
-      didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
-    ) {
-      if let image = info[.originalImage] as? UIImage {
-        parent.selectedImage = image
-      }
-      picker.dismiss(animated: true)
-    }
-
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-      picker.dismiss(animated: true)
     }
   }
 }

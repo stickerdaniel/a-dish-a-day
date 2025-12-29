@@ -9,7 +9,7 @@ import SwiftUI
 import UserNotifications
 
 class NotificationManager: ObservableObject {
-  // Singelton
+  // Singleton
   static let shared = NotificationManager()
 
   // request to send Notifications

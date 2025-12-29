@@ -31,9 +31,11 @@ struct RecipeCard: View {
 
       Divider()
 
-      Button(role: .destructive, action: { showDeleteConfirmation = true }) {
-        Label("Delete", systemImage: "trash")
-      }
+      Button(
+        role: .destructive,
+        action: { showDeleteConfirmation = true },
+        label: { Label("Delete", systemImage: "trash") }
+      )
     }
     .confirmationDialog(
       "Are you sure you want to delete this recipe?",

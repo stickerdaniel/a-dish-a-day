@@ -3,7 +3,7 @@
 //  calendar
 //
 //  Created by Daniel Sticker on 19.01.25.
-//  Here we handle the API calls to OpenAI. The custom promt ensures correct parsing and a consistent
+//  Here we handle the API calls to OpenAI. The custom prompt ensures correct parsing and a consistent
 //  output format. We get a JSON back with the title, ingredients and instructions (structured output)
 
 import Foundation
@@ -103,8 +103,8 @@ class OpenAIIntegration {
           "role": "user",
           "content": [
             ["type": "text", "text": recipePrompt],
-            ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(base64Image)"]],
-          ],
+            ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(base64Image)"]]
+          ]
         ]
       ],
       "response_format": [
@@ -117,14 +117,14 @@ class OpenAIIntegration {
             "properties": [
               "title": ["type": "string"],
               "ingredients": ["type": "string"],
-              "instructions": ["type": "string"],
+              "instructions": ["type": "string"]
             ],
             "required": ["title", "ingredients", "instructions"],
-            "additionalProperties": false,
-          ],
-        ],
+            "additionalProperties": false
+          ]
+        ]
       ],
-      "max_tokens": 500,
+      "max_tokens": 500
     ]
   }
 

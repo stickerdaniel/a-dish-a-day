@@ -15,7 +15,7 @@ struct RecipeSelectionSheet: View {
   let recipes: [RecipeModel]
 
   /// The recipe that might be selected initially
-  @State private var selectedRecipe: RecipeModel? = nil
+  @State private var selectedRecipe: RecipeModel?
 
   /// Called when the user taps on a recipe
   let onRecipeSelected: (RecipeModel) -> Void
