@@ -5,6 +5,7 @@
 //  Created by Daniel Sticker on 18.01.25.
 //  This view opens if we click on a calendar
 
+import SwiftDate
 import SwiftUI
 
 struct OpenCalendarView: View {
@@ -20,7 +21,7 @@ struct OpenCalendarView: View {
         guard let recipeData = calendar.getRecipe(for: date) else { return nil }
 
         // If we have a recipe, build a NavigationLink with a Card
-        let dayNumber = Calendar.current.component(.day, from: date)
+        let dayNumber = date.day
 
         let card = Card(
           image: recipeData.thumbnailImage,

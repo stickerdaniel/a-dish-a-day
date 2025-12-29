@@ -50,7 +50,7 @@ class CalendarModel: Identifiable, Codable {
 
     while current <= end {
       dates.append(current)
-      current += 1.days
+      current = current.dateByAdding(1, .day).date
     }
     return dates
   }
