@@ -1,3 +1,5 @@
+![banner.png](banner.png)
+
 # A Dish A Day
 
 Your family's recipe collection deserves a home. A Dish A Day is an iOS app for preserving and organizing cherished family recipes. From grandma's secret apple pie to mom's Sunday roast.
