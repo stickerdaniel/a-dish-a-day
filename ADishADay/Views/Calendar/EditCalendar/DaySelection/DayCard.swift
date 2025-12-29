@@ -14,16 +14,15 @@ struct DayCard: View {
   let onTap: () -> Void  // Action when user taps this card
 
   var body: some View {
-    // Day number as the overlay
-    Card(
-      image: recipeAssigned?.thumbnailImage,
-      badgeType: recipeAssigned == nil ? .warning : .none,
-      description: recipeAssigned?.name ?? "Tap to pick recipe",
-      fallbackSymbols: RecipeModel.fallbackSymbols,
-      day: date.day
-    )
-    .onTapGesture {
-      onTap()
+    Button(action: onTap) {
+      Card(
+        image: recipeAssigned?.thumbnailImage,
+        badgeType: recipeAssigned == nil ? .warning : .none,
+        description: recipeAssigned?.name ?? "Tap to pick recipe",
+        fallbackSymbols: RecipeModel.fallbackSymbols,
+        day: date.day
+      )
     }
+    .buttonStyle(.card)
   }
 }

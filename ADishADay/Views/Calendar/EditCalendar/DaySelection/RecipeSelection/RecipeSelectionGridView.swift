@@ -23,15 +23,17 @@ struct RecipeSelectionGridView: View {
       LazyVGrid(columns: columns, spacing: Card.spacing) {
         // Render the recipe items
         ForEach(recipes, id: \.id) { recipe in
-          Card(
-            image: recipe.thumbnailImage,
-            description: recipe.name,
-            fallbackSymbols: RecipeModel.fallbackSymbols
-          ).onTapGesture {
-            // Update selection and trigger callback
+          Button {
             selectedRecipe = recipe
             onRecipeTapped(recipe)
+          } label: {
+            Card(
+              image: recipe.thumbnailImage,
+              description: recipe.name,
+              fallbackSymbols: RecipeModel.fallbackSymbols
+            )
           }
+          .buttonStyle(.card)
         }
       }
       .padding()

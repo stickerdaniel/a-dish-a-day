@@ -38,13 +38,15 @@ struct CalendarsView: View {
                 )
               }
             } else if selection == .imported {
-              Card(
-                icon: Image(systemName: "tray.and.arrow.down"),
-                description: "Import calendar"
-              )
-              .onTapGesture {
-                isImportingJSON = true  // Trigger the file import
+              Button {
+                isImportingJSON = true
+              } label: {
+                Card(
+                  icon: Image(systemName: "tray.and.arrow.down"),
+                  description: "Import calendar"
+                )
               }
+              .buttonStyle(.card)
             }
           }
         ),

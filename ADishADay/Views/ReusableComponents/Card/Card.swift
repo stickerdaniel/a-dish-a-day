@@ -102,6 +102,7 @@ struct Card: View {
         .frame(maxWidth: .infinity)
         .frame(height: 40, alignment: .top)
     }
+    .contentShape(Rectangle())
     .frame(maxWidth: .infinity)
   }
 
