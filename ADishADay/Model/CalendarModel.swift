@@ -6,6 +6,7 @@
 //
 
 import SwiftData
+import SwiftDate
 import SwiftUI
 
 enum CalendarSource: String, Codable {
@@ -32,14 +33,26 @@ class CalendarModel: Identifiable, Codable {
 
   // Computed Properties
   var daysBetween: Int {
-    let days =
-      Calendar.current.dateComponents([.day], from: _startDate.midnight, to: endDate.midnight).day
-      ?? 0
-    return days + 1
+    let days = (_startDate.dateAtStartOf(.day) - endDate.dateAtStartOf(.day)).in(.day) ?? 0
+    return abs(days) + 1
   }
 
   var allDates: [Date] {
-    _startDate.midnight.allDates(upTo: endDate.midnight)
+    Self.generateDates(from: _startDate, to: endDate)
+  }
+
+  /// Generates an array of dates from start to end (inclusive), normalized to start of day
+  private static func generateDates(from startDate: Date, to endDate: Date) -> [Date] {
+    let start = startDate.dateAtStartOf(.day)
+    let end = endDate.dateAtStartOf(.day)
+    var dates: [Date] = []
+    var current = start
+
+    while current <= end {
+      dates.append(current)
+      current += 1.days
+    }
+    return dates
   }
 
   var thumbnailImage: Image? {
@@ -57,29 +70,30 @@ class CalendarModel: Identifiable, Codable {
   ) {
 
     self.name = name
-    self._startDate = startDate.midnight
-    self.endDate = endDate.midnight
+    self._startDate = startDate.dateAtStartOf(.day)
+    self.endDate = endDate.dateAtStartOf(.day)
     self.recipes = recipes
     self.thumbnailData = thumbnailData
     self.source = source
     self.adjustDatesOnImport = adjustDatesOnImport
   }
 
-  /// Adjusts the calendar dates based on the current time (midnight adjustment included)
+  /// Adjusts the calendar dates based on the current time
   func adjustDatesToCurrent() {
-    adjustDatesToNewStartDate(newStartDate: Date().midnight)
+    adjustDatesToNewStartDate(newStartDate: Date().dateAtStartOf(.day))
   }
 
   /// Adjusts calendar dates based on a new start date, preserving existing durations
   private func adjustDatesToNewStartDate(newStartDate: Date) {
-    let offset = newStartDate.midnight.timeIntervalSince(_startDate.midnight)
+    let newStart = newStartDate.dateAtStartOf(.day)
+    let daysDiff = (newStart - _startDate.dateAtStartOf(.day)).in(.day) ?? 0
 
-    _startDate = newStartDate.midnight
-    endDate = endDate.midnight.addingTimeInterval(offset)
+    _startDate = newStart
+    endDate = endDate.dateAtStartOf(.day) + daysDiff.days
 
     for i in 0..<recipes.count {
       if let unlockDate = recipes[i].unlockDate {
-        recipes[i].unlockDate = unlockDate.midnight.addingTimeInterval(offset)
+        recipes[i].unlockDate = unlockDate.dateAtStartOf(.day) + daysDiff.days
       }
     }
   }
@@ -118,7 +132,7 @@ class CalendarModel: Identifiable, Codable {
   func getRecipe(for date: Date) -> RecipeData? {
     recipes.first { recipe in
       guard let unlockDate = recipe.unlockDate else { return false }
-      return Calendar.current.isDate(unlockDate, inSameDayAs: date)
+      return unlockDate.compare(toDate: date, granularity: .day) == .orderedSame
     }
   }
 

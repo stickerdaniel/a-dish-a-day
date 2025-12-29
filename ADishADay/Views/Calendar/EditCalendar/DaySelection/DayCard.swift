@@ -5,6 +5,7 @@
 //  Created by Daniel Sticker on 17.01.25.
 //  This Card component wrapper is used for the day selection in the edit calendar view
 
+import SwiftDate
 import SwiftUI
 
 struct DayCard: View {
@@ -19,7 +20,7 @@ struct DayCard: View {
       badgeType: recipeAssigned == nil ? .warning : .none,
       description: recipeAssigned?.name ?? "Tap to pick recipe",
       fallbackSymbols: RecipeModel.fallbackSymbols,
-      day: date.dayOfMonth
+      day: date.day
     )
     .onTapGesture {
       onTap()

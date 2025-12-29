@@ -5,6 +5,7 @@
 //  Created by Daniel Sticker on 18.01.25.
 //  Why not use RecipeModel? RecipeModel is used to store the saved Recipes in the Recipes tab. Here we store the recipes that are saved (and auto-serialized) in the Calendars. We also have an unlock date set, that is not needed in RecipeModel
 
+import SwiftDate
 import SwiftUI
 
 struct RecipeData: Codable, Identifiable {
@@ -40,19 +41,11 @@ struct RecipeData: Codable, Identifiable {
     return remainingTime > 0 ? remainingTime : nil
   }
 
-  // Computed property to get a formatted string "2d 18h" for time remaining until unlock
+  // Computed property to get a formatted string for time remaining until unlock
   var formattedTimeUntilUnlock: String {
-    guard let remaining = timeUntilUnlock else { return self.name }
-
-    let days = Int(remaining) / (3600 * 24)  // Convert seconds to days
-    let hours = (Int(remaining) % (3600 * 24)) / 3600  // Get remaining hours after full days
-
-    if days > 0 {
-      return String(format: "Unlock in %dd %02dh", days, hours)
-    } else {
-      let minutes = (Int(remaining) % 3600) / 60
-      return String(format: "Unlock in %02dh %02dm", hours, minutes)
-    }
+    guard let unlockDate = unlockDate, unlockDate > Date() else { return name }
+    let relative = unlockDate.in(region: .current).toRelative(since: Date().in(region: .current))
+    return "Unlock \(relative)"
   }
 
   // Helper function to check if the recipe is within the given date range

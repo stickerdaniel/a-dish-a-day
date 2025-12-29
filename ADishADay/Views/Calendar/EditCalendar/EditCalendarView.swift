@@ -6,6 +6,7 @@
 //
 
 import SwiftData
+import SwiftDate
 import SwiftUI
 
 struct EditCalendarView: View {
@@ -15,8 +16,8 @@ struct EditCalendarView: View {
 
   @State private var editingCalendar = CalendarModel(
     name: "",
-    startDate: Date().midnight,
-    endDate: Date().addingTimeInterval(60 * 60 * 24 * 6).midnight
+    startDate: Date().dateAtStartOf(.day),
+    endDate: (Date() + 6.days).dateAtStartOf(.day)
   )
   @State private var thumbnailImage: UIImage?
 
@@ -50,15 +51,15 @@ struct EditCalendarView: View {
         DatePicker(
           "Start Date",
           selection: Binding(
-            get: { editingCalendar.startDate.midnight },
-            set: { editingCalendar.startDate = $0.midnight }
+            get: { editingCalendar.startDate.dateAtStartOf(.day) },
+            set: { editingCalendar.startDate = $0.dateAtStartOf(.day) }
           ), displayedComponents: .date)
 
         DatePicker(
           "End Date",
           selection: Binding(
-            get: { editingCalendar.endDate.midnight },
-            set: { editingCalendar.endDate = $0.midnight }
+            get: { editingCalendar.endDate.dateAtStartOf(.day) },
+            set: { editingCalendar.endDate = $0.dateAtStartOf(.day) }
           ), in: editingCalendar.startDate..., displayedComponents: .date)
       }
 
@@ -115,7 +116,7 @@ struct EditCalendarView: View {
         set: { if !$0 { selectedDateForRecipePicker = nil } }
       )
     ) {
-      if let date = selectedDateForRecipePicker {
+      if selectedDateForRecipePicker != nil {
         RecipeSelectionSheet(
           isPresented: .init(
             get: { selectedDateForRecipePicker != nil },
@@ -123,7 +124,9 @@ struct EditCalendarView: View {
           ),
           recipes: allRecipes
         ) { chosenRecipe in
-          assignRecipe(chosenRecipe, to: date)
+          if let currentDate = selectedDateForRecipePicker {
+            assignRecipe(chosenRecipe, to: currentDate)
+          }
           selectedDateForRecipePicker = nil
         }
       }
@@ -141,8 +144,8 @@ struct EditCalendarView: View {
     } else {
       editingCalendar = CalendarModel(
         name: "",
-        startDate: Date().midnight,
-        endDate: Date().addingTimeInterval(60 * 60 * 24 * 6).midnight
+        startDate: Date().dateAtStartOf(.day),
+        endDate: (Date() + 6.days).dateAtStartOf(.day)
       )
       thumbnailImage = nil
     }
@@ -174,10 +177,10 @@ struct EditCalendarView: View {
     // Remove any existing recipe assigned to the same date
     editingCalendar.recipes.removeAll { existingRecipe in
       guard let unlockDate = existingRecipe.unlockDate else { return false }
-      return Calendar.current.isDate(unlockDate, inSameDayAs: date)
+      return unlockDate.compare(toDate: date, granularity: .day) == .orderedSame
     }
 
     // Assign the new recipe with the specified unlock date
-    editingCalendar.assignRecipe(recipe, unlockDate: date.midnight)
+    editingCalendar.assignRecipe(recipe, unlockDate: date)
   }
 }

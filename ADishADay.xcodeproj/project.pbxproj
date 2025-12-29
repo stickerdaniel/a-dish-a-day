@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6500D11C2EF0C8E800DD073C /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 6500D11B2EF0C8E800DD073C /* Inject */; };
+		6589D7A72F028A0F004CE332 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 6589D7A62F028A0F004CE332 /* SwiftDate */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		BF9695A52D106F6F00025A94 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				6589D7A72F028A0F004CE332 /* SwiftDate in Frameworks */,
 				6500D11C2EF0C8E800DD073C /* Inject in Frameworks */,
 			);
 		};
@@ -82,6 +84,7 @@
 			name = "A Dish A Day";
 			packageProductDependencies = (
 				6500D11B2EF0C8E800DD073C /* Inject */,
+				6589D7A62F028A0F004CE332 /* SwiftDate */,
 			);
 			productName = calendar;
 			productReference = BF9695A82D106F6F00025A94 /* A Dish A Day.app */;
@@ -113,6 +116,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */,
+				6589D7A52F028A0F004CE332 /* XCRemoteSwiftPackageReference "SwiftDate" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = BF9695A92D106F6F00025A94 /* Products */;
@@ -138,7 +142,15 @@
 			alwaysOutOfDate = 1;
 			name = "Check Git Hooks";
 			shellPath = /bin/sh;
-			shellScript = "if [ -n \"$CI\" ]; then exit 0; fi\nHOOKS_PATH=$(git config core.hooksPath)\nif [ \"$HOOKS_PATH\" != \"scripts/hooks\" ]; then\n    echo \"error: Git hooks not configured. Run: git config core.hooksPath scripts/hooks\"\n    exit 1\nfi\n";
+			shellScript = (
+				"if [ -n \"$CI\" ]; then exit 0; fi",
+				"HOOKS_PATH=$(git config core.hooksPath)",
+				"if [ \"$HOOKS_PATH\" != \"scripts/hooks\" ]; then",
+				"    echo \"error: Git hooks not configured. Run: git config core.hooksPath scripts/hooks\"",
+				"    exit 1",
+				"fi",
+				"",
+			);
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -374,6 +386,14 @@
 				minimumVersion = 1.5.2;
 			};
 		};
+		6589D7A52F028A0F004CE332 /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/malcommac/SwiftDate.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -381,6 +401,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
+		};
+		6589D7A62F028A0F004CE332 /* SwiftDate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6589D7A52F028A0F004CE332 /* XCRemoteSwiftPackageReference "SwiftDate" */;
+			productName = SwiftDate;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
