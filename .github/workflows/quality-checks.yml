@@ -1,0 +1,22 @@
+name: Quality Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  quality_checks:
+    name: All Quality Checks
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: brew install swiftlint typos-cli
+
+      - name: Run quality checks
+        run: ./scripts/quality-checks.sh

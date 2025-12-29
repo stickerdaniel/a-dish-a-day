@@ -100,17 +100,41 @@ enum CalendarSource { case created, imported }
 
 | Tool | Purpose | When to run |
 |------|---------|-------------|
-| **swift-format** | Code formatting | Pre-commit hook, format-on-save |
-| **SwiftLint** | Code linting | Pre-commit hook |
-| **typos** | Spell checking | Pre-commit hook |
+| **swift-format** | Code formatting | Pre-commit hook, CI, format-on-save |
+| **SwiftLint** | Code linting | Pre-commit hook, CI |
+| **typos** | Spell checking | Pre-commit hook, CI |
 | **Periphery** | Find unused code | Manually, periodically |
+
+### Quality Checks Script
+
+The unified quality checks script (`scripts/quality-checks.sh`) runs all checks:
+
+```bash
+# Run on all files (CI mode)
+./scripts/quality-checks.sh
+
+# Run on staged files only (pre-commit mode)
+./scripts/quality-checks.sh --staged
+```
+
+**Checks performed:**
+1. **swift-format** - Auto-formats Swift files
+2. **SwiftLint** - Lints Swift files (blocks on errors)
+3. **typos** - Checks spelling (always on all files, uses typos.toml)
 
 ### Pre-commit Hook
 
-The pre-commit hook (`scripts/hooks/pre-commit`) runs:
-1. **swift-format** - Auto-formats staged Swift files
-2. **SwiftLint** - Lints staged Swift files (blocks commit on errors)
-3. **typos** - Checks spelling in all staged files
+The pre-commit hook (`scripts/hooks/pre-commit`) calls `quality-checks.sh --staged`:
+- swift-format and SwiftLint run on staged files only
+- typos runs on all files (uses typos.toml for exclusions)
+
+### CI Workflow
+
+GitHub Actions workflow (`.github/workflows/quality-checks.yml`) runs on:
+- Push to `main` branch
+- Pull request creation/updates
+
+Uses `macos-latest` runner with `./scripts/quality-checks.sh` (full mode).
 
 ### swift-format (Formatting)
 
