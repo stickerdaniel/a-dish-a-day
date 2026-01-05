@@ -31,20 +31,12 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 
 ### Hot Reloading with Inject
 
-This project supports hot reloading via [Inject](https://github.com/krzysztofzablocki/Inject). To enable it on your machine:
+This project supports hot reloading via [Inject](https://github.com/krzysztofzablocki/Inject). To enable it:
 
-1. Download [InjectionIII](https://github.com/johnno1962/InjectionIII/releases) and place it in `/Applications`. Use the GitHub release instead of the App Store version, it has fewer sandbox restrictions for projects in Desktop/Documents folders. You may need to grant Full Disk Access in System Settings. 
-2. Ensure Xcode is at `/Applications/Xcode.app`
-3. Run InjectionIII and select **Open Project** → choose the `a-dish-a-day` folder containing the `ADishADay.xcodeproj` file
-4. Build and run your app
+1. Download [InjectionIII](https://github.com/johnno1962/InjectionIII/releases) and place it in `/Applications`. Use the GitHub release instead of the App Store version.
+2. Build and run your app in the simulator
 
-If configured correctly, you'll see in the console:
-```
-💉 InjectionIII connected /path/to/ADishADay.xcodeproj
-💉 Watching files under /path/to/a-dish-a-day
-```
-
-Save any Swift file and changes appear instantly without rebuilding!
+The injection bundle loads automatically. Save any Swift file and changes appear instantly without rebuilding!
 
 ### Finding Unused Code
 

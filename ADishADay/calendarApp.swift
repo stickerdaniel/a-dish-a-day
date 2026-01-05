@@ -5,12 +5,21 @@
 //  Created by Vincent Nahn on 2024/12/16.
 //
 
-@_exported import Inject
 import SwiftUI
+
+#if DEBUG
+  @_exported import Inject
+#endif
 
 @main
 struct CalendarApp: App {
   @AppStorage("appearance") private var appearance: Appearance = .system
+
+  init() {
+    #if DEBUG
+      Bundle(path: "/Applications/InjectionIII.app/Contents/Resources/iOSInjection.bundle")?.load()
+    #endif
+  }
 
   var body: some Scene {
     WindowGroup {
