@@ -98,6 +98,21 @@ enum CalendarSource { case created, imported }
 - OpenAI API (external, requires API key)
 - When creating a SwiftUI view, add @ObserveInjection var inject as a property and .enableInjection() at the end of the body to enable hot reload - leave it in, it's a no-op in release builds.
 
+### Inject + Convex Compatibility
+
+**Important:** The `-Xlinker -interposable` linker flags have been intentionally removed from this project to allow ConvexMobile (Rust-based SDK) to load properly.
+
+**Why:** ConvexMobile uses Rust FFI with serde symbols. When `-interposable` is enabled, Xcode creates a `.debug.dylib` that cannot resolve these Rust symbols, causing a runtime crash:
+```
+dyld: Symbol not found: __ZN41_$LT$T$u20$as$u20$serde..de..Expected$GT$3fmt...
+```
+
+**Impact on Inject:**
+- Hot reload **works** for class methods (via swizzling)
+- Hot reload **does not work** for structs, enums, or free functions (requires interposing)
+- SwiftUI views using `@ObserveInjection` still work since they use class-based observation
+
+
 ## btca
 
 When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.

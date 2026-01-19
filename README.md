@@ -52,6 +52,14 @@ This project supports hot reloading via [Inject](https://github.com/krzysztofzab
 
 The injection bundle loads automatically. Save any Swift file and changes appear instantly without rebuilding!
 
+#### Inject + Convex Compatibility
+
+The `-Xlinker -interposable` linker flags have been removed to allow ConvexMobile (Rust-based SDK) to load properly. Without these flags:
+
+- Hot reload **works** for class methods (via swizzling)
+- Hot reload **does not work** for structs, enums, or free functions (requires interposing)
+- SwiftUI views using `@ObserveInjection` still work since they use class-based observation
+
 ### Finding Unused Code
 
 Run [Periphery](https://github.com/peripheryapp/periphery) periodically to find dead code:
