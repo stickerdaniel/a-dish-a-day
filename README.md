@@ -29,7 +29,7 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 4. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
 5. Build and run on simulator or device
 
-### Better Context (btca)
+### btca (Better Context)
 
 Install [btca](https://btca.dev) for AI agents to query up-to-date documentation from source repositories:
 
@@ -41,7 +41,7 @@ curl -fsSL https://bun.sh/install | bash
 bun add -g btca opencode-ai
 ```
 
-This project is configured with btca resources for SwiftUI, SwiftData, Inject, SwiftDate, and Convex. AI assistants will automatically use btca when they need current information about these technologies.
+This project is configured with btca resources for Inject, SwiftDate, and Convex. AI assistants will automatically use btca when they need current information about these technologies.
 
 ### Hot Reloading with Inject
 
