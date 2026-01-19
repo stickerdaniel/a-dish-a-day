@@ -1,0 +1,29 @@
+{
+	"$schema": "https://btca.dev/btca.schema.json",
+	"resources": [
+		{
+			"name": "inject",
+			"type": "git",
+			"url": "https://github.com/krzysztofzablocki/Inject.git",
+			"branch": "main",
+			"specialNotes": "Inject hot reload library for Swift development"
+		},
+		{
+			"name": "swiftDate",
+			"type": "git",
+			"url": "https://github.com/malcommac/SwiftDate.git",
+			"branch": "master",
+			"specialNotes": "SwiftDate date manipulation library with comprehensive date/time utilities"
+		},
+		{
+			"name": "convex",
+			"type": "git",
+			"url": "https://github.com/get-convex/convex-swift",
+			"branch": "main",
+			"specialNotes": "Convex backend platform Swift SDK for iOS/macOS apps"
+		}
+	],
+	"model": "claude-haiku-4-5",
+	"provider": "anthropic",
+	"providerTimeoutMs": 300000
+}

@@ -93,8 +93,28 @@ enum CalendarSource { case created, imported }
 
 - SwiftUI, SwiftData, UserNotifications (native)
 - Inject (development hot reload)
+- SwiftDate (date manipulation library)
+- Convex (backend platform Swift SDK)
 - OpenAI API (external, requires API key)
 - When creating a SwiftUI view, add @ObserveInjection var inject as a property and .enableInjection() at the end of the body to enable hot reload - leave it in, it's a no-op in release builds.
+
+## btca
+
+When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.
+
+**Available resources**: swiftUI, swiftData, inject, swiftDate, convex
+
+### Usage
+
+```bash
+btca ask -r <resource> -q "<question>"
+```
+
+Use multiple `-r` flags to query multiple resources at once:
+
+```bash
+btca ask -r swiftDate -r convex -q "How do I integrate Convex with SwiftDate for timestamp handling?"
+```
 
 ## Code Quality
 
