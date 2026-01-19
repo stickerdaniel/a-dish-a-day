@@ -113,10 +113,10 @@ Run a comprehensive pull request review using multiple specialized agents, each 
 # Simplifies code after passing review
 ```
 
-**Perpendicular review:**
+**Sequential review:**
 
 ```
-/review all perpendicular
+/review all sequential
 # Launches all agents sequentially (one after another)
 ```
 
