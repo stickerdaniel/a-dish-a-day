@@ -26,8 +26,33 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 1. Clone the repository
 2. Install tools: `brew install swiftlint typos-cli periphery`
 3. Enable git hooks: `git config core.hooksPath scripts/hooks`
-4. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
-5. Build and run on simulator or device
+4. Install Convex dependencies: `bun install`
+5. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
+6. Build and run on simulator or device
+
+### Convex Backend Development
+
+The app uses [Convex](https://convex.dev) for real-time backend features. To develop with the backend:
+
+**Terminal 1 - Convex Dev Server:**
+```bash
+bunx convex dev
+```
+
+**Terminal 2 - Run Xcode:**
+```bash
+# Build and run normally in Xcode
+```
+
+The Convex dev server watches for changes in `convex/` and auto-deploys functions. The iOS app connects to `https://jovial-firefly-799.convex.cloud`.
+
+**Convex Commands:**
+- `bunx convex dev` - Start dev server with hot reload
+- `bunx convex dashboard` - Open Convex dashboard
+- `bunx convex import --table <name> <file.jsonl>` - Import data
+- `bunx convex deploy` - Deploy to production
+
+See [AGENTS.md](AGENTS.md) for detailed backend development workflow.
 
 ### btca (Better Context)
 
