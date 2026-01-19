@@ -94,7 +94,6 @@ enum CalendarSource { case created, imported }
 - SwiftUI, SwiftData, UserNotifications (native)
 - Inject (development hot reload)
 - SwiftDate (date manipulation library)
-- Convex (backend platform Swift SDK)
 - OpenAI API (external, requires API key)
 - When creating a SwiftUI view, add @ObserveInjection var inject as a property and .enableInjection() at the end of the body to enable hot reload - leave it in, it's a no-op in release builds.
 
@@ -102,7 +101,7 @@ enum CalendarSource { case created, imported }
 
 When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.
 
-**Available resources**: inject, swiftDate, convex
+**Available resources**: inject, swiftDate
 
 ### Usage
 

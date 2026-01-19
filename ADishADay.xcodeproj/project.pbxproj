@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		6500D11C2EF0C8E800DD073C /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 6500D11B2EF0C8E800DD073C /* Inject */; };
 		6589D7A72F028A0F004CE332 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 6589D7A62F028A0F004CE332 /* SwiftDate */; };
-		65E7997F2F1E60B20086E7CA /* ConvexMobile in Frameworks */ = {isa = PBXBuildFile; productRef = 65E7997E2F1E60B20086E7CA /* ConvexMobile */; };
+		65GOOGLE012F1F000000000001 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 65GOOGLE002F1F000000000001 /* GoogleSignIn */; };
+		65GOOGLE022F1F000000000001 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 65GOOGLE012F1F000000000002 /* GoogleSignInSwift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,7 +45,8 @@
 			files = (
 				6589D7A72F028A0F004CE332 /* SwiftDate in Frameworks */,
 				6500D11C2EF0C8E800DD073C /* Inject in Frameworks */,
-				65E7997F2F1E60B20086E7CA /* ConvexMobile in Frameworks */,
+				65GOOGLE012F1F000000000001 /* GoogleSignIn in Frameworks */,
+				65GOOGLE022F1F000000000001 /* GoogleSignInSwift in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -87,7 +89,8 @@
 			packageProductDependencies = (
 				6500D11B2EF0C8E800DD073C /* Inject */,
 				6589D7A62F028A0F004CE332 /* SwiftDate */,
-				65E7997E2F1E60B20086E7CA /* ConvexMobile */,
+				65GOOGLE002F1F000000000001 /* GoogleSignIn */,
+				65GOOGLE012F1F000000000002 /* GoogleSignInSwift */,
 			);
 			productName = calendar;
 			productReference = BF9695A82D106F6F00025A94 /* A Dish A Day.app */;
@@ -120,7 +123,7 @@
 			packageReferences = (
 				6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */,
 				6589D7A52F028A0F004CE332 /* XCRemoteSwiftPackageReference "SwiftDate" */,
-				65E7997D2F1E60B20086E7CA /* XCRemoteSwiftPackageReference "convex-swift" */,
+				65GOOGLE002F1F000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = BF9695A92D106F6F00025A94 /* Products */;
@@ -298,6 +301,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ADishADay/Preview Content\"";
+				DEVELOPMENT_TEAM = RCG5K9ZGA7;
 				EMIT_FRONTEND_COMMAND_LINES = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -317,7 +321,7 @@
 					"-Xlinker",
 					"-interposable",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = danielsticker.recipeCalendar;
+				PRODUCT_BUNDLE_IDENTIFIER = LucyPlassmann.recipeCalendar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -333,6 +337,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ADishADay/Preview Content\"";
+				DEVELOPMENT_TEAM = RCG5K9ZGA7;
 				EMIT_FRONTEND_COMMAND_LINES = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -352,7 +357,7 @@
 					"-Xlinker",
 					"-interposable",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = danielsticker.recipeCalendar;
+				PRODUCT_BUNDLE_IDENTIFIER = LucyPlassmann.recipeCalendar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -398,12 +403,12 @@
 				minimumVersion = 7.0.0;
 			};
 		};
-		65E7997D2F1E60B20086E7CA /* XCRemoteSwiftPackageReference "convex-swift" */ = {
+		65GOOGLE002F1F000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/get-convex/convex-swift";
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.7.0;
+				minimumVersion = 8.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -419,10 +424,15 @@
 			package = 6589D7A52F028A0F004CE332 /* XCRemoteSwiftPackageReference "SwiftDate" */;
 			productName = SwiftDate;
 		};
-		65E7997E2F1E60B20086E7CA /* ConvexMobile */ = {
+		65GOOGLE002F1F000000000001 /* GoogleSignIn */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 65E7997D2F1E60B20086E7CA /* XCRemoteSwiftPackageReference "convex-swift" */;
-			productName = ConvexMobile;
+			package = 65GOOGLE002F1F000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		65GOOGLE012F1F000000000002 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65GOOGLE002F1F000000000000 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

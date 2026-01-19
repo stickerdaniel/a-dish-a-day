@@ -5,6 +5,7 @@
 //  Created by Vincent Nahn on 2024/12/16.
 //
 
+import GoogleSignIn
 import SwiftUI
 
 #if DEBUG
@@ -14,6 +15,7 @@ import SwiftUI
 @main
 struct CalendarApp: App {
   @AppStorage("appearance") private var appearance: Appearance = .system
+  @State private var isLoggedIn = false
 
   init() {
     #if DEBUG
@@ -23,15 +25,25 @@ struct CalendarApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ContentView()
-        .onAppear {
-          applyAppearance()
-          NotificationManager.requestAuthorization()
-        }
-        .modelContainer(for: [
-          RecipeModel.self,
-          CalendarModel.self
-        ])
+      if isLoggedIn {
+        ContentView()
+          .onAppear {
+            applyAppearance()
+            NotificationManager.requestAuthorization()
+          }
+          .modelContainer(for: [
+            RecipeModel.self,
+            CalendarModel.self
+          ])
+      } else {
+        LoginView(isLoggedIn: $isLoggedIn)
+          .onAppear {
+            applyAppearance()
+          }
+          .onOpenURL { url in
+            GIDSignIn.sharedInstance.handle(url)
+          }
+      }
     }
   }
 
