@@ -102,7 +102,7 @@ enum CalendarSource { case created, imported }
 
 When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.
 
-**Available resources**: swiftUI, swiftData, inject, swiftDate, convex
+**Available resources**: inject, swiftDate, convex
 
 ### Usage
 
