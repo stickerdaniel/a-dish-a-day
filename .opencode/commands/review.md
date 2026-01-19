@@ -174,7 +174,7 @@ Run a comprehensive pull request review using multiple specialized agents, each 
 ```
 1. Write code
 2. Run: /review code errors
-3. After review agents have finished, launch a general subagent for every critical / important issue found that should verify if this is indeed an issue and if it should be fixed. Instruct those general agents to use the tools available. For example, if it's a Svelte specific issue, it should use the Svelte MCP. If it's a Convex related issue, use the Convex mcp.
+3. After review agents have finished, launch a general subagent for every critical / important issue found that should verify if this is indeed an issue and if it should be fixed. Instruct those general agents to use the tools available. For example, if it's a SwiftUI/iOS specific issue, they can use btca to query the inject or swiftDate resources. If it's a Convex Swift SDK related issue, use btca with the convex resource.
 4. Enter plan mode if you arent already in it. Create a plan that addresses the issues and how to fix them.
 5. User confirms the plan and fix the issues.
 ```
@@ -184,7 +184,7 @@ Run a comprehensive pull request review using multiple specialized agents, each 
 ```
 1. Stage all changes
 2. Run: /review all
-3. After review agents have finished, launch a general subagent for every critical / important issue found that should verify if this is indeed an issue and if it should be fixed. Instruct those general agents to use the tools available. For example, if it's a Svelte specific issue, it should use the Svelte MCP. If it's a Convex related issue, use the Convex mcp.
+3. After review agents have finished, launch a general subagent for every critical / important issue found that should verify if this is indeed an issue and if it should be fixed. Instruct those general agents to use the tools available. For example, if it's a SwiftUI/iOS specific issue, they can use btca to query the inject or swiftDate resources. If it's a Convex Swift SDK related issue, use btca with the convex resource.
 4. Create a plan that addresses the issues and how to fix them.
 5. Run specific reviews again to verify
 6. Create PR
