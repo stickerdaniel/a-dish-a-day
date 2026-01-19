@@ -10,6 +10,7 @@ import SwiftUI
 enum Tab: String, CaseIterable {
   case calendar = "Calendar"
   case recipe = "Recipe"
+  case discover = "Discover"
 }
 
 struct ContentView: View {
@@ -42,7 +43,15 @@ struct ContentView: View {
           .tag(Tab.recipe)
       }
       .tabItem {
-        Label("Recipes", systemImage: "book.pages")
+        Label("Recipes", systemImage: "heart.text.square")
+      }
+      // Discover
+      NavigationStack {
+        DiscoverView()
+          .tag(Tab.discover)
+      }
+      .tabItem {
+        Label("Discover", systemImage: "safari")
       }
     }
     .environment(\.horizontalSizeClass, .compact)  // 👈 Use this modifier to change to old navbar style

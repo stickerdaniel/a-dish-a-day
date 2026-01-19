@@ -25,6 +25,70 @@ The Xcode build will fail with instructions if git hooks aren't configured.
 - No command-line build scripts; use Xcode or `xcodebuild` (or user)
 
 
+## Convex Backend Development
+
+Deployment: `https://jovial-firefly-799.convex.cloud`
+
+### Initial Setup (one-time)
+
+```bash
+# Install dependencies
+bun install
+
+# Link to existing deployment (select jovial-firefly-799)
+bunx convex dev
+```
+
+### Development Workflow
+
+```bash
+# Terminal 1: Start Convex dev server (watches for changes, syncs to cloud)
+bunx convex dev
+
+# Terminal 2: Run Xcode
+```
+
+### Commands Reference
+
+| Command | Purpose |
+|---------|---------|
+| `bunx convex dev` | Start dev server with hot reload |
+| `bunx convex deploy` | Deploy to production |
+| `bunx convex import --table <name> <file.jsonl>` | Import data |
+| `bunx convex export --path <dir>` | Export all data |
+| `bunx convex dashboard` | Open Convex dashboard |
+
+### Adding New Convex Functions
+
+1. Create `.ts` file in `convex/` directory
+2. `bunx convex dev` auto-deploys changes
+3. Create matching Swift `Decodable` struct in `ADishADay/Model/ConvexModels/`
+4. **Queries**: Subscribe in SwiftUI view using `.task { for await ... }`
+5. **Mutations**: Call with `convex.mutation("function:name", with: args)`
+
+### Tutorial Example (DiscoverView)
+
+The Discover tab demonstrates Convex integration with a simple task list:
+
+**Backend** (`convex/tasks.ts`):
+- `tasks:get` query - Returns all tasks
+- `tasks:toggle` mutation - Toggles task completion
+
+**Frontend** (`DiscoverView.swift`):
+- Real-time subscription to `tasks:get`
+- Tap tasks to toggle completion via `tasks:toggle` mutation
+- Updates appear instantly across all connected clients
+
+### Project Structure
+
+```
+convex/
+├── _generated/     # Auto-generated (gitignored)
+├── tasks.ts        # Task queries & mutations (tutorial example)
+└── schema.ts       # Optional: explicit schema
+```
+
+
 ## Architecture
 
 **Pattern:** MVVM with SwiftData persistence

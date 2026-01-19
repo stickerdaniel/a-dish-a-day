@@ -2,7 +2,7 @@
 //  ConvexClientManager.swift
 //  A Dish A Day
 //
-//  Minimal test to check if ConvexMobile loads on iOS 26
+//  Singleton manager for Convex backend connection.
 
 import ConvexMobile
 import Foundation
@@ -21,6 +21,11 @@ class ConvexClientManager {
     }
     // swiftlint:disable:next force_unwrapping
     return _client!
+  }
+
+  /// Convenience method to get the shared client instance.
+  static var client: ConvexClient {
+    shared.client
   }
 
   private init() {}

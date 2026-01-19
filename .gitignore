@@ -74,6 +74,10 @@ fastlane/test_output
 *.local
 *.local.*
 
+# Convex
+convex/_generated/
+node_modules/
+
 # VSCode autofomatting on save
 !.vscode/settings.json
 
