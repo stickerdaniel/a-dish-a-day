@@ -65,7 +65,7 @@ For every error handling location, ask:
 
 - Is the error logged with appropriate severity (logError for production issues)?
 - Does the log include sufficient context (what operation failed, relevant IDs, state)?
-- Is there an error ID from constants/errorIds.ts for Sentry tracking?
+- Is there a stable, well-defined error code or error domain associated with this failure for crash/analytics tools (for example a Swift Error enum case, OSLog category, or Sentry/Crashlytics tag)?
 - Would this log help someone debug the issue 6 months from now?
 
 **User Feedback:**
