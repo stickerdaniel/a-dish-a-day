@@ -7,6 +7,7 @@
 
 import AuthenticationServices
 import GoogleSignIn
+import GoogleSignInSwift
 import SwiftUI
 
 // MARK: - Supporting Types
@@ -243,25 +244,8 @@ struct LoginView: View {
         .frame(height: 50)
 
         // Sign in with Google
-        Button {
-          signInWithGoogle()
-        } label: {
-          HStack(spacing: 8) {
-            Image(systemName: "g.circle.fill")
-              .font(.title2)
-            Text(selectedTab == .login ? "Sign in with Google" : "Sign up with Google")
-              .fontWeight(.medium)
-          }
-          .frame(maxWidth: .infinity)
-          .padding()
-          .background(Color(.systemBackground))
-          .foregroundStyle(.primary)
-          .cornerRadius(10)
-          .overlay(
-            RoundedRectangle(cornerRadius: 10)
-              .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
-          )
-        }
+        GoogleSignInButton(action: signInWithGoogle)
+          .frame(height: 50)
       }
       .padding(.horizontal, 32)
       .padding(.bottom, 40)
