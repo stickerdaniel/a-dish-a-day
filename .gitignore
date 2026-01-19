@@ -76,3 +76,6 @@ fastlane/test_output
 
 # VSCode autofomatting on save
 !.vscode/settings.json
+
+# opencode
+.opencode/plans
