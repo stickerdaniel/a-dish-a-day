@@ -21,6 +21,13 @@
 			"url": "https://github.com/get-convex/convex-swift",
 			"branch": "main",
 			"specialNotes": "Convex backend platform Swift SDK for iOS/macOS apps"
+		},
+		{
+			"name": "convexAuth0",
+			"type": "git",
+			"url": "https://github.com/get-convex/convex-swift-auth0.git",
+			"branch": "main",
+			"specialNotes": "Convex Swift Auth0 integration for authentication via Auth0 Universal Login"
 		}
 	],
 	"model": "claude-haiku-4-5",
