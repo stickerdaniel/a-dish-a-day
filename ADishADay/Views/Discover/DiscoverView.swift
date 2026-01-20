@@ -155,13 +155,8 @@ struct DiscoverView: View {
 
     subscriptionTask = Task {
       // Authenticate with Convex using cached credentials
-      do {
-        try await convex.login()
-        print("[Convex] Authenticated successfully")
-      } catch {
-        print("[Convex] Auth failed: \(error.localizedDescription)")
-        return
-      }
+      _ = await convex.login()
+      print("[Convex] Authenticated successfully")
       await subscribeToTasks()
     }
   }

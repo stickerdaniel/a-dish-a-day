@@ -286,7 +286,7 @@ struct LoginView: View {
 
 #Preview("Sign Up") {
   NavigationStack {
-    LoginView()
+    LoginView(initialTab: .signup)
       .environmentObject(AuthenticationManager.shared)
   }
 }

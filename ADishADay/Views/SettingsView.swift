@@ -150,41 +150,33 @@ struct SettingsView: View {
               isSigningOut = false
             }
           } label: {
-            HStack {
-              Spacer()
-              Text("Sign Out")
-              Spacer()
-            }
-            .opacity(isSigningOut ? 0 : 1)
-            .overlay {
-              if isSigningOut {
-                ProgressView()
-                  .controlSize(.regular)
+            Text("Sign Out")
+              .opacity(isSigningOut ? 0 : 1)
+              .overlay {
+                if isSigningOut {
+                  ProgressView()
+                    .controlSize(.regular)
+                }
               }
-            }
           }
-          .buttonStyle(.bordered)
-          .controlSize(.large)
           .disabled(isSigningOut)
-          .listRowInsets(EdgeInsets())
         }
       }
 
       // Data Management Section
-      Section("Data Management") {
+      Section {
         Button(role: .destructive) {
           showClearDataConfirmation = true
         } label: {
-          HStack {
-            Spacer()
-            Text("Clear All Data")
-            Spacer()
-          }
+          Text("Clear All Data")
         }
-        .buttonStyle(.bordered)
-        .controlSize(.large)
+      } header: {
+        Text("Data Management")
+      } footer: {
+        Text(
+          "Permanently deletes all recipes, calendars, and app settings stored on this device. Your account and cloud data will not be affected."
+        )
       }
-      .listRowInsets(EdgeInsets())
     }
     .navigationTitle("Settings")
     .confirmationDialog(

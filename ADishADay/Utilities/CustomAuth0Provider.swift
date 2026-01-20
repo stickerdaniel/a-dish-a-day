@@ -23,11 +23,13 @@ public class CustomAuth0Provider: AuthProvider {
     self.credentialsManager = CredentialsManager(authentication: auth0)
   }
 
-  /// Login is handled externally by AuthenticationManager.
   /// Returns cached credentials for Convex, refreshing the token if expired (may make network call).
+  ///
+  /// Login is handled externally by AuthenticationManager - this method only retrieves
+  /// existing credentials. Both `login()` and `loginFromCache()` share identical implementations
+  /// because Auth0's CredentialsManager transparently handles cached retrieval and token refresh.
+  /// Both methods are required by the AuthProvider protocol.
   public func login() async throws -> Credentials {
-    // We don't trigger login here - it's handled by AuthenticationManager
-    // Return credentials, refreshing token if needed
     do {
       return try await credentialsManager.credentials()
     } catch {
@@ -37,6 +39,10 @@ public class CustomAuth0Provider: AuthProvider {
   }
 
   /// Returns credentials for Convex authentication, refreshing the token if expired (may make network call).
+  ///
+  /// Note: This implementation is identical to `login()` because Auth0's CredentialsManager
+  /// handles both cached retrieval and token refresh transparently. Both methods are required
+  /// by the AuthProvider protocol.
   public func loginFromCache() async throws -> Credentials {
     do {
       return try await credentialsManager.credentials()
