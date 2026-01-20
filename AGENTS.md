@@ -367,3 +367,12 @@ Document any unused code that should be kept here. When Periphery reports these 
 | `nextUnlockTime` | CalendarModel.swift | Infrastructure for future notification scheduling (e.g., remind user before next recipe unlocks) |
 | `startOfMonth` | BetterDateUtilities.swift | Non-trivial date utility for month boundary operations |
 | `endOfMonth` | BetterDateUtilities.swift | Pairs with `startOfMonth` for complete month boundary API |
+
+## Dev Workflow
+
+1. Before working on a new feature, first check all GitHub issues to see if we already have an issue for this feature. If not, create one.
+2. When the user just wants to work on the application, also scan for all issues and find one that's a good fit as the next task to tackle. In general, we want to build UI screens first and then build the data and backend connections.
+3. Always create a new branch for this feature.
+4. Encourage the user to run the /review command before committing. Once a feature implementation is done, automatically suggest to run /review afterwards.
+5. Once everything is reviewed, commit.
+6. Create a pull request once the system is in a stable state.
