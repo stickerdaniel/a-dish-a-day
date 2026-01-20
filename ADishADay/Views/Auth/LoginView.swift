@@ -10,7 +10,13 @@ import SwiftUI
 
 enum AuthTab: String, CaseIterable {
   case signup = "Sign Up"
-  case login = "Login"
+  case login = "Log In"
+}
+
+/// Wrapper to trigger fresh LoginView presentation with correct tab
+struct LoginPresentation: Identifiable {
+  let id = UUID()
+  let tab: AuthTab
 }
 
 // MARK: - Login View
@@ -18,13 +24,22 @@ enum AuthTab: String, CaseIterable {
 struct LoginView: View {
   @ObserveInjection var inject
   @Environment(\.dismiss) private var dismiss
+  @EnvironmentObject private var authManager: AuthenticationManager
 
-  @Binding var isLoggedIn: Bool
+  let initialTab: AuthTab
+
   @State private var selectedTab: AuthTab = .signup
+
+  init(initialTab: AuthTab = .signup) {
+    self.initialTab = initialTab
+  }
   @State private var showVerification = false
+  @State private var showForgotPassword = false
   @State private var email = ""
   @State private var password = ""
   @State private var confirmPassword = ""
+  @State private var isSubmitting = false
+  @State private var errorMessage: String?
 
   // MARK: - Validation
 
@@ -34,7 +49,11 @@ struct LoginView: View {
   }
 
   private var hasMinLength: Bool {
-    password.count >= 10
+    password.count >= 8
+  }
+
+  private var characterTypesCount: Int {
+    [hasUppercase, hasLowercase, hasNumber, hasSpecialCharacter].filter { $0 }.count
   }
 
   private var hasUppercase: Bool {
@@ -55,7 +74,7 @@ struct LoginView: View {
   }
 
   private var isValidPassword: Bool {
-    hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecialCharacter
+    hasMinLength && characterTypesCount >= 3
   }
 
   private var passwordsMatch: Bool {
@@ -64,9 +83,9 @@ struct LoginView: View {
 
   private var canSubmit: Bool {
     if selectedTab == .login {
-      return isValidEmail && !password.isEmpty
+      return isValidEmail && !password.isEmpty && !isSubmitting
     } else {
-      return isValidEmail && isValidPassword && passwordsMatch
+      return isValidEmail && isValidPassword && passwordsMatch && !isSubmitting
     }
   }
 
@@ -87,10 +106,15 @@ struct LoginView: View {
       .navigationDestination(isPresented: $showVerification) {
         EmailVerificationView(
           email: email,
-          onVerified: {
-            isLoggedIn = true
-          }
+          password: password
         )
+        .environmentObject(authManager)
+      }
+      .onChange(of: authManager.authState) { _, newState in
+        // Dismiss when authenticated
+        if newState.isAuthenticated {
+          dismiss()
+        }
       }
   }
 
@@ -117,23 +141,29 @@ struct LoginView: View {
           .autocorrectionDisabled()
           .keyboardType(.emailAddress)
           .textContentType(.emailAddress)
+          .disabled(isSubmitting)
 
         SecureField("Password", text: $password)
           .textInputAutocapitalization(.never)
           .autocorrectionDisabled()
           .textContentType(selectedTab == .login ? .password : .newPassword)
+          .disabled(isSubmitting)
 
         if selectedTab == .signup {
           SecureField("Confirm Password", text: $confirmPassword)
             .textInputAutocapitalization(.never)
             .autocorrectionDisabled()
             .textContentType(.newPassword)
+            .disabled(isSubmitting)
         }
       } header: {
         Text(selectedTab == .login ? "Welcome back" : "Create an account")
       } footer: {
         VStack(alignment: .leading, spacing: 4) {
-          if let error = validationError {
+          if let error = errorMessage {
+            Text(error)
+              .foregroundStyle(.red)
+          } else if let error = validationError {
             Text(error)
               .foregroundStyle(.red)
           }
@@ -141,16 +171,22 @@ struct LoginView: View {
             if isValidPassword && (confirmPassword.isEmpty || passwordsMatch) {
               PasswordRequirementRow(text: "Valid password", isMet: true)
             } else if !isValidPassword {
-              PasswordRequirementRow(text: "At least 10 characters", isMet: hasMinLength)
-              PasswordRequirementRow(text: "One uppercase letter", isMet: hasUppercase)
-              PasswordRequirementRow(text: "One lowercase letter", isMet: hasLowercase)
-              PasswordRequirementRow(text: "One number", isMet: hasNumber)
-              PasswordRequirementRow(text: "One special character", isMet: hasSpecialCharacter)
+              PasswordRequirementRow(text: "At least 8 characters", isMet: hasMinLength)
+              Text("At least 3 of the following:")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+              PasswordRequirementRow(
+                text: "Lower case letters (a-z)", isMet: hasLowercase, indented: true)
+              PasswordRequirementRow(
+                text: "Upper case letters (A-Z)", isMet: hasUppercase, indented: true)
+              PasswordRequirementRow(text: "Numbers (0-9)", isMet: hasNumber, indented: true)
+              PasswordRequirementRow(
+                text: "Special characters (!@#$%^&*)", isMet: hasSpecialCharacter, indented: true)
             }
           }
           if selectedTab == .login {
             Button("Forgot Password?") {
-              print("Forgot password tapped")
+              showForgotPassword = true
             }
             .font(.footnote)
             .foregroundStyle(.secondary)
@@ -162,17 +198,29 @@ struct LoginView: View {
       // Primary action
       Section {
         Button {
-          performAuth()
+          Task {
+            await performAuth()
+          }
         } label: {
           HStack {
             Spacer()
-            Text(selectedTab == .login ? "Sign In" : "Create Account")
             Image(systemName: selectedTab == .login ? "arrow.right" : "person.badge.plus")
+            Text(selectedTab == .login ? "Log In" : "Create Account")
             Spacer()
           }
+          .opacity(isSubmitting ? 0 : 1)
+          .overlay {
+            if isSubmitting {
+              ProgressView()
+                .controlSize(.regular)
+            }
+          }
         }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
         .disabled(!canSubmit)
       }
+      .listRowInsets(EdgeInsets())
 
     }
     .navigationTitle("Welcome")
@@ -182,44 +230,63 @@ struct LoginView: View {
         Button {
           dismiss()
         } label: {
-          Image(systemName: "xmark.circle.fill")
+          Image(systemName: "xmark")
             .foregroundStyle(.secondary)
         }
+        .disabled(isSubmitting)
       }
     }
     .onChange(of: selectedTab) {
-      // Clear confirm password when switching tabs
+      // Clear confirm password and error when switching tabs
       confirmPassword = ""
+      errorMessage = nil
+    }
+    .sheet(isPresented: $showForgotPassword) {
+      ForgotPasswordView(email: email)
+        .environmentObject(authManager)
+    }
+    .onAppear {
+      selectedTab = initialTab
     }
     .enableInjection()
   }
 
   // MARK: - Actions
 
-  private func performAuth() {
-    if selectedTab == .login {
-      // Login - go directly to app (placeholder)
-      isLoggedIn = true
-    } else {
-      // Sign up - show verification screen
-      showVerification = true
+  private func performAuth() async {
+    errorMessage = nil
+    isSubmitting = true
+    defer { isSubmitting = false }
+
+    do {
+      if selectedTab == .login {
+        try await authManager.login(email: email, password: password)
+        // Dismiss handled by onChange of authState
+      } else {
+        try await authManager.signup(email: email, password: password)
+        // Show verification screen after successful signup
+        showVerification = true
+      }
+    } catch let error as AuthError {
+      errorMessage = error.localizedDescription
+    } catch {
+      errorMessage = error.localizedDescription
     }
   }
-
 }
 
 // MARK: - Previews
 
 #Preview("Login") {
-  @Previewable @State var isLoggedIn = false
   NavigationStack {
-    LoginView(isLoggedIn: $isLoggedIn)
+    LoginView()
+      .environmentObject(AuthenticationManager.shared)
   }
 }
 
 #Preview("Sign Up") {
-  @Previewable @State var isLoggedIn = false
   NavigationStack {
-    LoginView(isLoggedIn: $isLoggedIn)
+    LoginView()
+      .environmentObject(AuthenticationManager.shared)
   }
 }

@@ -4,6 +4,10 @@ import { v } from "convex/values";
 export const get = query({
   args: {},
   handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
     return await ctx.db.query("tasks").collect();
   },
 });
@@ -11,6 +15,10 @@ export const get = query({
 export const toggle = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
     const task = await ctx.db.get(args.id);
     if (task) {
       await ctx.db.patch(args.id, { isCompleted: !task.isCompleted });

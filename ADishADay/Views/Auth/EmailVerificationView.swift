@@ -10,12 +10,13 @@ import SwiftUI
 struct EmailVerificationView: View {
   @ObserveInjection var inject
   @Environment(\.dismiss) private var dismiss
+  @EnvironmentObject private var authManager: AuthenticationManager
 
   let email: String
-  let onVerified: () -> Void
+  let password: String
 
-  @State private var isResending = false
-  @State private var showResendConfirmation = false
+  @State private var isVerifying = false
+  @State private var errorMessage: String?
 
   var body: some View {
     Form {
@@ -27,36 +28,40 @@ struct EmailVerificationView: View {
         Text("We sent a verification link!")
       } footer: {
         VStack(alignment: .leading, spacing: 4) {
-          Text("Didn't receive it? Check your spam folder")
-          Button {
-            resendEmail()
-          } label: {
-            if isResending {
-              Text("Sending...")
-            } else {
-              Text("Resend Email")
-            }
+          if let error = errorMessage {
+            Text(error)
+              .foregroundStyle(.red)
           }
-          .font(.footnote)
-          .foregroundStyle(.secondary)
-          .disabled(isResending)
-          .frame(maxWidth: .infinity, alignment: .trailing)
+          Text("Didn't receive it? Check your spam folder")
         }
       }
 
       // Primary action - last on page
       Section {
         Button {
-          onVerified()
+          Task {
+            await verifyAndLogin()
+          }
         } label: {
           HStack {
             Spacer()
-            Text("I've Verified My Email")
             Image(systemName: "checkmark.seal.fill")
+            Text("I've Verified My Email")
             Spacer()
           }
+          .opacity(isVerifying ? 0 : 1)
+          .overlay {
+            if isVerifying {
+              ProgressView()
+                .controlSize(.regular)
+            }
+          }
         }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .disabled(isVerifying)
       }
+      .listRowInsets(EdgeInsets())
     }
     .contentMargins(.top, 40)
     .navigationTitle("Verify Email")
@@ -66,26 +71,41 @@ struct EmailVerificationView: View {
         Button {
           dismiss()
         } label: {
-          Image(systemName: "xmark.circle.fill")
+          Image(systemName: "xmark")
             .foregroundStyle(.secondary)
         }
+        .disabled(isVerifying)
       }
     }
-    .alert("Email Sent", isPresented: $showResendConfirmation) {
-      Button("OK", role: .cancel) {}
-    } message: {
-      Text("A new verification email has been sent to \(email)")
+    .onChange(of: authManager.authState) { _, newState in
+      // Dismiss all the way back when authenticated
+      if newState.isAuthenticated {
+        dismiss()
+      }
     }
     .enableInjection()
   }
 
-  private func resendEmail() {
-    isResending = true
-    // Simulate sending email
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-      isResending = false
-      showResendConfirmation = true
+  private func verifyAndLogin() async {
+    isVerifying = true
+    errorMessage = nil
+
+    do {
+      // Attempt to log in - if email isn't verified, Auth0 will return an error
+      try await authManager.login(email: email, password: password)
+      // If successful, onChange will dismiss
+    } catch let error as AuthError {
+      if case .emailNotVerified = error {
+        errorMessage =
+          "Email not yet verified. Please check your inbox and click the verification link."
+      } else {
+        errorMessage = error.localizedDescription
+      }
+    } catch {
+      errorMessage = error.localizedDescription
     }
+
+    isVerifying = false
   }
 }
 
@@ -93,7 +113,8 @@ struct EmailVerificationView: View {
   NavigationStack {
     EmailVerificationView(
       email: "test@example.com",
-      onVerified: { print("Verified") }
+      password: "Test1234!@"
     )
+    .environmentObject(AuthenticationManager.shared)
   }
 }

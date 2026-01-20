@@ -32,13 +32,24 @@ struct RecipesView: View {
       .toolbar {
         ToolbarItem(placement: .topBarTrailing) {
           Button {
-            isShowingSettings.toggle()
+            isShowingSettings = true
           } label: {
             Image(systemName: "gearshape")
           }
-          .sheet(isPresented: $isShowingSettings) {
-            SettingsView()
-          }
+        }
+      }
+      .fullScreenCover(isPresented: $isShowingSettings) {
+        NavigationStack {
+          SettingsView()
+            .toolbar {
+              ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                  isShowingSettings = false
+                } label: {
+                  Image(systemName: "xmark")
+                }
+              }
+            }
         }
       }
     }
