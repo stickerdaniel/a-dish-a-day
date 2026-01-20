@@ -22,7 +22,102 @@ The Xcode build will fail with instructions if git hooks aren't configured.
 **Build Tool:** Xcode (native iOS)
 - Open `ADishADay.xcodeproj` in Xcode
 - Build target: ADishADay
-- No command-line build scripts; use Xcode or `xcodebuild` (or user)
+
+### CLI Build & Run Script
+
+Use `scripts/build-and-run.ts` to build, install, and launch the app from the command line:
+
+```bash
+bun scripts/build-and-run.ts           # Interactive destination picker
+bun scripts/build-and-run.ts --booted  # Use currently booted simulator
+bun scripts/build-and-run.ts --device  # Use connected physical device
+bun scripts/build-and-run.ts --help    # Show all options
+```
+
+### Verifying Code Changes
+
+**IMPORTANT:** After making Swift/SwiftUI code changes, ALWAYS build and run the app to verify the changes work. Do not consider a task complete until the app builds and runs successfully.
+
+1. **Try booted simulator first:**
+   ```bash
+   bun scripts/build-and-run.ts --booted
+   ```
+
+2. **If no simulator is booted**, try the user's physical device:
+   ```bash
+   bun scripts/build-and-run.ts --device
+   ```
+
+3. **If neither works**, ask the user to run the script interactively so they can select a destination:
+   ```bash
+   bun scripts/build-and-run.ts
+   ```
+
+The script auto-detects the project and scheme, shows progress with spinners, and handles errors gracefully (e.g., device trust issues).
+
+
+## Convex Backend Development
+
+Deployment: `https://jovial-firefly-799.convex.cloud`
+
+### Initial Setup (one-time)
+
+```bash
+# Install dependencies
+bun install
+
+# Link to existing deployment (select jovial-firefly-799)
+bunx convex dev
+```
+
+### Development Workflow
+
+```bash
+# Terminal 1: Start Convex dev server (watches for changes, syncs to cloud)
+bunx convex dev
+
+# Terminal 2: Run Xcode
+```
+
+### Commands Reference
+
+| Command | Purpose |
+|---------|---------|
+| `bunx convex dev` | Start dev server with hot reload |
+| `bunx convex deploy` | Deploy to production |
+| `bunx convex import --table <name> <file.jsonl>` | Import data |
+| `bunx convex export --path <dir>` | Export all data |
+| `bunx convex dashboard` | Open Convex dashboard |
+
+### Adding New Convex Functions
+
+1. Create `.ts` file in `convex/` directory
+2. `bunx convex dev` auto-deploys changes
+3. Create matching Swift `Decodable` struct in `ADishADay/Model/ConvexModels/`
+4. **Queries**: Subscribe in SwiftUI view using `.task { for await ... }`
+5. **Mutations**: Call with `convex.mutation("function:name", with: args)`
+
+### Tutorial Example (DiscoverView)
+
+The Discover tab demonstrates Convex integration with a simple task list:
+
+**Backend** (`convex/tasks.ts`):
+- `tasks:get` query - Returns all tasks
+- `tasks:toggle` mutation - Toggles task completion
+
+**Frontend** (`DiscoverView.swift`):
+- Real-time subscription to `tasks:get`
+- Tap tasks to toggle completion via `tasks:toggle` mutation
+- Updates appear instantly across all connected clients
+
+### Project Structure
+
+```
+convex/
+├── _generated/     # Auto-generated (gitignored)
+├── tasks.ts        # Task queries & mutations (tutorial example)
+└── schema.ts       # Optional: explicit schema
+```
 
 
 ## Architecture
@@ -63,6 +158,39 @@ ContentView (TabView)
 
 ## Key Features
 
+**SwiftUI Form Design Guidelines:**
+
+When building a new screen, explore the codebase to find a similar screen with similar elements that can be used as reference to match the overall aesthetic of the app.
+
+Keep it simple with plain SwiftUI components and good hierarchy:
+
+- **Use native `Form` + `Section`** - no custom containers, no decorative icons
+- **Section headers** provide context (e.g., "Welcome back", "Create an account")
+- **Section footers** for validation errors, hints, and secondary text buttons
+- **Content in sections** for input fields and data display
+- **Secondary actions** (Forgot Password, Resend Email) → small text buttons in footer:
+  ```swift
+  Button("Action") { }
+    .font(.footnote)
+    .foregroundStyle(.secondary)
+    .frame(maxWidth: .infinity, alignment: .trailing)
+  ```
+- **Primary action button always last** in the form, centered with icon:
+  ```swift
+  Section {
+    Button { } label: {
+      HStack {
+        Spacer()
+        Text("Action")
+        Image(systemName: "icon")
+        Spacer()
+      }
+    }
+  }
+  ```
+- **Modal screens**: centered inline title + X dismiss button in toolbar
+- **Sub-screens**: use `navigationDestination` (slides in with back button)
+
 **Recipe Unlock System:**
 - `RecipeData.unlockDate` controls when recipes become available
 - `isUnlocked` computed property checks if current date >= unlock date
@@ -98,11 +226,26 @@ enum CalendarSource { case created, imported }
 - OpenAI API (external, requires API key)
 - When creating a SwiftUI view, add @ObserveInjection var inject as a property and .enableInjection() at the end of the body to enable hot reload - leave it in, it's a no-op in release builds.
 
+### Inject + Convex Compatibility
+
+**Important:** The `-Xlinker -interposable` linker flags have been intentionally removed from this project to allow ConvexMobile (Rust-based SDK) to load properly.
+
+**Why:** ConvexMobile uses Rust FFI with serde symbols. When `-interposable` is enabled, Xcode creates a `.debug.dylib` that cannot resolve these Rust symbols, causing a runtime crash:
+```
+dyld: Symbol not found: __ZN41_$LT$T$u20$as$u20$serde..de..Expected$GT$3fmt...
+```
+
+**Impact on Inject:**
+- Hot reload **works** for class methods (via swizzling)
+- Hot reload **does not work** for structs, enums, or free functions (requires interposing)
+- SwiftUI views using `@ObserveInjection` still work since they use class-based observation
+
+
 ## btca
 
 When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.
 
-**Available resources**: inject, swiftDate, convex
+**Available resources**: inject, swiftDate, convex, convexAuth0
 
 ### Usage
 
@@ -145,8 +288,8 @@ The unified quality checks script (`scripts/quality-checks.sh`) runs all checks:
 ### Pre-commit Hook
 
 The pre-commit hook (`scripts/hooks/pre-commit`) calls `quality-checks.sh --staged`:
-- swift-format and SwiftLint run on staged files only
-- typos runs on all files (uses typos.toml for exclusions)
+- swift-format, SwiftLint, and typos run on staged files only
+- CI mode (`--staged` omitted) runs all checks on all files
 
 ### CI Workflow
 

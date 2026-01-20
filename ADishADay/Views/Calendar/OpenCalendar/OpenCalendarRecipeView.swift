@@ -42,7 +42,7 @@ struct OpenCalendarRecipeView: View {
             showSaveAlert = true
           },
           label: {
-            Image(systemName: "square.and.arrow.down.on.square")
+            Image(systemName: "heart.text.square")
               .foregroundColor(.blue)  // Blue color
           }
         )

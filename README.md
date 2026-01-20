@@ -26,8 +26,47 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 1. Clone the repository
 2. Install tools: `brew install swiftlint typos-cli periphery`
 3. Enable git hooks: `git config core.hooksPath scripts/hooks`
-4. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
-5. Build and run on simulator or device
+4. Install Convex dependencies: `bun install`
+5. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
+6. Build and run on simulator or device
+
+### Convex Backend Development
+
+The app uses [Convex](https://convex.dev) for real-time backend features. To develop with the backend:
+
+**Terminal 1 - Convex Dev Server:**
+```bash
+bunx convex dev
+```
+
+**Terminal 2 - Run Xcode:**
+```bash
+# Build and run normally in Xcode
+```
+
+The Convex dev server watches for changes in `convex/` and auto-deploys functions. The iOS app connects to `https://jovial-firefly-799.convex.cloud`.
+
+**Convex Commands:**
+- `bunx convex dev` - Start dev server with hot reload
+- `bunx convex dashboard` - Open Convex dashboard
+- `bunx convex import --table <name> <file.jsonl>` - Import data
+- `bunx convex deploy` - Deploy to production
+
+See [AGENTS.md](AGENTS.md) for detailed backend development workflow.
+
+### btca (Better Context)
+
+Install [btca](https://btca.dev) for AI agents to query up-to-date documentation from source repositories:
+
+```bash
+# Install Bun package manager
+curl -fsSL https://bun.sh/install | bash
+
+# Install btca and opencode-ai globally
+bun add -g btca opencode-ai
+```
+
+This project is configured with btca resources for Inject, SwiftDate, and Convex. AI assistants will automatically use btca when they need current information about these technologies.
 
 ### btca (Better Context)
 
@@ -51,6 +90,14 @@ This project supports hot reloading via [Inject](https://github.com/krzysztofzab
 2. Build and run your app in the simulator
 
 The injection bundle loads automatically. Save any Swift file and changes appear instantly without rebuilding!
+
+#### Inject + Convex Compatibility
+
+The `-Xlinker -interposable` linker flags have been removed to allow ConvexMobile (Rust-based SDK) to load properly. Without these flags:
+
+- Hot reload **works** for class methods (via swizzling)
+- Hot reload **does not work** for structs, enums, or free functions (requires interposing)
+- SwiftUI views using `@ObserveInjection` still work since they use class-based observation
 
 ### Finding Unused Code
 
