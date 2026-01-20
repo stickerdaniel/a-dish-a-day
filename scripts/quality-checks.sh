@@ -99,7 +99,7 @@ if command -v typos &> /dev/null; then
         # Staged files only
         STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
         if [ -n "$STAGED_FILES" ]; then
-            if ! echo "$STAGED_FILES" | typos --file-list -; then
+            if ! echo "$STAGED_FILES" | typos --file-list - --force-exclude; then
                 echo "Typos found (run 'typos -w' to fix)"
                 FAILED=1
             else
