@@ -10,6 +10,8 @@ import SwiftUI
 struct DiscoverView: View {
   @ObserveInjection var inject
   @State private var isShowingSettings = false
+  @State private var isShowingLogin = false
+  @State private var isLoggedIn = false
   @State private var tasks: [ConvexTask] = []
   @State private var isLoading = true
 
@@ -33,6 +35,13 @@ struct DiscoverView: View {
     }
     .navigationTitle("Discover")
     .toolbar {
+      ToolbarItem(placement: .topBarLeading) {
+        Button {
+          isShowingLogin = true
+        } label: {
+          Image(systemName: "person.crop.circle")
+        }
+      }
       ToolbarItem(placement: .topBarTrailing) {
         Button {
           isShowingSettings.toggle()
@@ -42,6 +51,16 @@ struct DiscoverView: View {
         .sheet(isPresented: $isShowingSettings) {
           SettingsView()
         }
+      }
+    }
+    .fullScreenCover(isPresented: $isShowingLogin) {
+      NavigationStack {
+        LoginView(isLoggedIn: $isLoggedIn)
+      }
+    }
+    .onChange(of: isLoggedIn) { _, newValue in
+      if newValue {
+        isShowingLogin = false
       }
     }
     .task {

@@ -127,6 +127,39 @@ ContentView (TabView)
 
 ## Key Features
 
+**SwiftUI Form Design Guidelines:**
+
+When building a new screen, explore the codebase to find a similar screen with similar elements that can be used as reference to match the overall aesthetic of the app.
+
+Keep it simple with plain SwiftUI components and good hierarchy:
+
+- **Use native `Form` + `Section`** - no custom containers, no decorative icons
+- **Section headers** provide context (e.g., "Welcome back", "Create an account")
+- **Section footers** for validation errors, hints, and secondary text buttons
+- **Content in sections** for input fields and data display
+- **Secondary actions** (Forgot Password, Resend Email) → small text buttons in footer:
+  ```swift
+  Button("Action") { }
+    .font(.footnote)
+    .foregroundStyle(.secondary)
+    .frame(maxWidth: .infinity, alignment: .trailing)
+  ```
+- **Primary action button always last** in the form, centered with icon:
+  ```swift
+  Section {
+    Button { } label: {
+      HStack {
+        Spacer()
+        Text("Action")
+        Image(systemName: "icon")
+        Spacer()
+      }
+    }
+  }
+  ```
+- **Modal screens**: centered inline title + X dismiss button in toolbar
+- **Sub-screens**: use `navigationDestination` (slides in with back button)
+
 **Recipe Unlock System:**
 - `RecipeData.unlockDate` controls when recipes become available
 - `isUnlocked` computed property checks if current date >= unlock date
