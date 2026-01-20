@@ -19,3 +19,4 @@ extend-exclude = [
 
 [default.extend-words]
 # Project-specific words that aren't typos
+udid = "udid"

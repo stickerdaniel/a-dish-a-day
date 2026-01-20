@@ -1,36 +1,57 @@
 {
-	"$schema": "https://btca.dev/btca.schema.json",
-	"resources": [
-		{
-			"name": "inject",
-			"type": "git",
-			"url": "https://github.com/krzysztofzablocki/Inject.git",
-			"branch": "main",
-			"specialNotes": "Inject hot reload library for Swift development"
-		},
-		{
-			"name": "swiftDate",
-			"type": "git",
-			"url": "https://github.com/malcommac/SwiftDate.git",
-			"branch": "master",
-			"specialNotes": "SwiftDate date manipulation library with comprehensive date/time utilities"
-		},
-		{
-			"name": "convex",
-			"type": "git",
-			"url": "https://github.com/get-convex/convex-swift",
-			"branch": "main",
-			"specialNotes": "Convex backend platform Swift SDK for iOS/macOS apps"
-		},
-		{
-			"name": "convexAuth0",
-			"type": "git",
-			"url": "https://github.com/get-convex/convex-swift-auth0.git",
-			"branch": "main",
-			"specialNotes": "Convex Swift Auth0 integration for authentication via Auth0 Universal Login"
-		}
-	],
-	"model": "claude-haiku-4-5",
-	"provider": "anthropic",
-	"providerTimeoutMs": 300000
+  "$schema": "https://btca.dev/btca.schema.json",
+  "providerTimeoutMs": 300000,
+  "resources": [
+    {
+      "type": "git",
+      "name": "inject",
+      "url": "https://github.com/krzysztofzablocki/Inject.git",
+      "branch": "main",
+      "specialNotes": "Inject hot reload library for Swift development"
+    },
+    {
+      "type": "git",
+      "name": "swiftDate",
+      "url": "https://github.com/malcommac/SwiftDate.git",
+      "branch": "master",
+      "specialNotes": "SwiftDate date manipulation library with comprehensive date/time utilities"
+    },
+    {
+      "type": "git",
+      "name": "convex",
+      "url": "https://github.com/get-convex/convex-swift",
+      "branch": "main",
+      "specialNotes": "Convex backend platform Swift SDK for iOS/macOS apps"
+    },
+    {
+      "type": "git",
+      "name": "convexAuth0",
+      "url": "https://github.com/get-convex/convex-swift-auth0.git",
+      "branch": "main",
+      "specialNotes": "Convex Swift Auth0 integration for authentication via Auth0 Universal Login"
+    },
+    {
+      "type": "git",
+      "name": "enquirer",
+      "url": "https://github.com/enquirer/enquirer",
+      "branch": "master",
+      "specialNotes": "Enquirer is a stylish, intuitive and user-friendly prompt library for Node.js"
+    },
+    {
+      "type": "git",
+      "name": "typos",
+      "url": "https://github.com/crate-ci/typos",
+      "branch": "master",
+      "specialNotes": "typos is a source code spell checker written in Rust"
+    },
+    {
+      "type": "git",
+      "name": "clack",
+      "url": "https://github.com/natemoo-re/clack",
+      "branch": "main",
+      "specialNotes": "Beautiful CLI prompts library with spinner, select, confirm, etc. Used by Svelte CLI."
+    }
+  ],
+  "model": "claude-haiku-4-5",
+  "provider": "anthropic"
 }

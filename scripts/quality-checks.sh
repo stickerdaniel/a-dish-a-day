@@ -91,15 +91,31 @@ else
 fi
 
 # =============================================================================
-# 3. typos (spellcheck) - always runs on all files
+# 3. typos (spellcheck)
 # =============================================================================
 if command -v typos &> /dev/null; then
     echo "Checking spelling..."
-    if ! typos; then
-        echo "Typos found (run 'typos -w' to fix)"
-        FAILED=1
+    if $STAGED_MODE; then
+        # Staged files only
+        STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+        if [ -n "$STAGED_FILES" ]; then
+            if ! echo "$STAGED_FILES" | typos --file-list -; then
+                echo "Typos found (run 'typos -w' to fix)"
+                FAILED=1
+            else
+                echo "No typos"
+            fi
+        else
+            echo "No files to spellcheck"
+        fi
     else
-        echo "No typos"
+        # All files (CI mode)
+        if ! typos; then
+            echo "Typos found (run 'typos -w' to fix)"
+            FAILED=1
+        else
+            echo "No typos"
+        fi
     fi
 else
     echo "Warning: typos not found, skipping spellcheck (install: brew install typos-cli)"

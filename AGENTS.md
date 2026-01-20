@@ -22,7 +22,38 @@ The Xcode build will fail with instructions if git hooks aren't configured.
 **Build Tool:** Xcode (native iOS)
 - Open `ADishADay.xcodeproj` in Xcode
 - Build target: ADishADay
-- No command-line build scripts; use Xcode or `xcodebuild` (or user)
+
+### CLI Build & Run Script
+
+Use `scripts/build-and-run.ts` to build, install, and launch the app from the command line:
+
+```bash
+bun scripts/build-and-run.ts           # Interactive destination picker
+bun scripts/build-and-run.ts --booted  # Use currently booted simulator
+bun scripts/build-and-run.ts --device  # Use connected physical device
+bun scripts/build-and-run.ts --help    # Show all options
+```
+
+### Verifying Code Changes
+
+**IMPORTANT:** After making Swift/SwiftUI code changes, ALWAYS build and run the app to verify the changes work. Do not consider a task complete until the app builds and runs successfully.
+
+1. **Try booted simulator first:**
+   ```bash
+   bun scripts/build-and-run.ts --booted
+   ```
+
+2. **If no simulator is booted**, try the user's physical device:
+   ```bash
+   bun scripts/build-and-run.ts --device
+   ```
+
+3. **If neither works**, ask the user to run the script interactively so they can select a destination:
+   ```bash
+   bun scripts/build-and-run.ts
+   ```
+
+The script auto-detects the project and scheme, shows progress with spinners, and handles errors gracefully (e.g., device trust issues).
 
 
 ## Convex Backend Development
@@ -257,8 +288,8 @@ The unified quality checks script (`scripts/quality-checks.sh`) runs all checks:
 ### Pre-commit Hook
 
 The pre-commit hook (`scripts/hooks/pre-commit`) calls `quality-checks.sh --staged`:
-- swift-format and SwiftLint run on staged files only
-- typos runs on all files (uses typos.toml for exclusions)
+- swift-format, SwiftLint, and typos run on staged files only
+- CI mode (`--staged` omitted) runs all checks on all files
 
 ### CI Workflow
 
