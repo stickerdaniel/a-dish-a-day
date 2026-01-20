@@ -22,7 +22,9 @@ enum Appearance: String, CaseIterable {
 
 struct SettingsView: View {
   @ObserveInjection var inject
+  @EnvironmentObject private var authManager: AuthenticationManager
   var notificationManager = NotificationManager()
+
   // MARK: - SwiftData model context
   @Environment(\.modelContext) private var modelContext
 
@@ -46,106 +48,184 @@ struct SettingsView: View {
   @State private var showClearDataSuccess = false
   @State private var clearDataError: String?
 
+  // MARK: - Authentication
+  @State private var loginPresentation: LoginPresentation?
+  @State private var isSigningOut = false
+
   var body: some View {
-    NavigationStack {
-      Form {
-        // OpenAI API Key Section
-        Section {
-          SecureField("API Key", text: $apiKey)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .onChange(of: apiKey) {
-              validateAPIKey()
-            }
-        } header: {
-          Text("OpenAI Integration")
-        } footer: {
-          Group {
-            if let error = apiKeyValidationError {
-              Text(error)
-                .foregroundColor(.red)
-            } else {
-              Text(
-                "To obtain an API key, visit the [OpenAI website](https://platform.openai.com/api-keys)."
-              )
-              .tint(.blue)
-            }
+    Form {
+      // OpenAI API Key Section
+      Section {
+        SecureField("API Key", text: $apiKey)
+          .textInputAutocapitalization(.never)
+          .autocorrectionDisabled()
+          .onChange(of: apiKey) {
+            validateAPIKey()
+          }
+      } header: {
+        Text("OpenAI Integration")
+      } footer: {
+        Group {
+          if let error = apiKeyValidationError {
+            Text(error)
+              .foregroundColor(.red)
+          } else {
+            Text(
+              "To obtain an API key, visit the [OpenAI website](https://platform.openai.com/api-keys)."
+            )
+            .tint(.blue)
           }
         }
+      }
 
-        // Appearance Picker Section
-        Picker("Appearance", selection: $appearance) {
-          ForEach(Appearance.allCases, id: \.self) { appearance in
-            Text(appearance.title).tag(appearance)
-          }
+      // Appearance Picker Section
+      Picker("Appearance", selection: $appearance) {
+        ForEach(Appearance.allCases, id: \.self) { appearance in
+          Text(appearance.title).tag(appearance)
         }
-        .pickerStyle(.inline)
+      }
+      .pickerStyle(.inline)
 
-        // Notifications Toggle if filteredImportedCalendars is not empty
-        if !filteredImportedCalendars.isEmpty {
-          Section("Notifications") {
-            ForEach(filteredImportedCalendars) { calendar in
-              Toggle(
-                calendar.name,
-                isOn: Binding(
-                  get: {
-                    UserDefaults.standard.bool(forKey: "calendar_notifications_\(calendar.id)")
-                  },
-                  set: { enabled in
-                    if enabled {
-                      notificationManager.scheduleNotifications(for: calendar)
-                    } else {
-                      notificationManager.deleteNotifications(for: calendar)
-                    }
+      // Notifications Toggle if filteredImportedCalendars is not empty
+      if !filteredImportedCalendars.isEmpty {
+        Section("Notifications") {
+          ForEach(filteredImportedCalendars) { calendar in
+            Toggle(
+              calendar.name,
+              isOn: Binding(
+                get: {
+                  UserDefaults.standard.bool(forKey: "calendar_notifications_\(calendar.id)")
+                },
+                set: { enabled in
+                  if enabled {
+                    notificationManager.scheduleNotifications(for: calendar)
+                  } else {
+                    notificationManager.deleteNotifications(for: calendar)
                   }
-                ))
+                }
+              ))
+          }
+        }
+      }
+
+      // Account Section
+      Section("Account") {
+        switch authManager.authState {
+        case .unknown, .loading:
+          HStack {
+            Text("Checking authentication...")
+            Spacer()
+            ProgressView()
+          }
+
+        case .unauthenticated:
+          Button {
+            loginPresentation = LoginPresentation(tab: .login)
+          } label: {
+            HStack {
+              Spacer()
+              Text("Log In")
+              Spacer()
             }
           }
-        }
+          .buttonStyle(.borderedProminent)
+          .controlSize(.large)
+          .listRowInsets(EdgeInsets())
 
-        // Data Management Section
-        Section("Data Management") {
-          Button("Clear All Data") {
-            showClearDataConfirmation = true
+        case .authenticated(let userEmail):
+          VStack(alignment: .leading, spacing: 4) {
+            Text("Signed in")
+              .font(.subheadline)
+              .foregroundStyle(.secondary)
+            if let email = userEmail {
+              Text(email)
+                .font(.body)
+            }
           }
-          .foregroundColor(.red)
+
+          Button(role: .destructive) {
+            Task {
+              isSigningOut = true
+              await authManager.logout()
+              isSigningOut = false
+            }
+          } label: {
+            HStack {
+              Spacer()
+              Text("Sign Out")
+              Spacer()
+            }
+            .opacity(isSigningOut ? 0 : 1)
+            .overlay {
+              if isSigningOut {
+                ProgressView()
+                  .controlSize(.regular)
+              }
+            }
+          }
+          .buttonStyle(.bordered)
+          .controlSize(.large)
+          .disabled(isSigningOut)
+          .listRowInsets(EdgeInsets())
         }
       }
-      .navigationTitle("Settings")
-      .confirmationDialog(
-        "Are you sure you want to clear all data? This action cannot be undone.",
-        isPresented: $showClearDataConfirmation,
-        titleVisibility: .visible
-      ) {
-        Button("Confirm", role: .destructive) {
-          clearAllData()
-          notificationManager.deleteAllNotifications()
+
+      // Data Management Section
+      Section("Data Management") {
+        Button(role: .destructive) {
+          showClearDataConfirmation = true
+        } label: {
+          HStack {
+            Spacer()
+            Text("Clear All Data")
+            Spacer()
+          }
         }
-        Button("Cancel", role: .cancel) {}
+        .buttonStyle(.bordered)
+        .controlSize(.large)
       }
-      .alert("Success", isPresented: $showClearDataSuccess) {
-        Button("OK", role: .cancel) {}
-      } message: {
-        Text("All data was cleared successfully.")
-      }
-      .alert(
-        "Error",
-        isPresented: Binding(
-          get: { clearDataError != nil },
-          set: { if !$0 { clearDataError = nil } }
-        )
-      ) {
-        Button("OK", role: .cancel) {}
-      } message: {
-        if let error = clearDataError {
-          Text("Failed to clear data: \(error)")
-        }
-      }
-      .onChange(of: appearance) {
-        applyAppearance()
-      }
-      .enableInjection()
+      .listRowInsets(EdgeInsets())
     }
+    .navigationTitle("Settings")
+    .confirmationDialog(
+      "Are you sure you want to clear all data? This action cannot be undone.",
+      isPresented: $showClearDataConfirmation,
+      titleVisibility: .visible
+    ) {
+      Button("Confirm", role: .destructive) {
+        clearAllData()
+        notificationManager.deleteAllNotifications()
+      }
+      Button("Cancel", role: .cancel) {}
+    }
+    .alert("Success", isPresented: $showClearDataSuccess) {
+      Button("OK", role: .cancel) {}
+    } message: {
+      Text("All data was cleared successfully.")
+    }
+    .alert(
+      "Error",
+      isPresented: Binding(
+        get: { clearDataError != nil },
+        set: { if !$0 { clearDataError = nil } }
+      )
+    ) {
+      Button("OK", role: .cancel) {}
+    } message: {
+      if let error = clearDataError {
+        Text("Failed to clear data: \(error)")
+      }
+    }
+    .onChange(of: appearance) {
+      applyAppearance()
+    }
+    .fullScreenCover(item: $loginPresentation) { presentation in
+      NavigationStack {
+        LoginView(initialTab: presentation.tab)
+          .environmentObject(authManager)
+      }
+    }
+    .enableInjection()
   }
 
   // MARK: - Clear All Data

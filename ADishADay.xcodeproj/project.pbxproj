@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		6500D11C2EF0C8E800DD073C /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 6500D11B2EF0C8E800DD073C /* Inject */; };
 		6589D7A72F028A0F004CE332 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 6589D7A62F028A0F004CE332 /* SwiftDate */; };
+		65A5A2B82F1F69AF0063BD1B /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 65A5A2B72F1F69AF0063BD1B /* Auth0 */; };
+		65A5A5522F1F89B90063BD1B /* ConvexAuth0 in Frameworks */ = {isa = PBXBuildFile; productRef = 65A5A5512F1F89B90063BD1B /* ConvexAuth0 */; };
 		65E7997F2F1E60B20086E7CA /* ConvexMobile in Frameworks */ = {isa = PBXBuildFile; productRef = 65E7997E2F1E60B20086E7CA /* ConvexMobile */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +47,8 @@
 				6589D7A72F028A0F004CE332 /* SwiftDate in Frameworks */,
 				6500D11C2EF0C8E800DD073C /* Inject in Frameworks */,
 				65E7997F2F1E60B20086E7CA /* ConvexMobile in Frameworks */,
+				65A5A5522F1F89B90063BD1B /* ConvexAuth0 in Frameworks */,
+				65A5A2B82F1F69AF0063BD1B /* Auth0 in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -88,6 +92,8 @@
 				6500D11B2EF0C8E800DD073C /* Inject */,
 				6589D7A62F028A0F004CE332 /* SwiftDate */,
 				65E7997E2F1E60B20086E7CA /* ConvexMobile */,
+				65A5A2B72F1F69AF0063BD1B /* Auth0 */,
+				65A5A5512F1F89B90063BD1B /* ConvexAuth0 */,
 			);
 			productName = calendar;
 			productReference = BF9695A82D106F6F00025A94 /* A Dish A Day.app */;
@@ -121,6 +127,8 @@
 				6500D11A2EF0C8E800DD073C /* XCRemoteSwiftPackageReference "Inject" */,
 				6589D7A52F028A0F004CE332 /* XCRemoteSwiftPackageReference "SwiftDate" */,
 				65E7997D2F1E60B20086E7CA /* XCRemoteSwiftPackageReference "convex-swift" */,
+				65A5A2B62F1F69AF0063BD1B /* XCRemoteSwiftPackageReference "Auth0" */,
+				65A5A5502F1F89B90063BD1B /* XCRemoteSwiftPackageReference "convex-swift-auth0" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = BF9695A92D106F6F00025A94 /* Products */;
@@ -392,6 +400,22 @@
 				minimumVersion = 7.0.0;
 			};
 		};
+		65A5A2B62F1F69AF0063BD1B /* XCRemoteSwiftPackageReference "Auth0" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/Auth0.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.0;
+			};
+		};
+		65A5A5502F1F89B90063BD1B /* XCRemoteSwiftPackageReference "convex-swift-auth0" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/get-convex/convex-swift-auth0";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
 		65E7997D2F1E60B20086E7CA /* XCRemoteSwiftPackageReference "convex-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/get-convex/convex-swift";
@@ -412,6 +436,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6589D7A52F028A0F004CE332 /* XCRemoteSwiftPackageReference "SwiftDate" */;
 			productName = SwiftDate;
+		};
+		65A5A2B72F1F69AF0063BD1B /* Auth0 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65A5A2B62F1F69AF0063BD1B /* XCRemoteSwiftPackageReference "Auth0" */;
+			productName = Auth0;
+		};
+		65A5A5512F1F89B90063BD1B /* ConvexAuth0 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 65A5A5502F1F89B90063BD1B /* XCRemoteSwiftPackageReference "convex-swift-auth0" */;
+			productName = ConvexAuth0;
 		};
 		65E7997E2F1E60B20086E7CA /* ConvexMobile */ = {
 			isa = XCSwiftPackageProductDependency;

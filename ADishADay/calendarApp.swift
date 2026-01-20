@@ -14,6 +14,8 @@ import SwiftUI
 @main
 struct CalendarApp: App {
   @AppStorage("appearance") private var appearance: Appearance = .system
+  @StateObject private var authManager = AuthenticationManager.shared
+  @State private var showLoginOnLaunch = false
 
   init() {
     #if DEBUG
@@ -24,9 +26,25 @@ struct CalendarApp: App {
   var body: some Scene {
     WindowGroup {
       ContentView()
+        .environmentObject(authManager)
         .onAppear {
           applyAppearance()
           NotificationManager.requestAuthorization()
+        }
+        .task {
+          // Initialize auth and determine if we should show login
+          await authManager.initialize()
+
+          // Show login on launch if not authenticated and no cached credentials
+          if !authManager.authState.isAuthenticated && !authManager.hasCachedCredentials {
+            showLoginOnLaunch = true
+          }
+        }
+        .fullScreenCover(isPresented: $showLoginOnLaunch) {
+          NavigationStack {
+            LoginView()
+              .environmentObject(authManager)
+          }
         }
         .modelContainer(for: [
           RecipeModel.self,

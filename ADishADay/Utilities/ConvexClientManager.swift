@@ -4,27 +4,29 @@
 //
 //  Singleton manager for Convex backend connection.
 
+import Auth0
 import ConvexMobile
 import Foundation
 
-/// Singleton manager for Convex backend connection.
+/// Singleton manager for Convex backend connection with Auth0 authentication.
 class ConvexClientManager {
   static let shared = ConvexClientManager()
 
-  static let deploymentUrl = "https://jovial-firefly-799.convex.cloud"
+  static let deploymentUrl = AppConfiguration.convexDeploymentUrl
 
-  private var _client: ConvexClient?
+  private var _client: ConvexClientWithAuth<Credentials>?
 
-  var client: ConvexClient {
+  var client: ConvexClientWithAuth<Credentials> {
     if _client == nil {
-      _client = ConvexClient(deploymentUrl: Self.deploymentUrl)
+      let authProvider = CustomAuth0Provider()
+      _client = ConvexClientWithAuth(deploymentUrl: Self.deploymentUrl, authProvider: authProvider)
     }
     // swiftlint:disable:next force_unwrapping
     return _client!
   }
 
   /// Convenience method to get the shared client instance.
-  static var client: ConvexClient {
+  static var client: ConvexClientWithAuth<Credentials> {
     shared.client
   }
 
@@ -32,7 +34,7 @@ class ConvexClientManager {
 
   func initialize() {
     _ = client  // Force lazy initialization
-    print("[Convex] Client initialized successfully")
+    print("[Convex] Client initialized successfully with Auth0")
   }
 
   func disconnect() {

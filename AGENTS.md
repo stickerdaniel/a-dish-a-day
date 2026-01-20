@@ -58,7 +58,15 @@ The script auto-detects the project and scheme, shows progress with spinners, an
 
 ## Convex Backend Development
 
-Deployment: `https://jovial-firefly-799.convex.cloud`
+**Deployments:**
+- Dev: `https://jovial-firefly-799.convex.cloud`
+- Prod: `https://ardent-porpoise-884.convex.cloud`
+
+**Auth0:**
+- Domain: `auth0.daniel.sticker.name` (custom domain, same for all environments)
+- Client ID: `kmAFHhrNLBgilsZyfcqbnmVdzx4RU9vh`
+
+The app automatically switches between dev/prod Convex deployments based on build configuration (Debug uses dev, Release uses prod).
 
 ### Initial Setup (one-time)
 
@@ -84,7 +92,8 @@ bunx convex dev
 | Command | Purpose |
 |---------|---------|
 | `bunx convex dev` | Start dev server with hot reload |
-| `bunx convex deploy` | Deploy to production |
+| `bunx convex deploy` | Deploy to dev (default from .env.local) |
+| `CONVEX_DEPLOYMENT=prod:ardent-porpoise-884 bunx convex deploy` | Deploy to production |
 | `bunx convex import --table <name> <file.jsonl>` | Import data |
 | `bunx convex export --path <dir>` | Export all data |
 | `bunx convex dashboard` | Open Convex dashboard |
@@ -94,8 +103,29 @@ bunx convex dev
 1. Create `.ts` file in `convex/` directory
 2. `bunx convex dev` auto-deploys changes
 3. Create matching Swift `Decodable` struct in `ADishADay/Model/ConvexModels/`
-4. **Queries**: Subscribe in SwiftUI view using `.task { for await ... }`
-5. **Mutations**: Call with `convex.mutation("function:name", with: args)`
+
+### Securing Convex with Auth0
+
+**Current Status:** Convex is secured with custom Auth0 provider using password-based authentication.
+
+**Implementation:**
+- Uses `ConvexClientWithAuth<Credentials>` with `CustomAuth0Provider`
+- `CustomAuth0Provider` bridges our manual email/password flow to Convex
+- Backend configured in `convex/auth.config.ts` with Auth0 domain and client ID
+- Queries/mutations check `ctx.auth.getUserIdentity()` server-side
+
+**Guard queries/mutations** server-side:
+```typescript
+export const myQuery = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+    // ... query logic
+  },
+});
+```
 
 ### Tutorial Example (DiscoverView)
 
@@ -175,21 +205,24 @@ Keep it simple with plain SwiftUI components and good hierarchy:
     .foregroundStyle(.secondary)
     .frame(maxWidth: .infinity, alignment: .trailing)
   ```
-- **Primary action button always last** in the form, centered with icon:
-  ```swift
-  Section {
-    Button { } label: {
-      HStack {
-        Spacer()
-        Text("Action")
-        Image(systemName: "icon")
-        Spacer()
-      }
-    }
-  }
-  ```
-- **Modal screens**: centered inline title + X dismiss button in toolbar
 - **Sub-screens**: use `navigationDestination` (slides in with back button)
+
+**Button Styling Guidelines:**
+
+- **Primary action** (main CTA): `.buttonStyle(.borderedProminent)` + `.controlSize(.large)`
+- **Secondary action**: `.buttonStyle(.bordered)` + `.controlSize(.large)`
+- **Destructive action**: `Button(role: .destructive)` + `.buttonStyle(.bordered)`
+- **Full-width buttons** in Form: wrap content in `HStack { Spacer() ... Spacer() }`, use `.listRowInsets(EdgeInsets())` on Section
+- **Consistency**: All buttons in same section should use matching styles
+- **Icons in bordered buttons**: Use `Image` + `Text` separately (not `Label`) for proper color inheritance. Icon goes before text.
+- **Multicolor SF Symbols in bordered buttons**: Add `.symbolRenderingMode(.monochrome)` to ensure single color
+- **Loading states**: Use opacity/overlay pattern to maintain button size while showing spinner with `.controlSize(.regular)`
+
+**Modal & Full-Screen Presentation:**
+
+- **Full-screen covers** (e.g., Settings): Use `fullScreenCover` to cover entire screen including tab bar
+- **Dismiss button**: Always top-right corner using `.topBarTrailing` with `Image(systemName: "xmark")`
+- **Sheets**: Use for contextual prompts that don't need to cover full screen
 
 **Recipe Unlock System:**
 - `RecipeData.unlockDate` controls when recipes become available

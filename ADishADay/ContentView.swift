@@ -16,7 +16,7 @@ enum Tab: String, CaseIterable {
 struct ContentView: View {
   @ObserveInjection var inject
 
-  @State private var selection: Tab = .calendar
+  @State private var selection: Tab = .discover
 
   // Padding 16 bottom only on MacOS not on iOS and iPadOS
   var bottomPadding: CGFloat {
@@ -32,24 +32,24 @@ struct ContentView: View {
       // Calendar
       NavigationStack {
         CalendarsView()
-          .tag(Tab.calendar)
       }
+      .tag(Tab.calendar)
       .tabItem {
         Label("Calendars", systemImage: "calendar")
       }
       // Recipes
       NavigationStack {
         RecipesView()
-          .tag(Tab.recipe)
       }
+      .tag(Tab.recipe)
       .tabItem {
         Label("Recipes", systemImage: "heart.text.square")
       }
       // Discover
       NavigationStack {
         DiscoverView()
-          .tag(Tab.discover)
       }
+      .tag(Tab.discover)
       .tabItem {
         Label("Discover", systemImage: "safari")
       }
