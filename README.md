@@ -56,7 +56,7 @@ See [AGENTS.md](AGENTS.md) for detailed backend development workflow.
 
 ### btca (Better Context)
 
-AI agents use the [btca-local](https://github.com/davis7dotsh/better-context) skill in `.agents/skills/btca-local` to search up-to-date source repositories. `btca.config.jsonc` lists the resources (Inject, SwiftDate, Convex Swift, and more); each one is cloned into `~/.btca/agent/sandbox/<name>`. No global install is needed.
+AI agents use the [btca-local](https://github.com/davis7dotsh/better-context) skill in `.agents/skills/btca-local` to search up-to-date source repositories. `.agents/btca.config.jsonc` lists the resources (Inject, SwiftDate, Convex Swift, and more); each one is cloned into `~/.btca/agent/sandbox/<name>`. No global install is needed.
 
 ### Hot Reloading with Inject
 
