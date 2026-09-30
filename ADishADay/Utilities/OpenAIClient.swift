@@ -25,7 +25,6 @@ class OpenAIIntegration {
     UserDefaults.standard.string(forKey: "openai_api_key") ?? ""
   }
 
-  // swiftlint:disable:next force_unwrapping
   private let apiURL = URL(string: "https://api.openai.com/v1/chat/completions")!
 
   private let recipePrompt = """
