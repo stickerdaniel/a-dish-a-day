@@ -1,6 +1,7 @@
 {
-  "$schema": "https://btca.dev/btca.schema.json",
-  "providerTimeoutMs": 300000,
+  // Resource manifest for the btca-local skill: repos pre-cloned into
+  // ~/.btca/agent/sandbox/<name>. The sandbox is shared across projects,
+  // so resource names must identify the repo unambiguously.
   "resources": [
     {
       "type": "git",
@@ -18,14 +19,14 @@
     },
     {
       "type": "git",
-      "name": "convex",
+      "name": "convexSwift",
       "url": "https://github.com/get-convex/convex-swift",
       "branch": "main",
       "specialNotes": "Convex backend platform Swift SDK for iOS/macOS apps"
     },
     {
       "type": "git",
-      "name": "convexAuth0",
+      "name": "convexSwiftAuth0",
       "url": "https://github.com/get-convex/convex-swift-auth0.git",
       "branch": "main",
       "specialNotes": "Convex Swift Auth0 integration for authentication via Auth0 Universal Login"
@@ -41,7 +42,7 @@
       "type": "git",
       "name": "typos",
       "url": "https://github.com/crate-ci/typos",
-      "branch": "master",
+      "branch": "main",
       "specialNotes": "typos is a source code spell checker written in Rust"
     },
     {
@@ -51,7 +52,5 @@
       "branch": "main",
       "specialNotes": "Beautiful CLI prompts library with spinner, select, confirm, etc. Used by Svelte CLI."
     }
-  ],
-  "model": "claude-haiku-4-5",
-  "provider": "anthropic"
+  ]
 }
