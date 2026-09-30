@@ -26,7 +26,7 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 1. Clone the repository
 2. Install tools: `brew install swiftlint typos-cli periphery`
 3. Enable git hooks: `git config core.hooksPath scripts/hooks`
-4. Install Convex dependencies: `bun install`
+4. Install Convex dependencies with [Bun](https://bun.sh): `bun install`
 5. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
 6. Build and run on simulator or device
 
@@ -56,31 +56,7 @@ See [AGENTS.md](AGENTS.md) for detailed backend development workflow.
 
 ### btca (Better Context)
 
-Install [btca](https://btca.dev) for AI agents to query up-to-date documentation from source repositories:
-
-```bash
-# Install Bun package manager
-curl -fsSL https://bun.sh/install | bash
-
-# Install btca and opencode-ai globally
-bun add -g btca opencode-ai
-```
-
-This project is configured with btca resources for Inject, SwiftDate, and Convex. AI assistants will automatically use btca when they need current information about these technologies.
-
-### btca (Better Context)
-
-Install [btca](https://btca.dev) for AI agents to query up-to-date documentation from source repositories:
-
-```bash
-# Install Bun package manager
-curl -fsSL https://bun.sh/install | bash
-
-# Install btca and opencode-ai globally
-bun add -g btca opencode-ai
-```
-
-This project is configured with btca resources for Inject, SwiftDate, and Convex. AI assistants will automatically use btca when they need current information about these technologies.
+AI agents use the [btca-local](https://github.com/davis7dotsh/better-context) skill in `.agents/skills/btca-local` to search up-to-date source repositories. `btca.config.jsonc` lists the resources (Inject, SwiftDate, Convex Swift, and more); each one is cloned into `~/.btca/agent/sandbox/<name>`. No global install is needed.
 
 ### Hot Reloading with Inject
 

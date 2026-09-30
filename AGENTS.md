@@ -276,21 +276,9 @@ dyld: Symbol not found: __ZN41_$LT$T$u20$as$u20$serde..de..Expected$GT$3fmt...
 
 ## btca
 
-When you need up-to-date information about technologies used in this project, use btca to query source repositories directly.
+When you need up-to-date information about technologies used in this project, use the `btca-local` skill to search the actual source repos. `btca.config.jsonc` is the resource registry; every resource is pre-cloned at `~/.btca/agent/sandbox/<resourceName>` (e.g. `swiftDate`, `convexSwift`). "Use btca with `<resource>` resource" means: search that clone. If a resource is missing from the sandbox, clone it with the url and branch from the manifest (the skill's "clone main by default" does not apply to registered resources).
 
-**Available resources**: inject, swiftDate, convex, convexAuth0
-
-### Usage
-
-```bash
-btca ask -r <resource> -q "<question>"
-```
-
-Use multiple `-r` flags to query multiple resources at once:
-
-```bash
-btca ask -r swiftDate -r convex -q "How do I integrate Convex with SwiftDate for timestamp handling?"
-```
+**New dependencies:** When adding a new dependency, always add its repo to `btca.config.jsonc` (verify the default branch first: `gh api repos/OWNER/REPO --jq '.default_branch'`) and clone it into the sandbox. Resource names are shared across projects in the sandbox, so pick a name that identifies the repo unambiguously (`convexSwift`, not `convex`).
 
 ## Code Quality
 
