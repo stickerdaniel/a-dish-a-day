@@ -5,11 +5,10 @@
 //  Created by Vincent Nahn on 2024/12/16.
 //
 
-import SwiftUI
-
 // Inject compiles to no-ops outside Debug, so every build configuration needs it.
 // It loads the InjectionIII or InjectionNext bundle itself on first use.
 @_exported import Inject
+import SwiftUI
 
 @main
 struct CalendarApp: App {
