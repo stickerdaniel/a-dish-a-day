@@ -7,21 +7,15 @@
 
 import SwiftUI
 
-#if DEBUG
-  @_exported import Inject
-#endif
+// Inject compiles to no-ops outside Debug, so every build configuration needs it.
+// It loads the InjectionIII or InjectionNext bundle itself on first use.
+@_exported import Inject
 
 @main
 struct CalendarApp: App {
   @AppStorage("appearance") private var appearance: Appearance = .system
   @StateObject private var authManager = AuthenticationManager.shared
   @State private var showLoginOnLaunch = false
-
-  init() {
-    #if DEBUG
-      Bundle(path: "/Applications/InjectionIII.app/Contents/Resources/iOSInjection.bundle")?.load()
-    #endif
-  }
 
   var body: some Scene {
     WindowGroup {
