@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices", "group:allNonMajor"],
+  "schedule": ["before 6am on Monday"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "SwiftLint pinned in the quality checks workflow",
+      "managerFilePatterns": ["/^\\.github/workflows/quality-checks\\.yml$/"],
+      "matchStrings": ["SWIFTLINT_VERSION:\\s*(?<currentValue>\\S+)"],
+      "depNameTemplate": "realm/SwiftLint",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "typos pinned in the quality checks workflow; release tags carry a v prefix",
+      "managerFilePatterns": ["/^\\.github/workflows/quality-checks\\.yml$/"],
+      "matchStrings": ["TYPOS_VERSION:\\s*(?<currentValue>\\S+)"],
+      "depNameTemplate": "crate-ci/typos",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+  "packageRules": [
+    {
+      "description": "Group all CI dependencies (GitHub Actions and the pinned lint tools)",
+      "matchManagers": ["github-actions", "custom.regex"],
+      "groupName": "CI dependencies",
+      "groupSlug": "ci-dependencies"
+    }
+  ]
+}

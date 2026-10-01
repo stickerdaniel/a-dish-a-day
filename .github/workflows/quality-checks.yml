@@ -6,17 +6,55 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read
+
 jobs:
   quality_checks:
     name: All Quality Checks
     runs-on: macos-26
+    env:
+      SWIFTLINT_VERSION: 0.65.1
+      TYPOS_VERSION: 1.50.3
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Install tools
-        run: brew install swiftlint typos-cli
+      - name: Install pinned tools
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tools_dir="$RUNNER_TEMP/quality-tools"
+          mkdir -p "$tools_dir"
+
+          # Download a release asset and check it against the SHA-256 digest GitHub reports for it
+          download() {
+            local repo="$1" tag="$2" asset="$3" destination="$4" digest
+            digest="$(gh api "repos/$repo/releases/tags/$tag" \
+              --jq ".assets[] | select(.name == \"$asset\") | .digest")"
+            [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || {
+              echo "Missing SHA-256 digest for $repo/$asset" >&2
+              return 1
+            }
+            curl -fsSL --retry 3 "https://github.com/$repo/releases/download/$tag/$asset" -o "$destination"
+            echo "${digest#sha256:}  $destination" | shasum -a 256 -c -
+          }
+
+          download realm/SwiftLint "$SWIFTLINT_VERSION" portable_swiftlint.zip "$RUNNER_TEMP/swiftlint.zip"
+          unzip -q "$RUNNER_TEMP/swiftlint.zip" swiftlint -d "$tools_dir"
+
+          typos_asset="typos-v$TYPOS_VERSION-$(uname -m | sed 's/arm64/aarch64/')-apple-darwin.tar.gz"
+          download crate-ci/typos "v$TYPOS_VERSION" "$typos_asset" "$RUNNER_TEMP/typos.tar.gz"
+          tar -xzf "$RUNNER_TEMP/typos.tar.gz" -C "$tools_dir" ./typos
+
+          echo "$tools_dir" >> "$GITHUB_PATH"
 
       - name: Run quality checks
-        run: ./scripts/quality-checks.sh
+        run: |
+          set -euo pipefail
+          # Fail if a preinstalled tool shadows the pinned one
+          test "$(swiftlint version)" = "$SWIFTLINT_VERSION"
+          test "$(typos --version)" = "typos-cli $TYPOS_VERSION"
+          ./scripts/quality-checks.sh
