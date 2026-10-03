@@ -12,6 +12,7 @@ import Auth0
 import Combine
 import ConvexMobile
 import Foundation
+import SimpleKeychain
 
 // MARK: - Auth State
 
@@ -102,6 +103,39 @@ protocol CredentialsStoring {
   func renew() async throws -> Credentials
   func store(credentials: Credentials) -> Bool
   func clear() -> Bool
+  /// True only when storage reports the entry as not found. A read error is not absence.
+  func credentialsDefinitelyAbsent() -> Bool
+}
+
+/// The app's store: a `CredentialsManager` over a Keychain the owner can also ask whether the
+/// entry is gone, because `clear()` reports deleting a missing entry as a failure.
+struct KeychainCredentialsStore: CredentialsStoring {
+  /// `CredentialsManager`'s default key; with its default Keychain, stored sessions stay readable.
+  private static let storeKey = "credentials"
+  private let keychain: SimpleKeychain
+  private let manager: CredentialsManager
+
+  init(authentication: Authentication, keychain: SimpleKeychain = SimpleKeychain()) {
+    self.keychain = keychain
+    manager = CredentialsManager(
+      authentication: authentication,
+      storeKey: Self.storeKey,
+      storage: keychain
+    )
+  }
+
+  func canRenew() -> Bool { manager.canRenew() }
+  func credentials(minTTL: Int) async throws -> Credentials {
+    try await manager.credentials(minTTL: minTTL)
+  }
+  func renew() async throws -> Credentials { try await manager.renew() }
+  func store(credentials: Credentials) -> Bool { manager.store(credentials: credentials) }
+  func clear() -> Bool { manager.clear() }
+
+  /// `hasItem` returns false only for `errSecItemNotFound` and throws for any other status.
+  func credentialsDefinitelyAbsent() -> Bool {
+    (try? keychain.hasItem(forKey: Self.storeKey)) == false
+  }
 }
 
 /// The `ConvexClientWithAuth` calls the owner makes.
@@ -159,6 +193,10 @@ final class AuthenticationManager: ObservableObject {
   private var transportObserver: AnyCancellable?
   private var phase = Phase.active
   private var generation = 0
+  /// Identifies the newest password login; an older response must not touch the session.
+  private var loginAttempt = 0
+  /// Auth0 rejected the session the running teardown is draining.
+  private var drainedSessionRejected = false
   private var inFlight = 0
   private var drainWaiters: [CheckedContinuation<Void, Never>] = []
   private var connectTask: Task<Void, Never>?
@@ -179,7 +217,7 @@ final class AuthenticationManager: ObservableObject {
         domain: Self.domain
       )
     self.auth0 = auth0
-    self.credentialsStore = credentialsStore ?? CredentialsManager(authentication: auth0)
+    self.credentialsStore = credentialsStore ?? KeychainCredentialsStore(authentication: auth0)
     self.convex = convex ?? ConvexClientManager.client
     transportObserver = self.convex.watchWebSocketState()
       .receive(on: DispatchQueue.main)
@@ -238,7 +276,9 @@ final class AuthenticationManager: ObservableObject {
   /// Log in with email and password.
   func login(email: String, password: String) async throws {
     guard phase == .active else { throw AuthError.unknown("Signing out, please try again.") }
-    // A response that arrives after a logout or a newer login belongs to an old session.
+    // A response that arrives after a logout or a newer login belongs to an old attempt.
+    loginAttempt += 1
+    let attempt = loginAttempt
     let loginGeneration = generation
     authState = .loading
 
@@ -253,8 +293,8 @@ final class AuthenticationManager: ObservableObject {
         )
         .start()
 
-      guard phase == .active, generation == loginGeneration else {
-        print("[Auth] Dropped a login response from an earlier session")
+      guard isCurrentLogin(attempt, generation: loginGeneration) else {
+        print("[Auth] Dropped a login response from an earlier attempt")
         throw AuthError.unknown("Login was interrupted. Please try again.")
       }
 
@@ -268,6 +308,10 @@ final class AuthenticationManager: ObservableObject {
       let stored = try await withCredentialOperation(generation: loginGeneration) {
         $0.store(credentials: credentials)
       }
+      guard isCurrentLogin(attempt, generation: loginGeneration) else {
+        print("[Auth] Dropped a login response from an earlier attempt")
+        throw AuthError.unknown("Login was interrupted. Please try again.")
+      }
       guard stored else {
         print("[Auth] Login rejected: credentials could not be stored")
         authState = .unauthenticated
@@ -280,13 +324,13 @@ final class AuthenticationManager: ObservableObject {
       print("[Auth] Logged in as: \(userEmail)")
       startConnect()
     } catch let error as Auth0.AuthenticationError {
-      if generation == loginGeneration { authState = .unauthenticated }
+      if isCurrentLogin(attempt, generation: loginGeneration) { authState = .unauthenticated }
       throw mapAuth0Error(error)
     } catch let error as AuthError {
       // Re-throw our own errors (like emailNotVerified)
       throw error
     } catch {
-      if generation == loginGeneration { authState = .unauthenticated }
+      if isCurrentLogin(attempt, generation: loginGeneration) { authState = .unauthenticated }
       throw AuthError.unknown(error.localizedDescription)
     }
   }
@@ -385,6 +429,11 @@ final class AuthenticationManager: ObservableObject {
       if debugForceRenewal { return .infinity }
     #endif
     return Self.idTokenRenewalGrace
+  }
+
+  /// No teardown and no newer password login started since this attempt.
+  private func isCurrentLogin(_ attempt: Int, generation loginGeneration: Int) -> Bool {
+    phase == .active && generation == loginGeneration && loginAttempt == attempt
   }
 
   private func extractEmail(from idToken: String) -> String? {
@@ -538,12 +587,22 @@ extension AuthenticationManager {
   /// Credential operations and the connect task report an invalid session this way, because
   /// the teardown waits for both.
   private func scheduleTerminal(generation terminalGeneration: Int) {
+    guard !recordForRunningTeardown(generation: terminalGeneration) else { return }
     Task { await handleTerminal(generation: terminalGeneration) }
   }
 
   private func handleTerminal(generation terminalGeneration: Int) async {
+    guard !recordForRunningTeardown(generation: terminalGeneration) else { return }
     guard phase == .active, generation == terminalGeneration else { return }
     _ = await teardown(reason: .sessionInvalidated)
+  }
+
+  /// A rejection of the session that the running teardown drains makes that teardown end it as
+  /// invalidated. The teardown advanced `generation` by one; older sessions stay ignored.
+  private func recordForRunningTeardown(generation terminalGeneration: Int) -> Bool {
+    guard phase == .tearingDown, terminalGeneration == generation - 1 else { return false }
+    drainedSessionRejected = true
+    return true
   }
 
   /// Runs one teardown at a time; a second request waits for the running one.
@@ -560,6 +619,7 @@ extension AuthenticationManager {
     print("[Auth] Teardown started (\(reason))")
     phase = .tearingDown
     generation += 1
+    drainedSessionRejected = false
     convexAuthInstalled = false
     convexAuthFailure = nil
 
@@ -568,28 +628,33 @@ extension AuthenticationManager {
     }
     await drainCredentialOperations()
     let detached = await detachConvex()
+    // Also true when an operation of the drained session reported `invalid_grant`
+    let invalidated = reason == .sessionInvalidated || drainedSessionRejected
     // A user logout keeps the credentials when Convex stayed attached, so Retry can repeat it.
-    // A missing entry counts as cleared; Auth0 reports deleting it as a failure.
+    // Auth0 reports deleting a missing entry as a failure, so the Keychain is asked directly.
     let cleared =
-      (detached || reason == .sessionInvalidated)
-      && (credentialsStore.clear() || !credentialsStore.canRenew())
+      (detached || invalidated)
+      && (credentialsStore.clear() || credentialsStore.credentialsDefinitelyAbsent())
     phase = .active
     teardownTask = nil
     print("[Auth] Teardown finished (detached: \(detached), cleared: \(cleared))")
 
-    guard (detached && cleared) || reason == .sessionInvalidated else {
+    guard (detached && cleared) || invalidated else {
       // Keep the session and reconnect the data it had before the failed logout
       startConnect()
       return false
     }
     authState = .unauthenticated
-    lastSignOutReason = reason
+    lastSignOutReason = invalidated ? .sessionInvalidated : reason
     return detached && cleared
   }
 
   /// `ConvexClientWithAuth.logout()` hides its errors and publishes `.unauthenticated` only after
   /// a successful detach, before it returns. The observer is armed first and skips the
   /// current-value replay, which can be left over from an earlier failed login.
+  ///
+  /// The SDK call itself has no deadline; admission stays closed until it returns. The 5 s
+  /// deadline bounds only the wait for the acknowledgement after it returned.
   private func detachConvex() async -> Bool {
     let (acknowledgements, continuation) = AsyncStream<Void>.makeStream()
     let observer = convex.authState
@@ -605,6 +670,7 @@ extension AuthenticationManager {
     }
 
     await convex.logout()
+    // Starts only now that the SDK call returned
     let deadline = Self.detachDeadline
     return await withTaskGroup(of: Bool.self) { group in
       group.addTask {
@@ -634,6 +700,9 @@ extension CredentialsManager: CredentialsStoring {
   func renew() async throws -> Credentials {
     try await renew(parameters: [:], headers: [:])
   }
+
+  /// Its storage API returns nil for a read error too, so it can never prove absence.
+  func credentialsDefinitelyAbsent() -> Bool { false }
 }
 
 extension ConvexClientWithAuth: ConvexAuthClient where T == Credentials {}
