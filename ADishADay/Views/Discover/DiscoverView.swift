@@ -17,6 +17,10 @@ struct DiscoverView: View {
   @State private var tasks: [ConvexTask] = []
   @State private var isLoading = false
   @State private var subscriptionTask: Task<Void, Never>?
+  @State private var subscriptionID = UUID()
+  @State private var subscriptionError: String?
+  @State private var toggleError: String?
+  @State private var isRetrying = false
 
   private var convex: ConvexClientWithAuth<Credentials> {
     ConvexClientManager.client
@@ -33,6 +37,13 @@ struct DiscoverView: View {
 
       case .unauthenticated:
         unauthenticatedView
+
+      case .offline:
+        retryView(
+          title: "You're Offline",
+          systemImage: "wifi.slash",
+          message: "Your account is still signed in.\nConnect to the internet and try again."
+        )
 
       case .authenticated:
         authenticatedContent
@@ -68,8 +79,21 @@ struct DiscoverView: View {
           .environmentObject(authManager)
       }
     }
-    .onChange(of: authManager.authState) { _, newState in
-      handleAuthStateChange(newState)
+    .onChange(of: authManager.isConvexReady) { _, isReady in
+      handleReadinessChange(isReady)
+    }
+    .alert(
+      "Could Not Update Task",
+      isPresented: Binding(
+        get: { toggleError != nil },
+        set: { if !$0 { toggleError = nil } }
+      )
+    ) {
+      Button("OK", role: .cancel) {}
+    } message: {
+      if let toggleError {
+        Text(toggleError)
+      }
     }
     .enableInjection()
   }
@@ -99,11 +123,49 @@ struct DiscoverView: View {
     .offset(y: -40)
   }
 
+  // MARK: - Retry View
+
+  /// Offline or failed Convex login: Retry resumes the failed stage through the auth owner.
+  private func retryView(title: String, systemImage: String, message: String) -> some View {
+    ContentUnavailableView {
+      Label(title, systemImage: systemImage)
+    } description: {
+      Text(message)
+    } actions: {
+      Button {
+        Task {
+          isRetrying = true
+          await authManager.connectConvex()
+          isRetrying = false
+        }
+      } label: {
+        Text("Retry")
+          .opacity(isRetrying ? 0 : 1)
+          .overlay {
+            if isRetrying {
+              ProgressView()
+                .controlSize(.regular)
+            }
+          }
+      }
+      .buttonStyle(.borderedProminent)
+      .controlSize(.large)
+      .disabled(isRetrying)
+    }
+    .offset(y: -40)
+  }
+
   // MARK: - Authenticated Content
 
   private var authenticatedContent: some View {
     Group {
-      if isLoading {
+      if let failure = authManager.convexAuthFailure {
+        retryView(title: "Not Connected", systemImage: "exclamationmark.icloud", message: failure)
+      } else if !authManager.isConvexReady {
+        ProgressView("Connecting...")
+      } else if let subscriptionError {
+        subscriptionErrorView(message: subscriptionError)
+      } else if isLoading {
         ProgressView("Loading tasks...")
       } else if tasks.isEmpty {
         ContentUnavailableView(
@@ -115,12 +177,41 @@ struct DiscoverView: View {
         tasksList
       }
     }
+    .safeAreaInset(edge: .top) {
+      if authManager.isConvexReady && authManager.transport == .connecting {
+        offlineBanner
+      }
+    }
     .onAppear {
       startSubscription()
     }
     .onDisappear {
       stopSubscription()
     }
+  }
+
+  private var offlineBanner: some View {
+    Label("Offline, waiting for connection", systemImage: "wifi.slash")
+      .font(.footnote)
+      .foregroundStyle(.secondary)
+      .frame(maxWidth: .infinity)
+      .padding(.vertical, 8)
+      .background(.bar)
+  }
+
+  private func subscriptionErrorView(message: String) -> some View {
+    ContentUnavailableView {
+      Label("Could Not Load Tasks", systemImage: "exclamationmark.triangle")
+    } description: {
+      Text(message)
+    } actions: {
+      Button("Retry") {
+        restartSubscription()
+      }
+      .buttonStyle(.borderedProminent)
+      .controlSize(.large)
+    }
+    .offset(y: -40)
   }
 
   private var tasksList: some View {
@@ -141,23 +232,30 @@ struct DiscoverView: View {
 
   // MARK: - Subscription Management
 
-  private func handleAuthStateChange(_ state: AuthState) {
-    if state.isAuthenticated {
+  private func handleReadinessChange(_ isReady: Bool) {
+    if isReady {
       startSubscription()
     } else {
       stopSubscription()
       tasks = []
+      subscriptionError = nil
     }
   }
 
+  /// Subscribes once the auth owner installed Convex auth, whatever the WebSocket state.
   private func startSubscription() {
-    guard subscriptionTask == nil, authManager.authState.isAuthenticated else { return }
+    guard subscriptionTask == nil, subscriptionError == nil, authManager.isConvexReady else {
+      return
+    }
 
+    let id = UUID()
+    subscriptionID = id
     subscriptionTask = Task {
-      // Authenticate with Convex using cached credentials
-      _ = await convex.login()
-      print("[Convex] Authenticated successfully")
       await subscribeToTasks()
+      // A replaced subscription must not clear its successor's handle
+      if subscriptionID == id {
+        subscriptionTask = nil
+      }
     }
   }
 
@@ -166,23 +264,41 @@ struct DiscoverView: View {
     subscriptionTask = nil
   }
 
+  private func restartSubscription() {
+    stopSubscription()
+    subscriptionError = nil
+    startSubscription()
+  }
+
   private func toggleTask(id: String) {
     Task {
-      try? await convex.mutation("tasks:toggle", with: ["id": id])
+      do {
+        try await convex.mutation("tasks:toggle", with: ["id": id])
+      } catch {
+        print("[Convex] Toggle failed: \(type(of: error))")
+        toggleError = "The task could not be updated. Please try again."
+      }
     }
   }
 
   private func subscribeToTasks() async {
     isLoading = true
 
-    for await result: [ConvexTask] in convex.subscribe(to: "tasks:get")
-      .replaceError(with: [])
-      .values
-    {
-      guard !Task.isCancelled else { break }
-      isLoading = false
-      tasks = result
+    do {
+      for try await result: [ConvexTask] in convex.subscribe(to: "tasks:get").values {
+        guard !Task.isCancelled else { return }
+        isLoading = false
+        tasks = result
+        authManager.noteQueryResult()
+      }
+    } catch {
+      print("[Convex] Subscription failed: \(type(of: error))")
     }
+
+    // The stream only ends on an error; show it instead of an empty list
+    guard !Task.isCancelled else { return }
+    isLoading = false
+    subscriptionError = "Tasks could not be loaded."
   }
 }
 

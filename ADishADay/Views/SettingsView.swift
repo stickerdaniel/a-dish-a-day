@@ -51,6 +51,7 @@ struct SettingsView: View {
   // MARK: - Authentication
   @State private var loginPresentation: LoginPresentation?
   @State private var isSigningOut = false
+  @State private var signOutError: String?
 
   var body: some View {
     Form {
@@ -109,7 +110,7 @@ struct SettingsView: View {
       }
 
       // Account Section
-      Section("Account") {
+      Section {
         switch authManager.authState {
         case .unknown, .loading:
           HStack {
@@ -133,35 +134,33 @@ struct SettingsView: View {
           .listRowInsets(EdgeInsets())
 
         case .authenticated(let userEmail):
-          VStack(alignment: .leading, spacing: 4) {
-            Text("Signed in")
-              .font(.subheadline)
-              .foregroundStyle(.secondary)
-            if let email = userEmail {
-              Text(email)
-                .font(.body)
-            }
-          }
+          accountRows(status: "Signed in", email: userEmail)
 
-          Button(role: .destructive) {
-            Task {
-              isSigningOut = true
-              await authManager.logout()
-              isSigningOut = false
-            }
-          } label: {
-            Text("Sign Out")
-              .opacity(isSigningOut ? 0 : 1)
-              .overlay {
-                if isSigningOut {
-                  ProgressView()
-                    .controlSize(.regular)
-                }
-              }
+        case .offline(let userEmail):
+          accountRows(status: "Signed in, offline", email: userEmail)
+
+          Button("Retry Connection") {
+            Task { await authManager.connectConvex() }
           }
-          .disabled(isSigningOut)
+        }
+      } header: {
+        Text("Account")
+      } footer: {
+        if let error = signOutError {
+          Text(error)
+            .foregroundColor(.red)
         }
       }
+
+      #if DEBUG
+        // Debug Section: forces the ID-token renewal branch for manual tests
+        Section("Debug") {
+          Toggle("Force Token Renewal", isOn: $authManager.debugForceRenewal)
+          Button("Reconnect Convex") {
+            Task { await authManager.connectConvex() }
+          }
+        }
+      #endif
 
       // Data Management Section
       Section {
@@ -218,6 +217,43 @@ struct SettingsView: View {
       }
     }
     .enableInjection()
+  }
+
+  // MARK: - Account Rows
+  @ViewBuilder
+  private func accountRows(status: String, email: String?) -> some View {
+    VStack(alignment: .leading, spacing: 4) {
+      Text(status)
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+      if let email {
+        Text(email)
+          .font(.body)
+      }
+    }
+
+    Button(role: .destructive) {
+      Task {
+        isSigningOut = true
+        signOutError = nil
+        do {
+          try await authManager.logout()
+        } catch {
+          signOutError = error.localizedDescription
+        }
+        isSigningOut = false
+      }
+    } label: {
+      Text("Sign Out")
+        .opacity(isSigningOut ? 0 : 1)
+        .overlay {
+          if isSigningOut {
+            ProgressView()
+              .controlSize(.regular)
+          }
+        }
+    }
+    .disabled(isSigningOut)
   }
 
   // MARK: - Clear All Data
