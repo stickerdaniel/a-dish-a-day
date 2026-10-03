@@ -28,8 +28,14 @@ struct CalendarApp: App {
           // Initialize auth and determine if we should show login
           await authManager.initialize()
 
-          // Show login on launch if not authenticated and no cached credentials
-          if !authManager.authState.isAuthenticated && !authManager.hasCachedCredentials {
+          // Show login on launch if not signed in and no cached credentials
+          if !authManager.authState.isSignedInForNavigation && !authManager.hasCachedCredentials {
+            showLoginOnLaunch = true
+          }
+        }
+        .onChange(of: authManager.lastSignOutReason) { _, reason in
+          // Auth0 rejected the stored session, so ask for a new login
+          if reason == .sessionInvalidated {
             showLoginOnLaunch = true
           }
         }

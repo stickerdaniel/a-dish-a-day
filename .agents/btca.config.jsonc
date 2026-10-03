@@ -26,13 +26,6 @@
     },
     {
       "type": "git",
-      "name": "convexSwiftAuth0",
-      "url": "https://github.com/get-convex/convex-swift-auth0.git",
-      "branch": "main",
-      "specialNotes": "Convex Swift Auth0 integration for authentication via Auth0 Universal Login"
-    },
-    {
-      "type": "git",
       "name": "enquirer",
       "url": "https://github.com/enquirer/enquirer",
       "branch": "master",
