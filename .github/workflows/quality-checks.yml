@@ -84,4 +84,5 @@ jobs:
             -configuration "${{ matrix.configuration }}" \
             -destination "generic/platform=iOS Simulator" \
             -derivedDataPath "$RUNNER_TEMP/DerivedData" \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            ARCHS=arm64 # convex-swift ships its Rust library for arm64 simulators only
