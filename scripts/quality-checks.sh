@@ -126,7 +126,8 @@ fi
 # =============================================================================
 if ! $STAGED_MODE && ! $SKIP_BUILD; then
     echo "Building project..."
-    if xcodebuild -project ADishADay.xcodeproj -scheme "A Dish A Day" -destination "platform=iOS Simulator,name=iPhone 17 Pro" build -quiet; then
+    # Generic destination so no simulator model has to exist; convex-swift ships arm64 simulator slices only
+    if xcodebuild -project ADishADay.xcodeproj -scheme "A Dish A Day" -destination "generic/platform=iOS Simulator" ARCHS=arm64 build -quiet; then
         echo "Build succeeded"
     else
         echo "Build failed"

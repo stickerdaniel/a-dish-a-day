@@ -57,7 +57,8 @@ jobs:
           # Fail if a preinstalled tool shadows the pinned one
           test "$(swiftlint version)" = "$SWIFTLINT_VERSION"
           test "$(typos --version)" = "typos-cli $TYPOS_VERSION"
-          ./scripts/quality-checks.sh
+          # The build jobs below compile the app
+          ./scripts/quality-checks.sh --no-build
 
   build:
     name: Build (${{ matrix.configuration }})
