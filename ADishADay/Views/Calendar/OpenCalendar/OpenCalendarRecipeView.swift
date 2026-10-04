@@ -5,6 +5,7 @@
 //  Created by Daniel Sticker on 19.01.25.
 //  This view opens if we select a recipe door in the calendar view
 
+import SwiftData
 import SwiftUI
 
 struct OpenCalendarRecipeView: View {

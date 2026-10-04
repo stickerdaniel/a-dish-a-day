@@ -17,14 +17,14 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 
 ## Requirements
 
-- iOS 17.0+
-- Xcode 15.0+
+- iOS 26.0+
+- Xcode 26.0+ (CI builds with Xcode 26.6)
 - OpenAI API key (optional, for recipe scanning)
 
 ## Development Setup
 
 1. Clone the repository
-2. Install tools: `brew install swiftlint typos-cli periphery`
+2. Install tools: `brew install swiftlint typos-cli periphery` (CI pins the SwiftLint and typos versions in `.github/workflows/quality-checks.yml`)
 3. Enable git hooks: `git config core.hooksPath scripts/hooks`
 4. Install Convex dependencies with [Bun](https://bun.sh): `bun install`
 5. Open `ADishADay.xcodeproj` in Xcode (or [Cursor](https://cursor.sh) with [SweetPad](https://sweetpad.hzbd.me))
