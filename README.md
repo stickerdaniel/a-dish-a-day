@@ -18,7 +18,7 @@ Plan your meals for the week, digitize handwritten recipe cards, and keep genera
 ## Requirements
 
 - iOS 26.0+
-- Xcode 26.0+ (CI builds with Xcode 26.6)
+- Xcode 26.0+ (CI builds with Xcode 27)
 - OpenAI API key (optional, for recipe scanning)
 
 ## Development Setup
