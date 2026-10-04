@@ -401,7 +401,7 @@
 			repositoryURL = "https://github.com/auth0/Auth0.swift";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.25.0;
+				minimumVersion = 3.1.0;
 			};
 		};
 		65E7997D2F1E60B20086E7CA /* XCRemoteSwiftPackageReference "convex-swift" */ = {
