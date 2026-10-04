@@ -5,6 +5,7 @@
 //  Created by Daniel Sticker on 15.01.25.
 //  A view for editing a recipe.
 
+import SwiftData
 import SwiftUI
 
 struct EditRecipeView: View {

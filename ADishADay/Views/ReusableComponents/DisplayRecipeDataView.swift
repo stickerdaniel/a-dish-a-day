@@ -20,15 +20,18 @@ struct DisplayRecipeDataView: View {
         ZStack(alignment: .bottomLeading) {
           // Expand thumbnail image full width
           if let thumbnail = thumbnailImage {
-            thumbnail
-              .resizable()
-              .scaledToFill()
-              .frame(maxWidth: UIScreen.main.bounds.width)
+            // The overlay keeps the filled image from widening the layout
+            Color.clear
+              .frame(maxWidth: .infinity)
               .frame(height: 200)
+              .overlay {
+                thumbnail
+                  .resizable()
+                  .scaledToFill()
+              }
               .clipped()
               .cornerRadius(16)
               .shadow(radius: 4)
-
           }
           if let day = day {
             DayOverlay(day: day)

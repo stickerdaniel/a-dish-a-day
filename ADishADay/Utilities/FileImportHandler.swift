@@ -32,32 +32,26 @@ struct FileImportHandler<T> {
         }
       }
 
-      do {
-        let fileCoordinator = NSFileCoordinator()
-        var error: NSError?
-        var imported: T?
+      let fileCoordinator = NSFileCoordinator()
+      var readError: NSError?
+      var importResult: Result<T, Error>?
 
-        fileCoordinator.coordinate(readingItemAt: url, options: [], error: &error) { securedURL in
-          do {
-            imported = try handleImport(securedURL)
-          } catch {
-            onError(error)
-          }
-        }
+      fileCoordinator.coordinate(readingItemAt: url, options: [], error: &readError) { securedURL in
+        importResult = Result { try handleImport(securedURL) }
+      }
 
-        if let error = error {
-          onError(error)
-          return
-        }
+      if let readError {
+        onError(readError)
+        return
+      }
 
-        if let imported = imported {
-          onSuccess(imported)
-        } else {
-          onError(URLError(.cannotDecodeContentData))
-        }
-
-      } catch {
+      switch importResult {
+      case .success(let imported):
+        onSuccess(imported)
+      case .failure(let error):
         onError(error)
+      case nil:
+        onError(URLError(.cannotDecodeContentData))
       }
 
     case .failure(let error):

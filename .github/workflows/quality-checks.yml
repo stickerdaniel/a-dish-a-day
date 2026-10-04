@@ -58,3 +58,31 @@ jobs:
           test "$(swiftlint version)" = "$SWIFTLINT_VERSION"
           test "$(typos --version)" = "typos-cli $TYPOS_VERSION"
           ./scripts/quality-checks.sh
+
+  build:
+    name: Build (${{ matrix.configuration }})
+    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+    env:
+      # Newest Xcode on the macos-26 image; bump when the image ships a newer one
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build for the iOS Simulator
+        run: |
+          set -euo pipefail
+          xcodebuild -version
+          xcodebuild build \
+            -project ADishADay.xcodeproj \
+            -scheme "A Dish A Day" \
+            -configuration "${{ matrix.configuration }}" \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            ARCHS=arm64 # convex-swift ships its Rust library for arm64 simulators only

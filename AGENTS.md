@@ -322,11 +322,11 @@ GitHub Actions workflow (`.github/workflows/quality-checks.yml`) runs on:
 - Push to `main` branch
 - Pull request creation/updates
 
-Uses `macos-latest` runner with `./scripts/quality-checks.sh` (full mode).
+Runs `./scripts/quality-checks.sh` (full mode) with pinned SwiftLint and typos, and builds the app in Debug and Release for the iOS Simulator.
 
 ### swift-format (Formatting)
 
-- **Config:** `.swift-format`
+- **Config:** none, swift-format defaults
 - **VS Code:** Format-on-save via [SweetPad](https://sweetpad.hyzyla.dev/docs/intro/)
 - **Xcode:** Built into toolchain at `/Applications/Xcode.app/.../usr/bin/swift-format`
 
@@ -337,7 +337,7 @@ Uses `macos-latest` runner with `./scripts/quality-checks.sh` (full mode).
 
 ### typos (Spell Checking)
 
-- **Config:** `_typos.toml` (for custom words/exclusions)
+- **Config:** `typos.toml` (for custom words/exclusions)
 - **Fix typos:** `typos -w` to auto-fix
 
 ### Periphery (Dead Code Detection)
@@ -357,8 +357,6 @@ Document any unused code that should be kept here. When Periphery reports these 
 | Item | File | Reason |
 |------|------|--------|
 | `nextUnlockTime` | CalendarModel.swift | Infrastructure for future notification scheduling (e.g., remind user before next recipe unlocks) |
-| `startOfMonth` | BetterDateUtilities.swift | Non-trivial date utility for month boundary operations |
-| `endOfMonth` | BetterDateUtilities.swift | Pairs with `startOfMonth` for complete month boundary API |
 
 ## Dev Workflow
 
