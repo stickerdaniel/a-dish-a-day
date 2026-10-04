@@ -2,7 +2,10 @@ name: Check Attribution
 
 # No branch filter: the base branch is read at runtime, so this works the same
 # on repos that call it main and repos that call it master.
-on: pull_request
+on:
+  pull_request:
+    # edited covers a changed base branch, which changes the commit range
+    types: [opened, synchronize, reopened, edited]
 
 # Coding agents sign their work either with a Co-Authored-By trailer or by
 # claiming the author/committer field. Squash-merging collects the trailers of
@@ -15,11 +18,10 @@ env:
   # Bare identities, matched against a trailer address and against the
   # author/committer fields. The optional digits cover GitHub's
   # "<id>+<handle>@users.noreply.github.com" form, whose id varies per app.
-  AI_IDENTITY_RE: '(noreply@anthropic\.com|cursoragent@cursor\.com|(noreply|codex)@openai\.com|noreply@aider\.chat|openhands@all-hands\.dev|noreply@opencode\.ai|noreply@continue\.dev|clio-agent@sisyphuslabs\.ai|roomote@roocode\.com|copilot@github\.com|([0-9]+[+])?(Copilot|gemini-code-assist\[bot\]|greptile-apps\[bot\]|coderabbitai\[bot\]|ellipsis-dev\[bot\]|qodo-merge-pro\[bot\]|sweep-ai\[bot\]|bito-code-review\[bot\]|roomote\[bot\]|factory-droid\[bot\]|opencode-agent\[bot\]|google-labs-jules\[bot\])@users\.noreply\.github\.com)'
+  AI_IDENTITY_RE: '(noreply@anthropic\.com|cursoragent@cursor\.com|(noreply|codex)@openai\.com|noreply@aider\.chat|openhands@all-hands\.dev|noreply@opencode\.ai|noreply@continue\.dev|clio-agent@sisyphuslabs\.ai|roomote@roocode\.com|copilot@github\.com|([0-9]+[+])?(Copilot|gemini-code-assist\[bot\]|greptile-apps\[bot\]|coderabbitai\[bot\]|ellipsis-dev\[bot\]|qodo-merge-pro\[bot\]|sweep-ai\[bot\]|bito-code-review\[bot\]|roomote\[bot\]|factory-droid\[bot\]|opencode-agent\[bot\]|google-labs-jules\[bot\]|devin-ai-integration\[bot\])@users\.noreply\.github\.com)'
 
 jobs:
   check-bot-coauthors:
-    if: ${{ !endsWith(github.actor, '[bot]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
