@@ -110,7 +110,11 @@ bunx convex dev
 
 **Implementation:**
 - Uses `ConvexClientWithAuth<Credentials>` with `CustomAuth0Provider`
-- `CustomAuth0Provider` bridges our manual email/password flow to Convex
+- `AuthenticationManager` is the single owner of the Auth0 credentials and the Convex auth lifecycle. Nothing else reads, renews, stores or clears credentials, and views never call `convex.login()` or `convex.logout()` themselves
+- `CustomAuth0Provider` only forwards Convex token requests to `AuthenticationManager.validCredentials()`, which renews the ID token when its `exp` is within 300 seconds (Convex validates the ID token, Auth0 only renews on access-token expiry). It ignores `onIdToken`, and its `logout()` is a no-op
+- Every credentials call passes an admission gate. Logout and session invalidation share one teardown: close the gate, wait for running calls, log out of Convex (confirmed by its auth publisher; the 5 s deadline bounds that wait after the SDK logout call returns, not the call itself), then clear the Keychain
+- Only an Auth0 `invalid_grant` on renewal invalidates the session (root login cover). Network errors keep the stored session as `AuthState.offline`; `connectConvex()` is the retry entry that restores it and installs Convex auth
+- Subscriptions start once `isConvexReady` is true; the WebSocket state only drives the offline banner
 - Backend configured in `convex/auth.config.ts` with Auth0 domain and client ID
 - Queries/mutations check `ctx.auth.getUserIdentity()` server-side
 

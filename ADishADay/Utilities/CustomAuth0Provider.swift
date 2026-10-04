@@ -10,60 +10,42 @@ import ConvexMobile
 import Foundation
 
 /// Custom Auth0 provider that bridges our AuthenticationManager to Convex.
-/// Uses cached credentials from our password-based auth flow instead of webAuth.
-public class CustomAuth0Provider: AuthProvider {
-  private let credentialsManager: CredentialsManager
+/// Hands Convex the owner's credentials and never touches the Keychain itself.
+final class CustomAuth0Provider: AuthProvider {
+  private let owner: @MainActor () -> AuthenticationManager
 
-  public init() {
-    // Use the same credentials manager configuration as AuthenticationManager
-    let auth0 = Auth0.authentication(
-      clientId: AppConfiguration.auth0ClientId,
-      domain: AppConfiguration.auth0Domain
-    )
-    self.credentialsManager = CredentialsManager(authentication: auth0)
+  /// The owner is resolved on each call, so the shared manager can create the client that
+  /// holds this provider.
+  init(owner: @escaping @MainActor () -> AuthenticationManager = { AuthenticationManager.shared }) {
+    self.owner = owner
   }
 
-  /// Returns cached credentials for Convex, refreshing the token if expired (may make network call).
-  ///
-  /// Login is handled externally by AuthenticationManager - this method only retrieves
-  /// existing credentials. Both `login()` and `loginFromCache()` share identical implementations
-  /// because Auth0's CredentialsManager transparently handles cached retrieval and token refresh.
-  /// Both methods are required by the AuthProvider protocol.
-  public func login() async throws -> Credentials {
-    do {
-      return try await credentialsManager.credentials()
-    } catch {
-      print("[CustomAuth0Provider] Failed to get credentials: \(error.localizedDescription)")
-      throw error
-    }
+  /// Login is handled externally by AuthenticationManager, which already stored the
+  /// credentials, so this is the same as `loginFromCache`.
+  func login(onIdToken: @Sendable @escaping (String?) -> Void) async throws -> Credentials {
+    try await loginFromCache(onIdToken: onIdToken)
   }
 
-  /// Returns credentials for Convex authentication, refreshing the token if expired (may make network call).
+  /// Returns credentials for Convex, renewing them when the ID token is about to expire.
+  /// Convex calls this on login and on every forced token refresh.
   ///
-  /// Note: This implementation is identical to `login()` because Auth0's CredentialsManager
-  /// handles both cached retrieval and token refresh transparently. Both methods are required
-  /// by the AuthProvider protocol.
-  public func loginFromCache() async throws -> Credentials {
-    do {
-      return try await credentialsManager.credentials()
-    } catch {
-      print("[CustomAuth0Provider] Failed to get cached credentials: \(error.localizedDescription)")
-      throw error
-    }
+  /// `onIdToken` is not retained: Convex caches the returned token itself, and its nil path
+  /// detaches in an unscoped task that could hit a newer session. The owner tears down
+  /// invalid sessions instead.
+  func loginFromCache(onIdToken: @Sendable @escaping (String?) -> Void) async throws -> Credentials
+  {
+    try await owner().validCredentials()
   }
 
   /// Extracts the ID token for Convex to verify.
-  public func extractIdToken(from authResult: Credentials) -> String {
+  func extractIdToken(from authResult: Credentials) -> String {
     authResult.idToken
   }
 
   // swiftlint:disable:next type_name
-  public typealias T = Credentials
+  typealias T = Credentials
 
-  /// Logout is handled externally by AuthenticationManager.
-  public func logout() async throws {
-    // Credentials are cleared by AuthenticationManager.logout()
-    // We just need to clear any cached state here
-    _ = credentialsManager.clear()
-  }
+  /// No-op. `ConvexClientWithAuth.logout()` calls this during the owner's own teardown, which
+  /// also clears the credentials.
+  func logout() async throws {}
 }
