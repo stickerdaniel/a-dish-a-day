@@ -101,8 +101,8 @@ protocol CredentialsStoring {
   func canRenew() -> Bool
   func credentials(minTTL: Int) async throws -> Credentials
   func renew() async throws -> Credentials
-  func store(credentials: Credentials) -> Bool
-  func clear() -> Bool
+  func store(credentials: Credentials) throws
+  func clear() throws
   /// True only when storage reports the entry as not found. A read error is not absence.
   func credentialsDefinitelyAbsent() -> Bool
 }
@@ -129,8 +129,8 @@ struct KeychainCredentialsStore: CredentialsStoring {
     try await manager.credentials(minTTL: minTTL)
   }
   func renew() async throws -> Credentials { try await manager.renew() }
-  func store(credentials: Credentials) -> Bool { manager.store(credentials: credentials) }
-  func clear() -> Bool { manager.clear() }
+  func store(credentials: Credentials) throws { try manager.store(credentials: credentials) }
+  func clear() throws { try manager.clear() }
 
   /// `hasItem` returns false only for `errSecItemNotFound` and throws for any other status.
   func credentialsDefinitelyAbsent() -> Bool {
@@ -305,8 +305,9 @@ final class AuthenticationManager: ObservableObject {
         throw AuthError.emailNotVerified
       }
 
+      // A storage error becomes `stored == false`; the gate's CancellationError still throws
       let stored = try await withCredentialOperation(generation: loginGeneration) {
-        $0.store(credentials: credentials)
+        (try? $0.store(credentials: credentials)) != nil
       }
       guard isCurrentLogin(attempt, generation: loginGeneration) else {
         print("[Auth] Dropped a login response from an earlier attempt")
@@ -522,7 +523,7 @@ extension AuthenticationManager {
       // Verify email is still verified in cached credentials
       guard isEmailVerified(in: credentials.idToken) else {
         print("[Auth] Cached credentials rejected: email not verified")
-        if !credentialsStore.clear() {
+        if (try? credentialsStore.clear()) == nil {
           print("[Auth] Failed to clear unverified credentials")
         }
         authState = .unauthenticated
@@ -631,10 +632,10 @@ extension AuthenticationManager {
     // Also true when an operation of the drained session reported `invalid_grant`
     let invalidated = reason == .sessionInvalidated || drainedSessionRejected
     // A user logout keeps the credentials when Convex stayed attached, so Retry can repeat it.
-    // Auth0 reports deleting a missing entry as a failure, so the Keychain is asked directly.
+    // Auth0 throws for deleting a missing entry too, so the Keychain is asked directly.
     let cleared =
       (detached || invalidated)
-      && (credentialsStore.clear() || credentialsStore.credentialsDefinitelyAbsent())
+      && ((try? credentialsStore.clear()) != nil || credentialsStore.credentialsDefinitelyAbsent())
     phase = .active
     teardownTask = nil
     print("[Auth] Teardown finished (detached: \(detached), cleared: \(cleared))")
@@ -701,7 +702,8 @@ extension CredentialsManager: CredentialsStoring {
     try await renew(parameters: [:], headers: [:])
   }
 
-  /// Its storage API returns nil for a read error too, so it can never prove absence.
+  /// Its storage protocol does not say which thrown error means a missing entry, so it can
+  /// never prove absence.
   func credentialsDefinitelyAbsent() -> Bool { false }
 }
 
