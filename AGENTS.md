@@ -322,7 +322,7 @@ GitHub Actions workflow (`.github/workflows/quality-checks.yml`) runs on:
 - Push to `main` branch
 - Pull request creation/updates
 
-Runs `./scripts/quality-checks.sh` (full mode) with pinned SwiftLint and typos, and builds the app in Debug and Release for the iOS Simulator.
+Runs on a self-hosted macOS runner (labels `self-hosted, macOS, ARM64, xcode-27`): `./scripts/quality-checks.sh` (full mode) with pinned SwiftLint and typos, and builds the app in Debug and Release for the iOS Simulator.
 
 ### swift-format (Formatting)
 

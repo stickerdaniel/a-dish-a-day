@@ -153,7 +153,7 @@
 			shellScript = (
 				"if [ -n \"$CI\" ]; then exit 0; fi",
 				"HOOKS_PATH=$(git config core.hooksPath)",
-				"if [ \"$HOOKS_PATH\" != \"scripts/hooks\" ]; then",
+				"if [ \"$HOOKS_PATH\" != \"scripts/hooks\" ] && [ \"$HOOKS_PATH\" != \"$SRCROOT/scripts/hooks\" ]; then",
 				"    echo \"error: Git hooks not configured. Run: git config core.hooksPath scripts/hooks\"",
 				"    exit 1",
 				"fi",
