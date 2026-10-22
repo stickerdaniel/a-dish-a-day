@@ -15,7 +15,7 @@ jobs:
     runs-on: [self-hosted, macOS, ARM64, xcode-27]
     env:
       SWIFTLINT_VERSION: 0.65.1
-      TYPOS_VERSION: 1.50.3
+      TYPOS_VERSION: 1.51.1
 
     steps:
       - name: Checkout code
